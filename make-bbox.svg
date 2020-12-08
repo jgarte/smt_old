@@ -1,0 +1,41 @@
+<!-- ;;; https://stackoverflow.com/questions/60821098/render-javascript-in-svg/60821486#60821486
+
+#|
+Open this file:
+
+<rect id="rectG" x="0" y="0" width="50" height="50" fill="yellow" transform="translate(100 200) scale(0.1 -0.1) "/>
+
+<rect id="rectG"/>
+
+
+<script type="text/javascript"><![CDATA[
+var x = document.getElementById("pathG");
+bb=x.getBBox();
+var rect = document.getElementById("rectG");
+rect.setAttribute('x', bb.x);
+rect.setAttribute('y', bb.y);
+rect.setAttribute('width', bb.width);
+rect.setAttribute('height', bb.height);
+]]></script>
+
+ with the glyph path-d, in Firefox and then issue in firefox-console:
+
+document.documentElement.outerHTML
+
+and save the outputed coordinates of the <rect> element.
+
+ -->
+
+<!-- width="793.70081" height="1122.51965" -->
+<!--  width="1300" height="1601.98" viewBox="0 0 1300 1601.98" -->
+<svg version="1.1" id="toplevel" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <path id="glyph" d="M0,38c0,-133,116,-194,214,-194c85,0,119,42,119,118c0,121,-93,194,-221,194c-68,0,-112,-27,-112,-118ZM251,-105c-42,0,-214,123,-214,171c0,19.84960174560547,17.277301788330078,35,37,35c48,0,214,-137,214,-172c0,-19.849403381347656,-17.277008056640625,-34,-37,-34Z"></path>
+
+  
+  <script type="text/javascript"><![CDATA[
+  var x = document.getElementById("glyph");
+  var r=x.getBoundingClientRect();
+  console.log(r);
+  ]]></script>
+</svg>

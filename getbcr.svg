@@ -1,0 +1,48 @@
+<!-- ;;; https://stackoverflow.com/questions/60821098/render-javascript-in-svg/60821486#60821486
+
+#|
+Open this file:
+
+<rect id="rectG" x="0" y="0" width="50" height="50" fill="yellow" transform="translate(100 200) scale(0.1 -0.1) "/>
+
+<rect id="rectG"/>
+
+
+<script type="text/javascript"><![CDATA[
+var x = document.getElementById("pathG");
+bb=x.getBBox();
+var rect = document.getElementById("rectG");
+rect.setAttribute('x', bb.x);
+rect.setAttribute('y', bb.y);
+rect.setAttribute('width', bb.width);
+rect.setAttribute('height', bb.height);
+]]></script>
+
+ with the glyph path-d, in Firefox and then issue in firefox-console:
+
+document.documentElement.outerHTML
+
+and save the outputed coordinates of the <rect> element.
+
+ -->
+
+<!-- width="793.70081" height="1122.51965" -->
+<!--  width="1300" height="1601.98" viewBox="0 0 1300 1601.98" -->
+<svg version="1.1" id="toplevel" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <path id="gl" d="M0,47c0,-106,114,-204,199,-204c71,0,101,35,101,110c0,96,-104,186,-187,186c-77,0,-113,-37,-113,-92Z"></path>
+
+
+
+
+
+
+
+  
+  <script type="text/javascript"><![CDATA[
+  var x = document.getElementById("gl");
+  var r=x.getBoundingClientRect();
+  
+  console.log(r);
+  ]]></script>
+</svg>

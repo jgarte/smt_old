@@ -1,0 +1,128 @@
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Sa 9. Mai 18:19:48 CEST 2020
+
+Was sind XSLT, XPath, XQuery?
+
+https://en.wikipedia.org/wiki/Scientific_pitch_notation
+
+https://en.wikipedia.org/wiki/Numbered_musical_notation
+
+https://graphicdesign.stackexchange.com/questions/137214/shaping-complex-svg-elements-as-per-textpath-for-text?noredirect=1#comment204318_137214
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+So 5. Apr 18:11:59 CEST 2020
+
+Jargon (https://en.wikipedia.org/wiki/Typesetting):
+
+Stick: Frame
+%TYPE: Glyph 
+HORIZONTAL COMPOSING STICK: x
+VERTICAL COMPOSING STICK: y
+STACKED COMPOSING STICK: z
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+------------
+Mi 1. Apr 16:37:13 CEST 2020
+For conversion to PDF:
+rsvg-convert
+https://superuser.com/questions/381125/how-do-i-convert-an-svg-to-a-pdf-on-linux
+
+
+
+
+17.02.2020
+What makes ACAMN different from other music notation systems is that ACAMN is rather a set of global music-notationally logical rules, than a ready-to-use software. It's aim is providing these logics of music notation rather than forcing music notational algorithms. Although the rules adhere to a great extent to the specifications of EG BB, acamn does not hesitate to express them in form of a more global algorithm, whenever the specifications of BB seem to be constrained to a certain type of music notation tradition (Western music). E.g. he says not: if you give me the note (f () 5) i put it there for you, but this is the logic i am using for determining the position/shape of the notehead, now you might go on and change or breake those logics.
+The expressivity of Lisp made it an appearent best choice for implementing these rules...
+
+16.02.2020
+Take a look at https://github.com/svg/svgo.git
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Problems of integerating traditional engraving practices into a modern
+software:
+* Spacing symbols (BB p.41). But what about flexible onset
+times, e.g. a note is NEGATIVE TIME after it's previous note.
+
+Clefs (unter anderem) sind nur einfache Hashtables die definierte Rules beinhalten. Diese hashtables können um neue Rules belibieg erweitert werden.
+
+CWIM adheres roughly to the specifications of Behind Bars.
+
+Z is musically the most intelligent CONTEXT MANAGER AGENT of CWIM. Z
+has read Behind Bars carefuly! I.e. it knows about all pre-defined
+structurs (protocols) and aims at giving best (overlapping-)
+positioning solutions in terms of the nature of those structurs.
+
+Z differentiates between (musically) IDENTIFIABLE and UNIDENTIFIABLE
+overlappings! Example for an identifiable overlapping is (Z staff
+clef), basically anything on a staff. Since combination of staff +
+clef gives each staff space and line a particular meaning, this will
+create a context for working with 12 tones and classifies the note to
+one of those spaces.  Z knows about many musically identifiable
+structures and puts them i a musically meaningful order: (Z staff note
+staccato dynamic-pp) => pp staccato note on a staff, as is expected by
+AN EDUCATED MUSICIAN!
+
+More specifically Z cares about (the order of importance is roughly
+the same as Behind Bars/Ground Rules):
+
+1. Staff structure:
+
+Z also recognizes identifiable musical elements inside other included
+context managers, e.g. (Z (staff) (Y (note) (horizontal-line) (note)))
+will put notes on corresponding staff lines (draws renaissance range
+at begin of a system).
+
+Y is a vertical stack of structures and/or other context-managers. As
+it is a vertical stack it is needed to specify which component is the
+vertical reference point (ABSY-TARGET-INDEX), by default it is the first
+component in the stack.  Same applies to horizontal alignment of Y's
+content: Y takes an ABSX argument and an ABSX-TARGET-INDEX argument (by
+default it is the component with the LARGEST WIDTH). ABSX is then
+applied to that component, all other items are by default centered
+around the middle point of that item.
+
+
+X takes ABSX: this will become the ABSX of it's first component. All
+of the following ABSXs of any further components is (by default)
+computed based on the WIDTHs of their foregoing components. As X is a
+horizontal stack, it could be specified to which component the ABSX
+refers to, this component will be placed at the specified x coordinate
+and everything else is computed based on that. It will be possible to
+use ABSX or RELX to adjust the horizontal positioning at any time
+(RELX will always change the horizontal alignment based on the
+computed ABSX). Using an ABSX on an inner-component will cancel out
+all X computations. Consider using RELX instead, as it will build upon
+X calculations.
+
+X components are processed sequentially.
+_______________________
+|X _____
+| |Z    | |
+| |_____| |
+|_________
+
+
+With nesting context managers the following applies:
+
+Z expands and treats the content of enclosed context managers as it's
+own content, i.e. Z expands the CMs and tries to bring them into a
+musical order.
+If X or Y are nested inside a Z, Z needs the index of the component for musical interpretation
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Am Fri Sep 11 12:58:18 CEST 2020 schreibe ich:
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

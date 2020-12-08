@@ -1,0 +1,15 @@
+* TODO order of rule-application?
+* TODO add support for defininf eg spn of notehead by rule?
+* TODO Add more general transformation functions 
+e.g. to rotate, flip, transpose etc. for mtypes or whole bunch of mtypes and sticks.
+* TODO Scalings should be re-implemented.
+* DONE A renam: chase -> frame mtype -> glyph composingstick -> form
+CLOSED: [2020-11-27 Fri 10:13]
+* TODO objects are not replacable:
+not providing objects copies, so I can't use a same obj on
+multiple places. This can be done by adding a slot clonable?, which indicates
+whether the objects is to be used itself (nil, default) or is to be
+used as a model from which other objs are cloned.
+* TODO svglst content cant be modifed
+(even at rule-application-time), svglsts are packed after rules have
+been applied, everything then goes for rendering.
