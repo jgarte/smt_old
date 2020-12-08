@@ -8,11 +8,6 @@
   :serial t
   :depends-on (#:xml #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
-	       ((:file "package")
-	       ;; (:module "xmlutils"
-	       ;; 	:serial t
-	       ;; 	:components ((:file "xml-base")
-	       ;; 		     (:file "svg")))
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
@@ -34,4 +29,4 @@
 		:serial t
 		:components ((:file "types")
 			     (:file "cwmn"))
-		))))
+		)))

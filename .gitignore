@@ -1,0 +1,9 @@
+*.lsp
+*fasl
+*.lx64fsl
+test*
+*.pdf
+*~
+#*
+.#*
+*#

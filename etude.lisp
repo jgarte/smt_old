@@ -33,10 +33,10 @@
 	  :for line-idx :from -2 :to 2
 	  :for line-y = (+ (* line-idx *staff-space*) (y me))
 	  :do (packsvg me (svg:line (left me) line-y (+ (left me) (width me)) line-y
-				     :stroke-width *staff-line-thickness*
+				    :stroke-width *staff-line-thickness*
 				     :stroke-linecap "round"
 				     :stroke "black")))))
-
+(ruledocs)
 (defrule spn (notehead) (:treble)
     ("Assigns correct vertical positions to note-heads,
  based on their pitch-name and their octave." 0) 
@@ -67,7 +67,7 @@
 	(octave (cdr spn)))
     (or (>= octave 5)
 	(and (eq pitch-name 'b) (= octave 4)))))
-*ruleidx*
+
 (defrule null (note) (:treble)
     ("Draws stem lines on the <correct> side of the note N.")  
   (null (n)
@@ -123,10 +123,10 @@ of the notehead!" -1)
 	      (incf (width d) (width d) ))
 	     ((= (dur n) .5) (incf (width d) (* 2 (width d))))
 	     ((= (dur n) 1) (incf (width d) (* 3 (width d)))))))
-   (hlineup! hf)))
+   (hlineup hf)))
 
 
-;; *rc* rule counter
+
 (let ((h (hform
 	  :ruler 'content
 	  :canvas-vis-p t
@@ -143,7 +143,7 @@ of the notehead!" -1)
 						       (note (cons pitch
 								   (1- oct))
 							     :dur dur
-							     :x-offset (if (member dur '(1/2 .25) :test #'=) (- 10) 0)
+							     :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
 							     :head-color color))
 					))
 	  :preproc (preproc x

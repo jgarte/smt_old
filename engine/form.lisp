@@ -239,11 +239,11 @@
 
 ;;; horizontal-form lines up it's direct-children horizontally side by side
 ;;; Takes place BEFORE applying rules (muss man davon ausgehen, wenn man Rules schreibt)!
-(defun hlineup! (obj)
+(defun hlineup (obj)
   ;; Start off lining up from the innermost child
   (when (formp obj)
     (dolist (d (content obj))
-      (hlineup! d)))
+      (hlineup d)))
   ;; The line up the outer most
   (when (hformp obj)
     (loop for a in (butlast (content obj))
@@ -257,8 +257,8 @@
   (when (marker-vis-p obj)    
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     ;; (push (svgize-marker obj) (svglst obj))
-    (push (xml-base::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))
-  ;; (push (xml-base::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
+    (push (xml::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))
+  ;; (push (xml::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
   (dolist (d (content obj))
     ;; Children's scales are multiplied by parent's scales
     (psetf (x-scaler d) (* (x-scaler d) (x-scaler obj))
@@ -269,5 +269,5 @@
   ;; BCR Rect
   (when (canvas-vis-p obj)
     (push (svgize-bcr obj) (svglst obj))
-    (push (xml-base::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svglst obj)))  
+    (push (xml::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svglst obj)))  
   )
