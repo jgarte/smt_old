@@ -26,7 +26,7 @@
     (assert (listp (cadr clause)) (clause)
 	    "Malformed rule clause lambda-list: ~A" (cadr clause))))
 
-(defmacro defrule (ruler trgts dmns (&optional doc (idx (incf *ruleidx*))) &body clauses)
+(defmacro defrule (ruler targets domains (&optional doc (idx (incf *ruleidx*))) &body clauses)
   (examine-clauses clauses)
   (let ((rlrval (gensym)))
     `(prog1 ',ruler
@@ -40,10 +40,12 @@
 						  `(,typespec (list :clsfn #'(lambda ,lambda-lst ,@body)
 								    :clsll ',lambda-lst
 								    :clsbd ',body))))))
-		   :trgts ',trgts :dmns ',dmns
+		   :trgts ',targets :dmns ',domains
 		   :rlr (function ,ruler)
 		   :clss ',clauses)
 	     ))))
+
+
 
 
 ;;; Top level objects may not have any ancestors

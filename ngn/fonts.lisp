@@ -107,5 +107,7 @@
 	  (label)
   	  "Invalid label ~A for ~A!" label class)
   (format nil "~A.~A" class label))
+
 ;; (glyph-labels "noteheads" )
-;; (glyph-label->glyph-code "s0" "noteheads" :haydn-11)
+;; (glyph-label->glyph-code "C" "clefs" :haydn-11)
+

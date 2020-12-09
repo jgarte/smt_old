@@ -113,9 +113,7 @@
 (apply #'remrules (mapcar #'car (ruledocs)))
 
 (defrule content (horizontal-form) (t)
-    ("TAKING rhythm into account, changes the width based on duration,
-this doc is comming somewhere else, but now doesn't change the color
-of the notehead!" -1)
+    ("Compute the ")
   ((cons snote)(hf) 
    (dolist (d (content hf))
      (let ((n (car (content d))))

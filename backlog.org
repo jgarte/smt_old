@@ -10,6 +10,7 @@ not providing objects copies, so I can't use a same obj on
 multiple places. This can be done by adding a slot clonable?, which indicates
 whether the objects is to be used itself (nil, default) or is to be
 used as a model from which other objs are cloned.
+* TODO pdfunite integrate
 * TODO svglst content cant be modifed
 (even at rule-application-time), svglsts are packed after rules have
 been applied, everything then goes for rendering.

@@ -8,7 +8,6 @@
    (canvas-color :initform %glyph-canvas-color%
 		 :documentation "Background color")
    (code :initarg :code
-	 :initform (error "Can not initialize a glyph without glyph-code.")
 	 :accessor code)
    (glyph-vis-p :initarg :glyph-vis-p
 		:initform t

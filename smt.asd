@@ -8,7 +8,7 @@
   :serial t
   :depends-on (#:xml #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
-	       (:module "engine"
+	       (:module "ngn"
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
