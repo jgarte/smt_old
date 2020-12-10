@@ -39,7 +39,7 @@
 (ruledocs)
 (defrule spn (notehead) (:treble)
     ("Assigns correct vertical positions to note-heads,
- based on their pitch-name and their octave." 0) 
+ based on their pitch-name and their octave.")
   ((cons symbol unsigned-byte)
    (me parent)
    (let ((pitch-name (car (spn me)))
@@ -111,9 +111,9 @@
 
 
 (apply #'remrules (mapcar #'car (ruledocs)))
-
+(remrules 0)
 (defrule content (horizontal-form) (t)
-    ("Compute the ")
+    ("Compute widths " -1)
   ((cons snote)(hf) 
    (dolist (d (content hf))
      (let ((n (car (content d))))
@@ -135,13 +135,13 @@
 			 for oct in '(4 4 4 5 4 4 5 4 4 5 5 5 5)
 			 for color = (nth (random 5)
 					  '("green" "orange" "red" "pink" "blue"))
-			 collect (sform :content (list (note (cons pitch oct)
+			 collect (sform :content (list (make-note (cons pitch oct)
 							     :dur dur
 							     :head-color color)
-						       (note (cons pitch
+						       (make-note (cons pitch
 								   (1- oct))
 							     :dur dur
-							     :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
+							     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
 							     :head-color color))
 					))
 	  :preproc (preproc x

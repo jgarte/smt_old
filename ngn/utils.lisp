@@ -202,14 +202,14 @@
 
 
 (defun inverse-toplvl-scale-posidims! (xmlelem)
-  (dolist (attr-val (xml::element-attributes xmlelem))
+  (dolist (attr-val (xml::elmattrs xmlelem))
     (when (member (car attr-val) *posidim-attrs* :test #'string=)
       (setf (cdr attr-val) (inv-toplvl-scale (cdr attr-val))))))
 
 (defun replace-with-transform! (xml-elem)  
   (multiple-value-bind (trns indxd) (svg::extract-transformations xml-elem)
     (when trns
-      (setf (xml::element-attributes xml-elem) (set-difference (xml::element-attributes xml-elem) trns))
+      (setf (xml::elmattrs xml-elem) (set-difference (xml::elmattrs xml-elem) trns))
       (push (cons "transform"
 		  (let ((s ""))
 		    (dolist (l indxd s) ;fängt mit 0 an
@@ -219,7 +219,7 @@
 			  (setf s (concatenate 'string s (format nil "translate(~D ~D) " (cdr (first ts)) (cdr (second ts))))))
 			(when ss
 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
-	    (xml::element-attributes xml-elem)))))
+	    (xml::elmattrs xml-elem)))))
 
 ;; (mapcan #'(lambda (x)
 ;; 	    (if (formp x)
