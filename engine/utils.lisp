@@ -228,6 +228,7 @@
 ;; 	(list (sform) (vform) (notehead "s0") (note 3)))
 
 
+
 (defun render (lst &key (apprulp t) (drawp t) (page-format *page-format*))
   ;; Vorbereitungen
   (dolist (obj lst)
@@ -243,6 +244,7 @@
 				 (cons x (desc x))
 				 (list x)))
 			 lst)))
+  ;; This part must ONLY do the drawing stuff!!!
   (when drawp
     ;;  Pack svg lists
     (dolist (obj lst)      
