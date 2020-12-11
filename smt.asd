@@ -1,14 +1,13 @@
 ;;;; smt.asd
 
 (asdf:defsystem #:smt
-  :description "Describe smt here"
-  :author "Your Name <your.name@example.com>"
-  :license  "Specify license here"
+  :description "Symbolic Music Typesetting"
+  :author "Amir Teymuri <ateymuri63[at]gmail(dot)com>"
   :version "0.0.1"
   :serial t
   :depends-on (#:xml #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
-	       (:module "ngn"
+	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
