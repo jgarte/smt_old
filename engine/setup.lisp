@@ -25,7 +25,7 @@
 
 (defconstant +px/mm+ 3.7795275591 "Pixels per mm")
 
-(eval-when (:compile-toplevel)
+(eval-when (:compile-toplevel :load-toplevel)
   ;; Need this for the margins constants later in the file
   ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
   (defun mm->px (mm) (* mm +px/mm+)))

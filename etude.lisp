@@ -108,12 +108,12 @@
 
 
 (ruledocs)
-
-
+*ruleidx*
 (apply #'remrules (mapcar #'car (ruledocs)))
 (remrules 0)
+
 (defrule content (horizontal-form) (t)
-    ("Compute widths " -1)
+    ("Compute widths ")
   ((cons snote)(hf) 
    (dolist (d (content hf))
      (let ((n (car (content d))))
@@ -133,9 +133,15 @@
 	  :content (loop for dur in (loop repeat 20 collect (expt 2 (nth (random 3) '(0 -1 -2))))
 			 for pitch in '(b a d f e a g f g c e d c)
 			 for oct in '(4 4 4 5 4 4 5 4 4 5 5 5 5)
-			 for color = (nth (random 5)
-					  '("green" "orange" "red" "pink" "blue"))
-			 collect (sform :content (list (make-note (cons pitch oct)
+			 for color = "black"
+			 ;; (nth (random 5)
+				     ;; 	  '("green" "orange" "red" "pink" "blue"))
+			 collect (sform :content (list (make-note (cons pitch
+								   (1+ oct))
+							     :dur dur
+							     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
+							     :head-color color)
+						       (make-note (cons pitch oct)
 							     :dur dur
 							     :head-color color)
 						       (make-note (cons pitch
@@ -172,3 +178,21 @@
   (render (list h))
   )
 
+;;;;;;;;;;;;;;;;;;;;;test
+(let* ((n (make-note '(c . 4)
+		     :canvas-vis-p nil))
+       (n2 (make-note '(f . 4) :id 'n2
+			       :canvas-vis-p nil))
+       (s (sform :content (list n)
+		 :canvas-vis-p t))
+       (s2 (sform :content (list n2)
+		  :canvas-color "green"))
+       (h (hform :content (list s s2)
+		 :canvas-color "green"
+		 :canvas-vis-p nil
+		 :toplevelp t)))
+  (inspbcr n2)
+  (incf (x n2) -20)
+  
+  (render (list h))
+  (inspbcr n2))

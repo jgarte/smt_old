@@ -112,8 +112,8 @@
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a form to the rightmost
     ;; of it's children.
-    (setf (slot-value anc 'rslot) (calc-rightmost anc)
-	  (slot-value anc 'lslot) (calc-leftmost anc)
+    (setf (slot-value anc 'rslot) (calc-right anc)
+	  (slot-value anc 'lslot) (calc-left anc)
 	  (slot-value anc 'wslot) (calc-width anc)))
   newx)
 
@@ -132,10 +132,9 @@
   newy)
 
 ;;; Horizontal stuff → Initial
-(defmethod calc-leftmost ((obj form))
+(defmethod calc-left ((obj form))
   ;; This recursion goes down possibly to a containing MTYPE.
   ;; left could have changed to be less than x, so include it in the calc too.
-  ;; (apply #'min (x obj) (mapcar #'calc-leftmost (content obj)))
   (apply #'min (x obj) (mapcar #'left (rdesc obj))))
 
 ;;; Beware! Changing left doesn't impact right
@@ -144,7 +143,7 @@
   (incf (x obj) (- newl (slot-value obj 'lslot)))
   newl)
 
-(defmethod calc-rightmost ((obj form))
+(defmethod calc-right ((obj form))
   (apply #'max (x obj) (mapcar #'right (rdesc obj))))
 
 (defmethod (setf right) (newr (obj form))

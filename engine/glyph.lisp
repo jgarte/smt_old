@@ -51,8 +51,8 @@ Composing Sticks."))
     (incf (slot-value obj 'rslot) dx))
   ;; Anc kann NUR ein Form sein!
   (dolist (anc (reverse (ancestors obj)))
-    (setf (slot-value anc 'rslot) (calc-rightmost anc)
-	  (slot-value anc 'lslot) (calc-leftmost anc)
+    (setf (slot-value anc 'rslot) (calc-right anc)
+	  (slot-value anc 'lslot) (calc-left anc)
 	  (slot-value anc 'wslot) (calc-width anc)))
   newx)
 
@@ -76,10 +76,10 @@ Composing Sticks."))
 
 
 ;;; Faghat baraye CS!!!!
-(defmethod calc-leftmost ((obj glyph))
+(defmethod calc-left ((obj glyph))
   (+ (x obj) (toplvl-scale (bcr-left (bcr obj)))))
 
-(defmethod calc-rightmost ((obj glyph))
+(defmethod calc-right ((obj glyph))
   (+ (x obj) (toplvl-scale (bcr-right (bcr obj)))))
 
 (defmethod calc-width ((obj glyph))

@@ -139,8 +139,8 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
   (when x (setf (slot-value obj 'xslot) (calc-x obj)))
   (when y (setf (slot-value obj 'yslot) (calc-y obj)))  
   ;; LR and then W
-  (when l (setf (slot-value obj 'lslot) (calc-leftmost obj)))
-  (when r (setf (slot-value obj 'rslot) (calc-rightmost obj)))  
+  (when l (setf (slot-value obj 'lslot) (calc-left obj)))
+  (when r (setf (slot-value obj 'rslot) (calc-right obj)))  
   (when w (setf (slot-value obj 'wslot) (calc-width obj)))  
   ;; TB and then H
   (when top (setf (slot-value obj 'tslot) (refresh-top obj)))
