@@ -1,6 +1,8 @@
-;;;; smt.asd
+;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
-(asdf:defsystem #:smt
+
+(asdf:defsystem smt
+  :name "smt"
   :description "Symbolic Music Typesetting"
   :author "Amir Teymuri"
   :version "0.0.1"
