@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
 
-(asdf:defsystem smtxml
+(asdf:defsystem xml
   :serial t
   :depends-on ("cl-ppcre")
   :components ((:file "package")

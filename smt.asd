@@ -7,8 +7,12 @@
   :author "Amir Teymuri"
   :version "0.0.1"
   :serial t
-  :depends-on (#:xml #:alexandria #:split-sequence #:cl-ppcre)
+  :depends-on ("xml" #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
+	       ;; (:module "xml"
+	       ;; 	:serial t
+	       ;; 	:components ((:file "xmlbase")
+	       ;; 		     (:file "svg")))
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
@@ -30,5 +34,4 @@
 		:serial t
 		:components ((:file "types")
 			     (:file "cwmn"))
-		)
-	       (:file "test")))
+		)))

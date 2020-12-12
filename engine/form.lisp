@@ -256,8 +256,8 @@
   (when (marker-vis-p obj)    
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     ;; (push (svgize-marker obj) (svglst obj))
-    (push (xml::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))
-  ;; (push (xml::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
+    (push (xmlbase::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))
+  ;; (push (xmlbase::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
   (dolist (d (content obj))
     ;; Children's scales are multiplied by parent's scales
     (psetf (x-scaler d) (* (x-scaler d) (x-scaler obj))
@@ -268,5 +268,5 @@
   ;; BCR Rect
   (when (canvas-vis-p obj)
     (push (svgize-bcr obj) (svglst obj))
-    (push (xml::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svglst obj)))  
+    (push (xmlbase::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svglst obj)))  
   )
