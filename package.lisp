@@ -1,5 +1,15 @@
 ;;;; package.lisp
 
+
+(defpackage #:xmlbase
+  (:use #:cl))
+
+(defpackage #:svg
+  (:use #:cl #:xmlbase)
+  (:export #:circle #:line #:write-svg #:g #:transform #:scale
+	   #:rect #:path))
+
+
 (defpackage #:smtngn
   (:use #:cl)
   (:export #:sform #:hform #:defrule #:packsvg
