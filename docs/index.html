@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual describes ASDF, a system definition facility
+for Common Lisp programs and libraries.
+
+You can find the latest version of this manual at
+https://common-lisp.net/project/asdf/asdf.html.
+
+ASDF Copyright (C) 2001-2019 Daniel Barlow and contributors.
+
+This manual Copyright (C) 2001-2019 Daniel Barlow and contributors.
+
+This manual revised (C) 2009-2019 Robert P. Goldman and Francois-Rene Rideau.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Predefined operations of ASDF (ASDF Manual)</title>
+
+<meta name="description" content="Predefined operations of ASDF (ASDF Manual)">
+<meta name="keywords" content="Predefined operations of ASDF (ASDF Manual)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Concept-Index.html" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Operations.html" rel="up" title="Operations">
+<link href="Creating-new-operations.html" rel="next" title="Creating new operations">
+<link href="Operations.html" rel="prev" title="Operations">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="Predefined-operations-of-ASDF"></span><div class="header">
+<p>
+Next: <a href="Creating-new-operations.html" accesskey="n" rel="next">Creating new operations</a>, Previous: <a href="Operations.html" accesskey="p" rel="prev">Operations</a>, Up: <a href="Operations.html" accesskey="u" rel="up">Operations</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="Predefined-operations-of-ASDF-1"></span><h4 class="subsection">7.1.1 Predefined operations of ASDF</h4>
+
+<p>All the operations described in this section are in the <code>asdf</code> package.
+They are invoked via the <code>operate</code> generic function.
+</p>
+<div class="lisp">
+<pre class="lisp">(asdf:operate 'asdf:<var>operation-name</var> :<var>system-name</var> {<var>operation-options ...</var>})
+</pre></div>
+
+<dl>
+<dt id="index-compile_002dop">Operation: <strong>compile-op</strong></dt>
+<dd>
+<p>This operation compiles the specified component.
+A <code>cl-source-file</code> will be <code>compile-file</code>&rsquo;d.
+All the children and dependencies of a system or module
+will be recursively compiled by <code>compile-op</code>.
+</p>
+<p><code>compile-op</code> depends on <code>prepare-op</code> which
+itself depends on a <code>load-op</code> of all of a component&rsquo;s dependencies,
+as well as of its parent&rsquo;s dependencies.
+When <code>operate</code> is called on <code>compile-op</code>,
+all these dependencies will be loaded as well as compiled;
+yet, some parts of the system main remain unloaded,
+because nothing depends on them.
+Use <code>load-op</code> to load a system.
+</p></dd></dl>
+
+<dl>
+<dt id="index-load_002dop">Operation: <strong>load-op</strong></dt>
+<dd>
+<p>This operation loads the compiled code for a specified component.
+A <code>cl-source-file</code> will have its compiled fasl <code>load</code>ed,
+which fasl is the output of <code>compile-op</code> that <code>load-op</code> depends on.
+</p>
+<p><code>load-op</code> will recursively load all the children of a system or module.
+</p>
+<p><code>load-op</code> also depends on <code>prepare-op</code> which
+itself depends on a <code>load-op</code> of all of a component&rsquo;s dependencies,
+as well as of its parent&rsquo;s dependencies.
+</p></dd></dl>
+
+<dl>
+<dt id="index-prepare_002dop">Operation: <strong>prepare-op</strong></dt>
+<dd>
+<p>This operation ensures that the dependencies of a component
+and its recursive parents are loaded (as per <code>load-op</code>),
+as a prerequisite before <code>compile-op</code> and <code>load-op</code> operations
+may be performed on a given component.
+</p></dd></dl>
+
+<dl>
+<dt id="index-load_002dsource_002dop">Operation: <strong>load-source-op</strong></dt>
+<dt id="index-prepare_002dsource_002dop">Operation: <strong>prepare-source-op</strong></dt>
+<dd>
+<p><code>load-source-op</code> will load the source for the files in a module
+rather than the compiled fasl output.
+It has a <code>prepare-source-op</code> analog to <code>prepare-op</code>,
+that ensures the dependencies are themselves loaded via <code>load-source-op</code>.
+</p>
+</dd></dl>
+
+<span id="test_002dop"></span><dl>
+<dt id="index-test_002dop">Operation: <strong>test-op</strong></dt>
+<dd>
+<p>This operation will perform some tests on the module.
+The default method will do nothing.
+The default dependency is to require
+<code>load-op</code> to be performed on the module first.
+Its default <code>operation-done-p</code> method returns <code>nil</code>,
+which means that the operation is <em>never</em> done
+&ndash;
+we assume that if you invoke the <code>test-op</code>,
+you want to test the system, even if you have already done so.
+</p>
+<p>The results of this operation are not defined by ASDF.
+It has proven difficult to define how the test operation
+should signal its results to the user
+in a way that is compatible with all of the various test libraries
+and test techniques in use in the community, and
+given the fact that ASDF operations do not return a value indicating
+success or failure.
+For those willing to go to the effort, we suggest defining conditions to
+signal when a <code>test-op</code> fails, and storing in those conditions
+information that describes which tests fail.
+</p>
+<p>People typically define a separate test <em>system</em> to hold the tests.
+Doing this avoids unnecessarily adding a test framework as a dependency
+on a library.  For example, one might have
+</p><div class="lisp">
+<pre class="lisp">(defsystem &quot;foo&quot;
+  :in-order-to ((test-op (test-op &quot;foo/test&quot;)))
+ ...)
+
+(defsystem &quot;foo/test&quot;
+  :depends-on (&quot;foo&quot; &quot;fiveam&quot;) ; fiveam is a test framework library
+  ...)
+</pre></div>
+
+<p>Then one defines <code>perform</code> methods on
+<code>test-op</code> such as the following:
+</p><div class="lisp">
+<pre class="lisp">(defsystem &quot;foo/test&quot;
+  :depends-on (&quot;foo&quot; &quot;fiveam&quot;) ; fiveam is a test framework library
+  :perform (test-op (o s)
+                    (uiop:symbol-call :fiveam '#:run!
+                       (uiop:find-symbol* '#:foo-test-suite
+                                            :foo-tests)))
+  ...)
+</pre></div>
+
+</dd></dl>
+
+
+
+<dl>
+<dt id="index-compile_002dbundle_002dop">Operation: <strong>compile-bundle-op</strong></dt>
+<dt id="index-monolithic_002dcompile_002dbundle_002dop">Operation: <strong>monolithic-compile-bundle-op</strong></dt>
+<dt id="index-load_002dbundle_002dop">Operation: <strong>load-bundle-op</strong></dt>
+<dt id="index-monolithic_002dload_002dbundle_002dop">Operation: <strong>monolithic-load-bundle-op</strong></dt>
+<dt id="index-deliver_002dasd_002dop">Operation: <strong>deliver-asd-op</strong></dt>
+<dt id="index-monolithic_002ddeliver_002dasd_002dop">Operation: <strong>monolithic-deliver-asd-op</strong></dt>
+<dt id="index-lib_002dop">Operation: <strong>lib-op</strong></dt>
+<dt id="index-monolithic_002dlib_002dop">Operation: <strong>monolithic-lib-op</strong></dt>
+<dt id="index-dll_002dop">Operation: <strong>dll-op</strong></dt>
+<dt id="index-monolithic_002ddll_002dop">Operation: <strong>monolithic-dll-op</strong></dt>
+<dt id="index-image_002dop">Operation: <strong>image-op</strong></dt>
+<dt id="index-program_002dop">Operation: <strong>program-op</strong></dt>
+<dd>
+<p>These are &ldquo;bundle&rdquo; operations, that can create a single-file &ldquo;bundle&rdquo;
+for all the contents of each system in an application,
+or for the entire application.
+</p>
+<p><code>compile-bundle-op</code> will create a single fasl file for each of the systems needed,
+grouping all its many fasls in one,
+so you can deliver each system as a single fasl.
+<code>monolithic-compile-bundle-op</code> will create a single fasl file for the target system
+and all its dependencies,
+so you can deliver your entire application as a single fasl.
+<code>load-bundle-op</code> will load the output of <code>compile-bundle-op</code>.
+Note that if the output is not up-to-date,
+<code>compile-bundle-op</code> may load the intermediate fasls as a side-effect.
+Bundling fasls together matters a lot on ECL,
+where the dynamic linking involved in loading tens of individual fasls
+can be noticeably more expensive than loading a single one.
+</p>
+<p>NB: <code>compile-bundle-op</code>, <code>monolithic-compile-bundle-op</code>, <code>load-bundle-op</code>, <code>monolithic-load-bundle-op</code>, <code>deliver-asd-op</code>, <code>monolithic-deliver-asd-op</code> were respectively called
+<code>fasl-op</code>, <code>monolithic-fasl-op</code>, <code>load-fasl-op</code>, <code>monolithic-load-fasl-op</code>, <code>binary-op</code>, <code>monolithic-binary-op</code> before ASDF 3.1.
+The old names still exist for backward compatibility,
+though they poorly label what is going on.
+</p>
+<p>Once you have created a fasl with <code>compile-bundle-op</code>,
+you can use <code>precompiled-system</code> to deliver it in a way
+that is compatible with clients having dependencies on your system,
+whether it is distributed as source or as a single binary;
+the <samp>.asd</samp> file to be delivered with the fasl will look like this:
+</p><div class="example">
+<pre class="example">(defsystem :mysystem :class :precompiled-system
+  :fasl (some expression that will evaluate to a pathname))
+</pre></div>
+<p>Or you can use <code>deliver-asd-op</code> to let ASDF create such a system for you
+as well as the <code>compile-bundle-op</code> output,
+or <code>monolithic-deliver-asd-op</code>.
+This allows you to deliver code for your systems or applications
+as a single file.
+Of course, if you want to test the result in the current image,
+<em>before</em> you try to use any newly created <samp>.asd</samp> files,
+you should not forget to <code>(asdf:clear-configuration)</code>
+or at least <code>(asdf:clear-source-registry)</code>,
+so it re-populates the source-registry from the filesystem.
+</p>
+<p>The <code>program-op</code> operation will create an executable program
+from the specified system and its dependencies.
+You can use UIOP for its pre-image-dump hooks, its post-image-restore hooks,
+and its access to command-line arguments.
+And you can specify an entry point <code>my-app:main</code>
+by specifying in your <code>defsystem</code>
+the option <code>:entry-point &quot;my-app:main&quot;</code>.
+Depending on your implementation,
+running <code>(asdf:operate 'asdf:program-op :my-app)</code>
+may quit the current Lisp image upon completion.
+See the example in
+<samp>test/hello-world-example.asd</samp> and <samp>test/hello.lisp</samp>,
+as built and tested by
+<samp>test/test-program.script</samp> and <samp>test/make-hello-world.lisp</samp>.
+<code>image-op</code> will dump an image that may not be standalone
+and does not start its own function,
+but follows the usual execution convention of the underlying Lisp,
+just with more code pre-loaded,
+for use as an intermediate build result or with a wrapper invocation script.
+</p>
+<p>There is also <code>lib-op</code>
+for building a linkable <samp>.a</samp> file (Windows: <samp>.lib</samp>)
+from all linkable object dependencies (FFI files, and on ECL, Lisp files too),
+and its monolithic equivalent <code>monolithic-lib-op</code>.
+And there is also <code>dll-op</code>
+(respectively its monolithic equivalent <code>monolithic-dll-op</code>)
+for building a linkable <samp>.so</samp> file
+(Windows: <samp>.dll</samp>, MacOS X: <samp>.dynlib</samp>)
+to create a single dynamic library
+for all the extra FFI code to be linked into each of your systems
+(respectively your entire application).
+</p>
+<p>All these &ldquo;bundle&rdquo; operations are available since ASDF 3
+on all actively supported Lisp implementations,
+but may be unavailable on unmaintained legacy implementations.
+This functionality was previously available for select implementations,
+as part of a separate system <code>asdf-bundle</code>,
+itself descended from the ECL-only <code>asdf-ecl</code>.
+</p>
+<p>The pathname of the output of bundle operations
+is subject to output-translation as usual,
+unless the operation is equal to
+the <code>:build-operation</code> argument to <code>defsystem</code>.
+This behaviour is not very satisfactory and may change in the future.
+Maybe you have suggestions on how to better configure it?
+</p></dd></dl>
+
+<dl>
+<dt id="index-concatenate_002dsource_002dop">Operation: <strong>concatenate-source-op</strong></dt>
+<dt id="index-monolithic_002dconcatenate_002dsource_002dop">Operation: <strong>monolithic-concatenate-source-op</strong></dt>
+<dt id="index-load_002dconcatenated_002dsource_002dop">Operation: <strong>load-concatenated-source-op</strong></dt>
+<dt id="index-compile_002dconcatenated_002dsource_002dop">Operation: <strong>compile-concatenated-source-op</strong></dt>
+<dt id="index-load_002dcompiled_002dconcatenated_002dsource_002dop">Operation: <strong>load-compiled-concatenated-source-op</strong></dt>
+<dt id="index-monolithic_002dload_002dconcatenated_002dsource_002dop">Operation: <strong>monolithic-load-concatenated-source-op</strong></dt>
+<dt id="index-monolithic_002dcompile_002dconcatenated_002dsource_002dop">Operation: <strong>monolithic-compile-concatenated-source-op</strong></dt>
+<dt id="index-monolithic_002dload_002dcompiled_002dconcatenated_002dsource_002dop">Operation: <strong>monolithic-load-compiled-concatenated-source-op</strong></dt>
+<dd>
+<p>These operations, as their respective names indicate,
+will concatenate all the <code>cl-source-file</code> source files in a system
+(or in a system and all its dependencies, if monolithic),
+in the order defined by dependencies,
+then load the result, or compile and then load the result.
+</p>
+<p>These operations are useful to deliver a system or application
+as a single source file,
+and for testing that said file loads properly, or compiles and then loads properly.
+</p>
+<p>ASDF itself is delivered as a single source file this way,
+using <code>monolithic-concatenate-source-op</code>,
+prepending a prelude and the <code>uiop</code> library
+before the <code>asdf/defsystem</code> system itself.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Creating-new-operations.html" accesskey="n" rel="next">Creating new operations</a>, Previous: <a href="Operations.html" accesskey="p" rel="prev">Operations</a>, Up: <a href="Operations.html" accesskey="u" rel="up">Operations</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>
