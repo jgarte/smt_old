@@ -223,7 +223,7 @@
 
 ;; (mapcan #'(lambda (x)
 ;; 	    (if (formp x)
-;; 		(cons x (desc x))
+;; 		(cons x (descendants x))
 ;; 		(list x)))
 ;; 	(list (sform) (vform) (notehead "s0") (note 3)))
 
@@ -241,7 +241,7 @@
   (when apprulp
     (apply-rules (mapcan #'(lambda (x)
 			     (if (formp x)
-				 (cons x (desc x))
+				 (cons x (descendants x))
 				 (list x)))
 			 lst)))
   ;; This part must ONLY do the drawing stuff!!!

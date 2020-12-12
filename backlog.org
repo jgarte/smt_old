@@ -1,3 +1,6 @@
+* TODO feature?
+Operations can be invoked directly, or examined to see what their
+effects would be without performing them.
 * TODO order of rule-application?
 * TODO add support for defininf eg spn of notehead by rule?
 * TODO Add more general transformation functions 

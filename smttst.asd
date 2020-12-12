@@ -3,7 +3,6 @@
 
 (asdf:defsystem smttst
   :name "smttst"
-  :description "Symbolic Music Typesetting Testing"
   :serial t
   :depends-on ("smtngn" "fiveam")
   :components ((:file "package")
