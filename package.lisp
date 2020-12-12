@@ -21,7 +21,12 @@
 	   #:head #:canvas-color #:glyph-color #:render
 	   #:*staff-space* #:fixed-bottom #:fixed-height))
 
+
+
 (defpackage #:smt
-  (:use #:cl #:smtngn))
+  (:use #:cl))
+
+(defpackage #:smttst
+  (:use #:cl))
 
 
