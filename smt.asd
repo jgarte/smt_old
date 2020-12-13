@@ -10,18 +10,11 @@
 		:components ((:file "xmlbase")
 			     (:file "svg")))))
 
-(defun smt-engine-version-form (at)
-  (uiop:safe-read-file-form "./engine-version" :at at))
 
-(defun smt-engine-version-string (&optional (at 0))
-  (destructuring-bind (major minor patch)
-      (car (smt-engine-version-form at))
-    (format nil "~d.~d.~d" major minor patch)))
 
 (asdf:defsystem "smt/ngn"
   ;; :in-order-to ((test-op (test-op "smttst")))
   :serial t
-  :version #.(smt-engine-version-string)
   :depends-on ("smt/xml" #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
 	       (:module "engine"
@@ -42,7 +35,16 @@
 			     )
 		)))
 
+(defun smt-version-form (at)
+  (uiop:safe-read-file-form "./version" :at at))
+
+(defun smt-version-string (&optional (at 0))
+  (destructuring-bind (major minor patch)
+      (car (smt-version-form at))
+    (format nil "~d.~d.~d" major minor patch)))
+
 (asdf:defsystem "smt"
+  :version #.(smt-version-string)
   :serial t
   :depends-on ("smt/ngn")
   :components ((:file "package")
