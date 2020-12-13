@@ -1,11 +1,10 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
 
-(asdf:defsystem smtngn
-  :name "smtngn"
-  :description "Symbolic Music Typesetting Engine"
-  :author "Amir Teymuri"
-  :version "0.0.1"
+
+
+(asdf:defsystem "smtngn"
+  :in-order-to ((test-op (test-op "smttst")))
   :serial t
   :depends-on ("smtxml" #:alexandria #:split-sequence #:cl-ppcre)
   :components ((:file "package")
