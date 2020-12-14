@@ -3,7 +3,7 @@
 ;;; https://www.tei-c.org/release/doc/tei-p5-doc/en/html/SG.html
 
 
-(in-package #:xmlbase)
+(in-package #:xml-base)
 
 (deftype real-atom ()
   "HyperSpec: atom n. any object that is not a cons."

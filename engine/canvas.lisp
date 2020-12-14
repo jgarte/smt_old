@@ -1,6 +1,6 @@
 
 ;; (asdf:load-system "smt")
-(in-package :smtngn)
+(in-package :smt-engine)
 
 ;;; Keeps track of UPDATES for an object
 ;; (defstruct ud

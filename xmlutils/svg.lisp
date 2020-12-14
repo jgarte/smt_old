@@ -129,7 +129,7 @@ whitesmoke
 (defmacro defshape (name &rest obligatory-attributes)
   "Defines a basic shape with it's obligatory & optional attributes."
   `(defun ,name (,@obligatory-attributes &rest optional-attributes &key &allow-other-keys)
-     (xmlbase::make-element ,(downcase-sym-name name)
+     (xml-base::make-element ,(downcase-sym-name name)
 			:attrs (append
 				;; Obligatory attributes
 				(list ,@(loop :for s :in obligatory-attributes
@@ -150,7 +150,7 @@ whitesmoke
 				       '("tx" "ty" "sx" "sy")
 				       :test #'string=))
 			   (remove-if #'(lambda (av) (< (length (car av)) 2))
-				      (xmlbase::elmattrs element)))))
+				      (xml-base::elmattrs element)))))
     (when transformations
       (let* ((biggest-idx (values
 			   (read-from-string
@@ -166,7 +166,7 @@ whitesmoke
 					    #'(lambda (av) (= i (values (read-from-string (subseq (car av) 2) nil 0))))
 					    transformations)))))
 	;; rm
-	(setf (xmlbase::elmattrs element) (set-difference (xmlbase::elmattrs element) transformations))
+	(setf (xml-base::elmattrs element) (set-difference (xml-base::elmattrs element) transformations))
 	;; add one transfORM to attrs lst
 	(push (cons "transform"
 		    (let ((s ""))
@@ -175,7 +175,7 @@ whitesmoke
 			      (ss (remove-if-not #'(lambda (av) (string= "s" (car av) :end2 1)) (cadr l))))
 			  (setf s (concatenate 'string s (format nil "translate(~D ~D) " (cdr (first ts)) (cdr (second ts)))))
 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss)))))))))
-	      (xmlbase::elmattrs element))))))
+	      (xml-base::elmattrs element))))))
 
 (defun extract-transformations (element)
   (let ((transformations (remove-if-not
@@ -184,7 +184,7 @@ whitesmoke
 				      '("tx" "ty" "sx" "sy")
 				      :test #'string=))
 			  (remove-if #'(lambda (av) (< (length (car av)) 2))
-				     (xmlbase::elmattrs element)))))
+				     (xml-base::elmattrs element)))))
     (when transformations
       (let ((biggest-idx (values
 			  (read-from-string
@@ -214,7 +214,7 @@ whitesmoke
 
 ;;; Group
 (defun g (&key attributes content)
-  (xmlbase::make-element "g"
+  (xml-base::make-element "g"
 		     :attrs attributes
 		     :cnt content))
 
@@ -228,7 +228,7 @@ whitesmoke
 			    (ind-depth 1)
 			    (ind-type 'space))
   "Writes the content to the specified path."
-  (xmlbase::write-to-path (xmlbase::make-element "svg"
+  (xml-base::write-to-path (xml-base::make-element "svg"
 						 :attrs
 						 `(("xmlns" . ,*svg-ns*)
 						   ("xmlns:xlink" . ,*xlink-ns*)

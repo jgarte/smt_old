@@ -1,4 +1,4 @@
-(in-package :smtngn)
+(in-package :smt-engine)
 
 (defclass clef (pitched-glyph) ())
 

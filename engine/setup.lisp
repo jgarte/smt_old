@@ -3,7 +3,7 @@
 ;;; specific module-level parameters go directly inside their own
 ;;; files.
 
-(in-package :smtngn)
+(in-package :smt-engine)
 
 (load-time-value (defparameter *take* 0))
 
@@ -13,7 +13,7 @@
   "Keep track of objects created")
 
 
-(defparameter *xml-indentation-type* 'xmlbase::space)
+(defparameter *xml-indentation-type* 'xml-base::space)
 (defparameter *xml-indentation-depth* 3)
 
 ;;; Default font

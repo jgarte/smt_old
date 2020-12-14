@@ -1,6 +1,6 @@
 ;;; Temporal symbols ie notes and rests
 
-(in-package #:smtngn)
+(in-package #:smt-engine)
 
 
 

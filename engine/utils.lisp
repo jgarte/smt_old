@@ -1,7 +1,7 @@
 ;;; In this file come functions which prepare things
 ;;; for use by system, like prepearing funcs for svgi etc.
 ;;; Every thing which is needed by others in advance!
-(in-package #:smtngn)
+(in-package #:smt-engine)
 
 ;; (defgeneric svgize (obj)
 ;;   (:documentation "Returns a list of svg elements to be written to the document.
@@ -131,7 +131,7 @@
 	       :stroke cross-stroke
 	       :fill "none"
 	       :stroke-width *marker-line-thickness*)
-     (xmlbase::comment comment-str))))
+     (xml-base::comment comment-str))))
 
 
 ;; (defun svgize-marker (obj)
@@ -147,17 +147,17 @@
 ;; 		 :fill-opacity *marker-circle-opac*
 ;; 		 :stroke *marker-circle-line-color*
 ;; 		 :stroke-width *marker-line-thickness*)
-;;      (xmlbase::comment (format nil "~A, Marker Center" (id obj)))
+;;      (xml-base::comment (format nil "~A, Marker Center" (id obj)))
 ;;      (svg:line (- (x obj) half-marker-line-length) (y obj) (+ (x obj) half-marker-line-length) (y obj)
 ;; 	       :stroke (marker-stroke obj)
 ;; 	       :fill "none"
 ;; 	       :stroke-width *marker-line-thickness*)
-;;      (xmlbase::comment (format nil "~A, Marker Horizontal Line" (id obj)))
+;;      (xml-base::comment (format nil "~A, Marker Horizontal Line" (id obj)))
 ;;      (svg:line (x obj) (- (y obj) half-marker-line-length) (x obj) (+ (y obj) half-marker-line-length)
 ;; 	       :stroke (marker-stroke obj)
 ;; 	       :fill "none"
 ;; 	       :stroke-width *marker-line-thickness*)
-;;      (xmlbase::comment (format nil "~A, Marker Vertical Line" (id obj)))
+;;      (xml-base::comment (format nil "~A, Marker Vertical Line" (id obj)))
 ;;      )))
 
 
@@ -202,14 +202,14 @@
 
 
 (defun inverse-toplvl-scale-posidims! (xmlelem)
-  (dolist (attr-val (xmlbase::elmattrs xmlelem))
+  (dolist (attr-val (xml-base::elmattrs xmlelem))
     (when (member (car attr-val) *posidim-attrs* :test #'string=)
       (setf (cdr attr-val) (inv-toplvl-scale (cdr attr-val))))))
 
 (defun replace-with-transform! (xml-elem)  
   (multiple-value-bind (trns indxd) (svg::extract-transformations xml-elem)
     (when trns
-      (setf (xmlbase::elmattrs xml-elem) (set-difference (xmlbase::elmattrs xml-elem) trns))
+      (setf (xml-base::elmattrs xml-elem) (set-difference (xml-base::elmattrs xml-elem) trns))
       (push (cons "transform"
 		  (let ((s ""))
 		    (dolist (l indxd s) ;fängt mit 0 an
@@ -219,7 +219,7 @@
 			  (setf s (concatenate 'string s (format nil "translate(~D ~D) " (cdr (first ts)) (cdr (second ts))))))
 			(when ss
 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
-	    (xmlbase::elmattrs xml-elem)))))
+	    (xml-base::elmattrs xml-elem)))))
 
 ;; (mapcan #'(lambda (x)
 ;; 	    (if (formp x)

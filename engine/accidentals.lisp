@@ -2,7 +2,7 @@
 ;;; Key signature and single accidentals
 
 
-(in-package :smtngn)
+(in-package :smt-engine)
 (defclass accidental (pitched-glyph) ())
 (defun accidental (spn label &rest initargs &key &allow-other-keys)
   (apply #'make-instance

@@ -1,5 +1,5 @@
 
-(in-package :smtngn)
+(in-package :smt-engine)
 
 
 
@@ -111,16 +111,16 @@ Composing Sticks."))
     ;; Since svgize-marker consists of more than one svg-element,
     ;; push each one seperately into SVGLST
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
-    (push (xmlbase::comment (format nil "Glyph ~A, Marker" (id obj))) (svglst obj)))  
+    (push (xml-base::comment (format nil "Glyph ~A, Marker" (id obj))) (svglst obj)))  
   (push (svg:path (glyph-path-d (code obj) (family obj))
 		  :fill (or (glyph-color obj) "none")
 		  :fill-opacity (glyph-opac obj)
 		  :id (symbol-name (id obj))
 		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (y-scaler obj))
 	(svglst obj))
-  (push (xmlbase::comment (format nil "Glyph ~A" (id obj))) (svglst obj))
+  (push (xml-base::comment (format nil "Glyph ~A" (id obj))) (svglst obj))
   ;; BCR Rect
   (when (canvas-vis-p obj)
     (push (svgize-bcr obj) (svglst obj))
-    (push (xmlbase::comment (format nil "Glyph ~A, BCR" (id obj))) (svglst obj)))  
+    (push (xml-base::comment (format nil "Glyph ~A, BCR" (id obj))) (svglst obj)))  
   )

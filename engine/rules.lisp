@@ -1,5 +1,5 @@
 ;;; (asdf:load-system "smt")
-(in-package :smtngn)
+(in-package :smt-engine)
 
 
 (defparameter *ruleidx* -1 "Rule Index")

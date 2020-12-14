@@ -1,16 +1,16 @@
 ;;;; package.lisp
 
 
-(defpackage #:xmlbase
+(defpackage #:xml-base
   (:use #:cl))
 
 (defpackage #:svg
-  (:use #:cl #:xmlbase)
+  (:use #:cl #:xml-base)
   (:export #:circle #:line #:write-svg #:g #:transform #:scale
 	   #:rect #:path))
 
 
-(defpackage #:smtngn
+(defpackage #:smt-engine
   (:use #:cl)
   (:export #:sform #:hform #:defrule #:packsvg
 	   #:*staff-line-thickness*
@@ -22,7 +22,7 @@
 	   #:*staff-space* #:fixed-bottom #:fixed-height))
 
 (defpackage #:smt
-  (:use #:cl #:smtngn))
+  (:use #:cl #:smt-engine))
 
-(defpackage #:smttst
-  (:use #:cl #:smtngn #:smt))
+(defpackage #:smt-test
+  (:use #:cl #:smt-engine #:smt))

@@ -2,7 +2,7 @@
 
 
 
-(asdf:defsystem "smt/xml"
+(defsystem smt/xml
   :serial t
   :depends-on ("cl-ppcre")
   :components ((:file "package")
@@ -12,29 +12,29 @@
 
 
 
-(asdf:defsystem "smt/ngn"
-  ;; :in-order-to ((test-op (test-op "smttst")))
+(defsystem smt/engine
   :serial t
-  :depends-on ("smt/xml" #:alexandria #:split-sequence #:cl-ppcre)
+  :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
   :components ((:file "package")
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
 			     (:file "fonts")
-			     (:file "rules")   			     
+			     (:file "rules")     
 			     (:file "canvas")
 			     (:file "form")
 			     (:file "glyph")
-			     
 			     (:file "accidentals")
 			     (:file "tmpsyms")
 			     (:file "clefs")
-			     (:file "burin")
-			     (:file "staff")
+			     
 			     )
-		)))
+		))
+  )
 
+
+;;; Leave these funx to stay in ASDF-USER pkg
 (defun smt-version-form (at)
   (uiop:safe-read-file-form "./version" :at at))
 
@@ -43,10 +43,11 @@
       (car (smt-version-form at))
     (format nil "~d.~d.~d" major minor patch)))
 
-(asdf:defsystem "smt"
+(defsystem smt
   :version #.(smt-version-string)
   :serial t
-  :depends-on ("smt/ngn")
+  ;; :in-order-to ((test-op (test-op "smt/test")))
+  :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
   :components ((:file "package")
 	       (:module "rules"
 		:serial t
@@ -54,14 +55,19 @@
 			     (:file "cwmn")))))
 
 
-(asdf:defsystem "smt/tst"
+(defsystem smt/test
   :serial t
-  :depends-on ("smt/ngn" "fiveam")
-  :perform (test-op (o s)
-  		    (uiop:symbol-call :fiveam '#:run!
-  				      (uiop:find-symbol* '#:boundary-check :smttst))
-  		    )
+  ;; https://github.com/rpgoldman/fiveam-asdf.git
+  :defsystem-depends-on ("fiveam-asdf")
+  :depends-on ("smt" "fiveam")
+  :class asdf::fiveam-tester-system
+  :test-package #:smt-test
+  :test-names (boundary-check)
+  ;; :perform (test-op (o s)
+  ;; 		    (uiop:symbol-call :fiveam '#:run!
+  ;; 				      (uiop:find-symbol* '#:boundary-check
+  ;; 							 :smttst))
+  ;; 		    )
   :components ((:file "package")
-	       (:module "tests"
-		:serial t
-		:components ((:file "engine")))))
+	       (:file "regression-testing")
+	       ))
