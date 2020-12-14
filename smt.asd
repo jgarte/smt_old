@@ -61,6 +61,7 @@
   :defsystem-depends-on ("fiveam-asdf")
   :depends-on ("smt" "fiveam")
   :class asdf::fiveam-tester-system
+  ;; :class :fiveam-tester-system
   :test-package #:smt-test
   :test-names (boundary-check)
   ;; :perform (test-op (o s)
