@@ -57,12 +57,7 @@
 
 (asdf:defsystem smt/test
   :serial t
-  ;; https://github.com/rpgoldman/fiveam-asdf.git
-  ;; :defsystem-depends-on ("fiveam-asdf")
   :depends-on ("smt" "parachute")
-  ;; :class :fiveam-tester-system
-  ;; :test-package #:smt-test
-  ;; :test-names (boundary-check)
   :components ((:file "package")
 	       (:file "regression-testing")
 	       )
