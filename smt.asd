@@ -36,7 +36,7 @@
 
 ;;; Leave these funx to stay in ASDF-USER pkg
 (defun smt-version-form (at)
-  (uiop:safe-read-file-form "./version" :at at))
+  (safe-read-file-form "./version" :at at))
 
 (defun smt-version-string (&optional (at 0))
   (destructuring-bind (major minor patch)
@@ -46,7 +46,7 @@
 (defsystem smt
   :version #.(smt-version-string)
   :serial t
-  ;; :in-order-to ((test-op (test-op "smt/test")))
+  :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
   :components ((:file "package")
 	       (:module "rules"
@@ -55,20 +55,16 @@
 			     (:file "cwmn")))))
 
 
-(defsystem smt/test
+(asdf:defsystem smt/test
   :serial t
   ;; https://github.com/rpgoldman/fiveam-asdf.git
-  :defsystem-depends-on ("fiveam-asdf")
-  :depends-on ("smt" "fiveam")
-  :class asdf::fiveam-tester-system
+  ;; :defsystem-depends-on ("fiveam-asdf")
+  :depends-on ("smt" "parachute")
   ;; :class :fiveam-tester-system
-  :test-package #:smt-test
-  :test-names (boundary-check)
-  ;; :perform (test-op (o s)
-  ;; 		    (uiop:symbol-call :fiveam '#:run!
-  ;; 				      (uiop:find-symbol* '#:boundary-check
-  ;; 							 :smttst))
-  ;; 		    )
+  ;; :test-package #:smt-test
+  ;; :test-names (boundary-check)
   :components ((:file "package")
 	       (:file "regression-testing")
-	       ))
+	       )
+  :perform (test-op (o s) (uiop:symbol-call :smt-test :runtst)))
+
