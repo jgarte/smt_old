@@ -1,8 +1,8 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
-(let ((x 0))
-  (defun count-pkg ()
-    (print (incf x))))
+
+
+(print *package*)
 
 (defsystem "smt/xml"
   :serial t
@@ -50,13 +50,18 @@
 		:components ((:file "types")
 			     (:file "cwmn")))))
 
-(asdf:defsystem "smt/test"
+(defsystem "smt/test"
   :serial t
+  :defsystem-depends-on ("fiveam-asdf")
+  ;; :depends-on ("fiveam" "foo")
+  :class asdf-user::fiveam-tester-system
   :depends-on ("smt")
   :components (;; (:file "package")
 	       (:file "regtest")
 	       )
-  :perform (test-op (o c) (uiop:symbol-call :smt-test :run!
-					    :it.bese.fiveam)
-		    )
+  ;; :perform (test-op (o c) (uiop:symbol-call :smt-test :run!
+  ;; 					    )
+  ;; 		    )
+  :test-package :smt-test
+  :test-names (:julian)
   )
