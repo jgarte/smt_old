@@ -4,11 +4,11 @@
 (in-package #:smt-test)
 
 
-(def-suite julian
-  )
+(def-suite julian)
 (def-test j1 (:suite julian)
   (is (= 2 2))
-  (fail))
+  ;; (fail)
+  )
 
 ;; (in-suite* :it.bese.fiveam)
 

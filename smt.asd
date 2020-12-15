@@ -2,7 +2,7 @@
 
 
 
-(print *package*)
+
 
 (defsystem "smt/xml"
   :serial t
@@ -49,12 +49,13 @@
 		:serial t
 		:components ((:file "types")
 			     (:file "cwmn")))))
-
+(print '___________)
+(print (find-package :faa))
 (defsystem "smt/test"
   :serial t
   :defsystem-depends-on ("fiveam-asdf")
   ;; :depends-on ("fiveam" "foo")
-  :class asdf-user::fiveam-tester-system
+  :class fiveam-tester-system
   :depends-on ("smt")
   :components (;; (:file "package")
 	       (:file "regtest")
@@ -65,3 +66,4 @@
   :test-package :smt-test
   :test-names (:julian)
   )
+

@@ -30,4 +30,3 @@
   (:use #:cl #:smt :it.bese.fiveam)
   (:nicknames "st")
   )
-
