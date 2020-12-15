@@ -1,5 +1,6 @@
 ;;;; package.lisp
-
+(print '_______________________________________)
+(format t "~%Goind through package.lisp ~d~&" (asdf-user::count-pkg))
 
 (defpackage #:xml-base
   (:use #:cl))
@@ -23,7 +24,9 @@
 
 (defpackage #:smt
   (:use #:cl #:smt-engine))
-
+(print (mapcar #'find-package '(:it.bese.fiveam :fiveam)))
 (defpackage #:smt-test
-  (:use #:cl #:smt )
+  (:use #:cl #:smt :it.bese.fiveam)
+  (:nicknames "st")
   )
+

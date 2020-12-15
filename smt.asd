@@ -1,10 +1,12 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
-
+(let ((x 0))
+  (defun count-pkg ()
+    (print (incf x))))
 
 (defsystem "smt/xml"
   :serial t
-  :depends-on ("cl-ppcre")
+  :depends-on ("cl-ppcre" "fiveam")
   :components ((:file "package")
                (:module "xmlutils"
 		:components ((:file "xmlbase")
@@ -15,7 +17,7 @@
 (defsystem "smt/engine"
   :serial t
   :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
-  :components ((:file "package")
+  :components (;; (:file "package")
 	       
 	       (:module "engine"
 		:serial t
@@ -42,28 +44,19 @@
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
-  :components ((:file "package")
+  :components (;; (:file "package")
 	       (:module "rules"
 		:serial t
 		:components ((:file "types")
 			     (:file "cwmn")))))
 
-;; (defmethod perform :before ((o test-op) (c (eql (asdf:find-system "smt/test"))))
-;;   (print 'before))
-;; (defmethod perform :after ((o test-op) (c (eql (asdf:find-system "smt/test"))))
-;;   (print 'after))
-
 (asdf:defsystem "smt/test"
   :serial t
-  :depends-on ("smt" "parachute")
-  :components ((:file "package")
-	       (:file "regression-testing")
+  :depends-on ("smt")
+  :components (;; (:file "package")
+	       (:file "regtest")
 	       )
-  :perform (test-op (o c) (uiop:symbol-call :smt-test :goon))
+  :perform (test-op (o c) (uiop:symbol-call :smt-test :run!
+					    :it.bese.fiveam)
+		    )
   )
-
-
-;; (defmethod perform ((o test-op) (c (eql (asdf:find-system "smt/test"))))
-;;   (print 'hastings))
-
-
