@@ -5,7 +5,8 @@
 
 (in-package :smt-engine)
 
-(load-time-value (defparameter *take* 0))
+;; (load-time-value (defparameter *take* 0))
+
 
 (defstruct bcr x y width height top right bottom left)
 

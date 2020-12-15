@@ -16,6 +16,7 @@
   :serial t
   :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
   :components ((:file "package")
+	       
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
@@ -34,17 +35,10 @@
   )
 
 
-;;; Leave these funx to stay in ASDF-USER pkg
-(defun smt-version-form (at)
-  (safe-read-file-form "./version" :at at))
-
-(defun smt-version-string (&optional (at 0))
-  (destructuring-bind (major minor patch)
-      (car (smt-version-form at))
-    (format nil "~d.~d.~d" major minor patch)))
-
 (defsystem "smt"
-  :version #.(smt-version-string)
+  :version #.(destructuring-bind (major minor patch)
+		 (car (safe-read-file-form "./version"))
+	       (format nil "~d.~d.~d" major minor patch))
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
@@ -61,14 +55,14 @@
 
 (asdf:defsystem "smt/test"
   :serial t
-  :depends-on ("smt")
+  :depends-on ("smt" "parachute")
   :components ((:file "package")
 	       (:file "regression-testing")
 	       )
-  :perform (test-op (o s) (print s))
+  :perform (test-op (o c) (uiop:symbol-call :smt-test :goon))
   )
 
-#.(list 1 2 3 4 5)
+
 ;; (defmethod perform ((o test-op) (c (eql (asdf:find-system "smt/test"))))
 ;;   (print 'hastings))
 

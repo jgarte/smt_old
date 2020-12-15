@@ -25,5 +25,5 @@
   (:use #:cl #:smt-engine))
 
 (defpackage #:smt-test
-  (:use #:cl #:smt)
+  (:use #:cl #:smt )
   )

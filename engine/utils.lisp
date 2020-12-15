@@ -3,6 +3,8 @@
 ;;; Every thing which is needed by others in advance!
 (in-package #:smt-engine)
 
+
+
 ;; (defgeneric svgize (obj)
 ;;   (:documentation "Returns a list of svg elements to be written to the document.
 ;; Svgizing happens in the RENDER function after all (possible) rules have been applied
