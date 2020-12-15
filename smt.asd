@@ -2,7 +2,7 @@
 
 
 
-(defsystem smt/xml
+(defsystem "smt/xml"
   :serial t
   :depends-on ("cl-ppcre")
   :components ((:file "package")
@@ -12,7 +12,7 @@
 
 
 
-(defsystem smt/engine
+(defsystem "smt/engine"
   :serial t
   :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
   :components ((:file "package")
@@ -43,7 +43,7 @@
       (car (smt-version-form at))
     (format nil "~d.~d.~d" major minor patch)))
 
-(defsystem smt
+(defsystem "smt"
   :version #.(smt-version-string)
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
@@ -54,12 +54,22 @@
 		:components ((:file "types")
 			     (:file "cwmn")))))
 
+;; (defmethod perform :before ((o test-op) (c (eql (asdf:find-system "smt/test"))))
+;;   (print 'before))
+;; (defmethod perform :after ((o test-op) (c (eql (asdf:find-system "smt/test"))))
+;;   (print 'after))
 
-(asdf:defsystem smt/test
+(asdf:defsystem "smt/test"
   :serial t
-  :depends-on ("smt" "parachute")
+  :depends-on ("smt")
   :components ((:file "package")
 	       (:file "regression-testing")
 	       )
-  :perform (test-op (o s) (uiop:symbol-call :smt-test :runtst)))
+  :perform (test-op (o s) (print s))
+  )
+
+#.(list 1 2 3 4 5)
+;; (defmethod perform ((o test-op) (c (eql (asdf:find-system "smt/test"))))
+;;   (print 'hastings))
+
 
