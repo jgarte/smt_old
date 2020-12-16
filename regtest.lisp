@@ -9,7 +9,7 @@
   (is (= 2 2))
   (pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)
   ;; (fail)
-  (is (= 2 2 2 2 2 2))
+  (is (= 2 2 2 2 2 0))
   )
 
 ;; (in-suite* :it.bese.fiveam)
