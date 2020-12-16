@@ -36,7 +36,7 @@
 		))
   )
 
-
+(print '___________)
 (defsystem "smt"
   :version #.(destructuring-bind (major minor patch)
 		 (car (safe-read-file-form "./version"))
@@ -49,8 +49,7 @@
 		:serial t
 		:components ((:file "types")
 			     (:file "cwmn")))))
-(print '___________)
-(print (find-package :faa))
+
 (defsystem "smt/test"
   :serial t
   :defsystem-depends-on ("fiveam-asdf")

@@ -1,18 +1,16 @@
 
 (defpackage #:xml-base
-  (:use #:cl)
-  (:nicknames "sx"))
+  (:use #:cl))
 
 (defpackage #:svg
   (:use #:cl #:xml-base)
-  (:nicknames "ss")
   (:export #:circle #:line #:write-svg #:g #:transform #:scale
 	   #:rect #:path))
 
 
 (defpackage #:smt-engine
   (:use #:cl)
-  (:nicknames "se")
+  (:nicknames "SE")
   (:export #:sform #:hform #:defrule #:packsvg
 	   #:*staff-line-thickness*
 	   #:left #:width #:y #:x #:height
@@ -24,9 +22,10 @@
 
 (defpackage #:smt
   (:use #:cl #:smt-engine)
-  (:nicknames "s"))
+  (:nicknames "S"))
 ;; (print (mapcar #'find-package '(:it.bese.fiveam :fiveam)))
+
 (defpackage #:smt-test
-  (:use #:cl #:smt :it.bese.fiveam)
-  (:nicknames "st")
+  (:use #:cl #:smt #:it.bese.fiveam)
+  (:nicknames "ST")
   )

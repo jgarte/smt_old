@@ -7,7 +7,9 @@
 (def-suite julian)
 (def-test j1 (:suite julian)
   (is (= 2 2))
+  (pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)(pass)
   ;; (fail)
+  (is (= 2 2 2 2 2 2))
   )
 
 ;; (in-suite* :it.bese.fiveam)
