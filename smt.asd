@@ -36,7 +36,7 @@
 		))
   )
 
-(print '___________)
+
 (defsystem "smt"
   :version #.(destructuring-bind (major minor patch)
 		 (car (safe-read-file-form "./version"))
@@ -59,9 +59,6 @@
   :components (;; (:file "package")
 	       (:file "regtest")
 	       )
-  ;; :perform (test-op (o c) (uiop:symbol-call :smt-test :run!
-  ;; 					    )
-  ;; 		    )
   :test-package :smt-test
   :test-names (:julian)
   )
