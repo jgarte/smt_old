@@ -1,12 +1,9 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
 
-
-
-
 (defsystem "smt/xml"
   :serial t
-  :depends-on ("cl-ppcre" "fiveam")
+  :depends-on ("cl-ppcre")
   :components ((:file "package")
                (:module "xmlutils"
 		:components ((:file "xmlbase")
@@ -44,7 +41,7 @@
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
-  :components (;; (:file "package")
+  :components ((:file "package")
 	       (:module "rules"
 		:serial t
 		:components ((:file "types")
@@ -52,14 +49,11 @@
 
 (defsystem "smt/test"
   :serial t
-  :defsystem-depends-on ("fiveam-asdf")
-  ;; :depends-on ("fiveam" "foo")
-  :class fiveam-tester-system
+  :defsystem-depends-on ("fiveam" "fiveam-asdf")
+  :class :fiveam-tester-system
   :depends-on ("smt")
-  :components (;; (:file "package")
-	       (:file "regtest")
-	       )
+  :components ((:file "package")
+	       (:file "regtest"))
   :test-package :smt-test
-  :test-names (:julian)
+  :test-names (#:boundary-checks)
   )
-
