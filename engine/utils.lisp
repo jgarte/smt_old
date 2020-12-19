@@ -262,8 +262,7 @@
 						     :fill "red"
 						     :fill-opacity .7))))
 		   :width (getf (page-size page-format) :w)
-		   :height (getf (page-size page-format) :h)))
-  (uiop:run-program "rsvg-convert --format=pdf --output=/tmp/smt.pdf /tmp/smt.svg"))
+		   :height (getf (page-size page-format) :h))))
 
 (defun packsvg (object &rest svg-elements)
   ""
@@ -274,3 +273,14 @@
 
 (defmacro lazy-getf (place indicator default)
   `(or (getf ,place ,indicator) ,default))
+
+
+(defun inspect-br (obj)
+  (let ((o obj))
+    (format t "~%===================== BR ~A" (id o))
+    (format t "~% X: ~D Y: ~D" (x o) (y o))
+    (format t "~% Top: ~D Fixed Top: ~D" (top o) (when (formp o) (fixed-top o)))
+    (format t "~% Bottom: ~D Fixed Bottom: ~D" (bottom o) (when (formp o) (fixed-bottom o)))
+    (format t "~% Left: ~D Right: ~D" (left o) (right o))
+    (format t "~% Width: ~D Height: ~D Fixed Height: ~D" (width o) (height o) (when (formp o) (fixed-height o)))
+    (format t "~%=========================")))

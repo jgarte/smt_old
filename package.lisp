@@ -18,7 +18,7 @@
 	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:marker-vis-p
 	   #:head #:canvas-color #:glyph-color #:render
 	   #:*staff-space* #:fixed-bottom #:fixed-height
-	   #:make-note #:make-notehead
+	   #:make-note #:make-notehead #:inspect-br
 	   ))
 
 (defpackage #:smt

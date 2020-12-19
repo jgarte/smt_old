@@ -272,15 +272,5 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 
 
 
-(defun inspbcr (obj)
-  (let ((o obj))
-    (format t "~&>>> [~A]~% x:~D y:~D ~% t:~D ft:~D ~% l:~D r:~D ~% b:~D fb:~D ~% h:~D fh:~D ~% w:~D"
-	    (id o)
-	    (x o) (y o)
-	    (top o) (when (formp o) (fixed-top o))
-	    (left o) (right o)
-	    (bottom o) (when (formp o) (fixed-bottom o))
-	    (height o) (when (formp o) (fixed-height o))
-	    (width o)
-	    )))
+
 
