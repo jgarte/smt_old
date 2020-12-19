@@ -17,7 +17,7 @@
 	   #:vertical-form #:ruledocs #:remrules #:content #:dur
 	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:marker-vis-p
 	   #:head #:canvas-color #:glyph-color #:render
-	   #:*staff-space* #:fixed-bottom #:fixed-height
+	   #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
 	   #:make-note #:make-notehead #:inspect-br
 	   ))
 
