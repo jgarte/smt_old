@@ -1,5 +1,5 @@
 ;;; Testing main xmlUTILS added locally
-(in-package :smtngn)
+(in-package :ngn)
 
 ;; (setq n 
       
@@ -196,5 +196,13 @@
   
   (render (list h))
   (inspbcr n2))
+(glyph-color (make-notehead "s0" ))
 
-
+(let* ((n (make-notehead "s0" :id 'n
+			 :canvas-color "green"))
+       (s (sform :content (list n) :id 's :toplevelp t)))
+  ;; (print (mapcar #'top (list n s)))
+  (inspbcr n)
+  (inspbcr s)
+  (render (list s))
+  )

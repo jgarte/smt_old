@@ -47,7 +47,7 @@
 		:components ((:file "types")
 			     (:file "cwmn")))))
 
-(defsystem "smt/test"
+(asdf:defsystem "smt/test"
   :serial t
   :defsystem-depends-on ("fiveam" "fiveam-asdf")
   :class :fiveam-tester-system
@@ -55,5 +55,5 @@
   :components ((:file "package")
 	       (:file "regtest"))
   :test-package :smt-test
-  :test-names (#:boundary-checks)
+  :test-names (#:boundary-check)
   )

@@ -13,6 +13,7 @@
 		:initform t
 		:accessor glyph-vis-p)   
    (glyph-color :initarg :glyph-color
+		:initform "black"
 		:accessor glyph-color
 		:documentation "Glyph's Face Color")
    (glyph-opac :initarg :glyph-opac
@@ -113,7 +114,7 @@ Composing Sticks."))
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     (push (xml-base::comment (format nil "Glyph ~A, Marker" (id obj))) (svglst obj)))  
   (push (svg:path (glyph-path-d (code obj) (family obj))
-		  :fill (or (glyph-color obj) "none")
+		  :fill (glyph-color obj) 
 		  :fill-opacity (glyph-opac obj)
 		  :id (symbol-name (id obj))
 		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (y-scaler obj))

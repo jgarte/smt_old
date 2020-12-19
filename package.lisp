@@ -9,8 +9,7 @@
 
 
 (defpackage #:smt-engine
-  (:use #:cl)
-  (:nicknames "SE")
+  (:use #:cl) (:nicknames "NGN")
   (:export #:sform #:hform #:defrule #:packsvg
 	   #:*staff-line-thickness*
 	   #:left #:width #:y #:x #:height
@@ -18,14 +17,16 @@
 	   #:vertical-form #:ruledocs #:remrules #:content #:dur
 	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:marker-vis-p
 	   #:head #:canvas-color #:glyph-color #:render
-	   #:*staff-space* #:fixed-bottom #:fixed-height))
+	   #:*staff-space* #:fixed-bottom #:fixed-height
+	   #:make-note #:make-notehead
+	   ))
 
 (defpackage #:smt
-  (:use #:cl #:smt-engine)
-  (:nicknames "S"))
-;; (print (mapcar #'find-package '(:it.bese.fiveam :fiveam)))
+  (:use #:cl #:ngn)
+  )
 
 (defpackage #:smt-test
-  (:use #:cl #:smt #:it.bese.fiveam)
-  (:nicknames "ST")
+  (:nicknames "TST")
+  (:use #:cl "NGN" #:it.bese.fiveam)
+  
   )
