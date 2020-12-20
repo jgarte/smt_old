@@ -6,7 +6,7 @@
   :depends-on ("cl-ppcre")
   :components ((:file "package")
                (:module "xmlutils"
-		:components ((:file "xmlbase")
+		:components ((:file "xml")
 			     (:file "svg")))))
 
 

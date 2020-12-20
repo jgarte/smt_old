@@ -1,9 +1,9 @@
 
-(defpackage #:xml-base
+(defpackage #:xml
   (:use #:cl))
 
 (defpackage #:svg
-  (:use #:cl #:xml-base)
+  (:use #:cl #:xml)
   (:export #:circle #:line #:write-svg #:g #:transform #:scale
 	   #:rect #:path))
 
