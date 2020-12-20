@@ -57,10 +57,10 @@ body {
   margin-left: 40px;
   padding-left: 30px;
   font-family: verdana, arial;
-  background-image: url(bg.png);
+  background-image: url(bg.jpg);
   background-position: top left;
   background-attachment: fixed;
-  background-repeat: no-repeat;
+  background-repeat: repeat;
 }
 
 h1 {
