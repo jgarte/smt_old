@@ -52,19 +52,13 @@ sometimes called its generic identifier (GI)"
   (format nil "</~A>" (gi obj)))
 
 (defparameter *sdelims*
-  '(empty-element "<"
-    non-empty-element "<"
-    comment "<!--"
-    decl "<?xml"
-    cdata "<![CDATA[")
+  '(empty-element "<" non-empty-element "<" comment "<!--"
+    decl "<?xml" entity "<!ENTITY" cdata "<![CDATA[")
   "Start Delimiters for Stag")
 
 (defparameter *edelims*
-  '(empty-element "/>"
-    non-empty-element ">"
-    comment "-->"
-    decl "?>"
-    cdata "]]>")
+  '(empty-element "/>" non-empty-element ">" comment "-->"
+    entity ">" decl "?>" cdata "]]>")
   "End Delimiters for Stag")
 
 ;;; Start tag wird gleichzeitig für empty & non-empty Elemente benutzt.
@@ -96,7 +90,6 @@ sometimes called its generic identifier (GI)"
 
 (defun make-comment (content)
   (make-instance 'comment :content content))
-(defun commentp (obj) (typep obj 'comment))
 
 (defmethod delimit ((obj comment))
   (format nil "~A ~A ~A"
@@ -106,10 +99,8 @@ sometimes called its generic identifier (GI)"
 
 
 ;;; https://xmlwriter.net/xml_guide/xml_declaration.shtml
-(defparameter *xmldecl*
+(defparameter *xmldec*
   '(version "1.0" encoding "UTF-8" standalone yes))
-
-(defun declp (obj) (typep obj 'decl))
 
 (defclass decl (unnamed) ())
 
@@ -126,7 +117,7 @@ sometimes called its generic identifier (GI)"
 	))))
 
 (defun make-decl ()
-  (make-instance 'decl :attributes *xmldecl*))
+  (make-instance 'decl :attributes *xmldec*))
 
 (defun indent (doc curr-ind ind-depth ind-offset)
   "Creates dotted pairs, where car is the number of indentations and

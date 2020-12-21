@@ -51,16 +51,16 @@ div.sidebar ul.hack {
 
 body {
   color: #000000;
-  background-color: #ffffff;
+  background-color: #00ffff;
   margin-right: 0pt;
   margin-bottom: 10%;
   margin-left: 40px;
   padding-left: 30px;
   font-family: verdana, arial;
-  background-image: url(bg.jpg);
+  /* background-image: url(bg.jpg); */
   background-position: top left;
   background-attachment: fixed;
-  background-repeat: repeat;
+  /* background-repeat: repeat; */
 }
 
 h1 {

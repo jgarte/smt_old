@@ -1,12 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
-    <style>
-      body {
-	  background-image: url("bg.jpg");
-	  background-repeat: repeat;
-      }
-    </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Symbolic Music Typesetting</title>
     <link rel="stylesheet" type="text/css" href="smt.css">
@@ -16,9 +10,9 @@
       <div class="sidebar-title"><a href="index.html">Symbolic Music Typesetting</a></div>
       <div class="sidebar-main"><ul class="main">
 	  <li>
-	    <a href="installation.html">Installing Closure XML</a><ul class="sub">
+	    <a href="installation.html">Installing SMT</a><ul class="sub">
 	      <li><a href="installation.html#download"><b>Download</b></a></li>
-	      <li><a href="installation.html#implementations">Implementation-specific notes</a></li>
+	      <!-- <li><a href="installation.html#implementations">Implementation-specific notes</a></li> -->
 	      <li><a href="installation.html#compilation">Compilation</a></li>
 	      <li><a href="installation.html#tests">Tests</a></li>
 	    </ul>
@@ -45,8 +39,8 @@
 	    </ul>
 	  </li>
 	  <li>
-	    <a href="dom.html">DOM implementation</a><ul class="sub">
-	      <li><a href="dom.html#parser">Parsing with the DOM builder</a></li>
+	    <a href="xml.html">XML Utilities</a><ul class="sub">
+	      <li><a href="xml.html#base">XML Basics</a></li>
 	      <li><a href="dom.html#serialization">Serialization</a></li>
 	      <li><a href="dom.html#mapping">DOM/Lisp mapping</a></li>
 	    </ul>
@@ -54,6 +48,9 @@
 	  <li><ul class="hack"><li><a href="xmls-compat.html">XMLS Builder</a></li></ul></li>
       </ul></div>
     </div>
+
+    <!-- Main Page Content -->
+    
     <h1>Symbolic Music Typesetting</h1>
 
     <p>A music score writer written in Common Lisp.</p>
