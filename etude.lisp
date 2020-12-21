@@ -1,4 +1,14 @@
 ;;; Testing main xmlUTILS added locally
+
+(in-package #:xml)
+(write-xml (make-non-empty-element "A" '(a 1)
+				   (loop repeat 2 collect
+						  (make-non-empty-element "B"  '(b 2)
+									  (list (make-comment "CMNT")
+										(make-empty-element "C" '(c 3))))))
+	   :ind-depth 4
+	   )
+
 (in-package :ngn)
 
 ;; (setq n 

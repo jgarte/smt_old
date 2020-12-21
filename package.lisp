@@ -1,6 +1,9 @@
 
 (defpackage #:xml
-  (:use #:cl))
+  (:use #:cl)
+  (:export #:make-empty-element #:make-non-empty-element
+	   #:make-comment #:make-decl #:write-xml
+	   #:*xmldecl*))
 
 (defpackage #:svg
   (:use #:cl #:xml)
