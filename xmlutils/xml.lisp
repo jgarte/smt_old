@@ -149,5 +149,3 @@ cdr is the elements/strings to be written to the output file."
 			  :if-exists if-exists)
     (dolist (pair (indent (list (make-decl) doc) curr-ind ind-depth ind-offset))
       (write-line (make-line pair) s))))
-
-
