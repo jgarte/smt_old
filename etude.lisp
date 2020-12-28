@@ -1,15 +1,5 @@
 ;;; Testing main xmlUTILS added locally
 
-(in-package #:xml)
-(write-xml (make-non-empty-element "A" '(a 1)
-				   (cons
-				    (make-non-empty-element "FOO" '(a 1 s 2 d d) "Hello World!")
-				    (loop repeat 2 collect
-						   (make-non-empty-element "B"  '(b 2)
-									   (list (make-comment "CMNT")
-										 (make-empty-element "C" '(c 3)))))))
-
-	   )
 
 (in-package :ngn)
 
@@ -36,7 +26,7 @@
 ;;   ;; Print all right edges
 ;;   (print (mapcar #'right (list n s0 s1)))
 ;;   )
-
+(defparameter *staff-line-thickness* 30)
 
 ;;; Stave
 (defrule null (stacked-form) (stacked) ("Drawing staff lines")
@@ -46,8 +36,8 @@
 	  :for line-y = (+ (* line-idx *staff-space*) (y me))
 	  :do (packsvg me (svg:line (left me) line-y (+ (left me) (width me)) line-y
 				    :stroke-width *staff-line-thickness*
-				     :stroke-linecap "round"
-				     :stroke "black")))))
+				    :stroke-linecap "round"
+				    :stroke "black")))))
 (ruledocs)
 (defrule spn (notehead) (:treble)
     ("Assigns correct vertical positions to note-heads,
@@ -203,11 +193,8 @@
 		 :canvas-color "green"
 		 :canvas-vis-p nil
 		 :toplevelp t)))
-  (inspbcr n2)
-  (incf (x n2) -20)
-  
   (render (list h))
-  (inspbcr n2))
+)
 (glyph-color (make-notehead "s0" ))
 
 (let* ((n (make-notehead "s0" :id 'n
@@ -218,3 +205,18 @@
   (inspbcr s)
   (render (list s))
   )
+
+
+
+
+(ql:quickload "cxml")
+
+(with-open-file (stream "/tmp/etude.xml" :direction :output :if-exists :supersede)
+  (cxml:with-xml-output (cxml:make-character-stream-sink
+			 stream :indentation 2 :canonical nil)
+    (cxml:with-element "foo"
+      (cxml:attribute "xyz" "abc")
+      (cxml:attribute "asd" "8.123")
+      (cxml:with-element "bar"
+	(cxml:attribute "blub" "bla"))
+      (cxml:text "Hi there."))))

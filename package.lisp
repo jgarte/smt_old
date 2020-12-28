@@ -1,14 +1,20 @@
-
-(defpackage #:xml
-  (:use #:cl)
-  (:export #:make-empty-element #:make-non-empty-element
-	   #:make-comment #:make-decl #:write-xml
-	   #:*xmldecl*))
+(defpackage #:xml-base
+  (:use #:cl))
 
 (defpackage #:svg
-  (:use #:cl #:xml)
+  (:use #:cl #:xml-base)
   (:export #:circle #:line #:write-svg #:g #:transform #:scale
 	   #:rect #:path))
+;; (defpackage #:xml-base
+;;   (:use #:cl)
+;;   (:export #:make-empty-element #:make-non-empty-element
+;; 	   #:make-comment #:make-decl #:write-xml
+;; 	   #:*xmldecl*))
+
+;; (defpackage #:svg
+;;   (:use #:cl #:xml-base)
+;;   (:export #:circle #:line #:write-svg #:g #:transform #:scale
+;; 	   #:rect #:path))
 
 
 (defpackage #:smt-engine

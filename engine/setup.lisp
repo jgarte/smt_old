@@ -14,8 +14,8 @@
   "Keep track of objects created")
 
 
-(defparameter *xml-indentation-type* 'xml-base::space)
-(defparameter *xml-indentation-depth* 3)
+;; (defparameter *xml-indentation-type* #\space)
+;; (defparameter *xml-indentation-depth* 3)
 
 ;;; Default font
 (defparameter *font-families* '(:haydn-11))
