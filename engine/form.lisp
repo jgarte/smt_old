@@ -45,6 +45,7 @@
 ;; descendant's ANCESTORS list."
 ;;   (unfold-contents-helper obj ()))
 
+;;; Children
 (defun descendants (form)
   "Returns form's descendants."
   (append (content form)
@@ -79,13 +80,13 @@
 
 (defmethod initialize-instance :after ((obj form) &key)
   (let ((unfolded (reversed-descendants obj)))
-    (dolist (descendants unfolded)
+    (dolist (desc unfolded)
       ;; Tell all my kids about that im their Parent.
       ;; Don't push if obj already in the parents list,
       ;; otherwise there will be duplicates of obj there!
       ;; Nur ein Stick kann Vorfahren anderer Dinge sein (ein glyph nicht).
       ;; The Farthest of ancestors is in the front of the list.
-      (pushnew obj (ancestors descendants)))
+      (pushnew obj (ancestors desc)))
     ;; At this time every obj has it's full ancestors list
     (when (toplevelp obj)
       ;; (dolist (d (append (remove-if-not #'glyphp (unfold-contents obj))
