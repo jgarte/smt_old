@@ -1,3 +1,4 @@
+* TODO Floating Arithmetic Error?
 * TODO feature?
 Operations can be invoked directly, or examined to see what their
 effects would be without performing them.

@@ -25,40 +25,23 @@
 	    :accessor content)
    ))
 
-
-
 (defun formp (obj) (typep obj 'form))
-
-
-
-;; (defun unfold-contents-helper (cs-obj acc)
-;;   (dolist (child (content cs-obj) acc)
-;;     (typecase child
-;;       (form (setf acc (unfold-contents-helper child (push child acc))))
-;;       (glyph (setf acc (push child acc)))
-;;       ;; (burin (setf acc (push child acc)))
-;;       )))
-
-;; (defun unfold-contents (obj)
-;;   "Discloses all children of the canvas flattened.
-;; This is used by sticks to push themselves to their
-;; descendant's ANCESTORS list."
-;;   (unfold-contents-helper obj ()))
 
 ;;; Children
 (defun descendants (form)
   "Returns form's descendants."
   (append (content form)
-	  (mapcan #'(lambda (x) (when (formp x) (descendants x)))
+	  (mapcan #'(lambda (x)
+		      (when (formp x) (descendants x)))
 		  (content form))))
 
-(defun reversed-descendants (form)
-  "Reverses the descendants list."
-  (nreverse (descendants form)))
+;; (defun reversed-descendants (form)
+;;   "Reverses the descendants list."
+;;   (nreverse (descendants form)))
 
 (defun preprocess (form)
   (when (form-preproc form)
-    (dolist (d (reversed-descendants form))
+    (dolist (d (reverse (descendants form)))
       (dolist (pp-func (form-preproc form))
 	;; Call the preproc func on all descendants
 	(funcall pp-func d))))
@@ -79,7 +62,7 @@
 
 
 (defmethod initialize-instance :after ((obj form) &key)
-  (let ((unfolded (reversed-descendants obj)))
+  (let ((unfolded (reverse (descendants obj))))
     (dolist (desc unfolded)
       ;; Tell all my kids about that im their Parent.
       ;; Don't push if obj already in the parents list,
@@ -105,7 +88,7 @@
     (incf (slot-value obj 'xslot) dx)
     (incf (slot-value obj 'lslot) dx)
     (incf (slot-value obj 'rslot) dx)
-    (dolist (d (reversed-descendants obj))
+    (dolist (d (reverse (descendants obj)))
       ;; Treat for children as setfing would be offsetting???????
       (incf (slot-value d 'xslot) dx)
       (incf (slot-value d 'lslot) dx)
@@ -120,7 +103,7 @@
 
 (defmethod (setf y) (newy (obj form))  
   (let ((dy (- newy (slot-value obj 'yslot))))
-    (dolist (d (reversed-descendants obj))
+    (dolist (d (reverse (descendants obj)))
       (incf (slot-value d 'yslot) dy)))
   (setf (slot-value obj 'yslot) newy)
   (dolist (mt (remove-if-not #'glyphp (descendants obj)))
@@ -134,9 +117,10 @@
 
 ;;; Horizontal stuff → Initial
 (defmethod calc-left ((obj form))
-  ;; This recursion goes down possibly to a containing MTYPE.
-  ;; left could have changed to be less than x, so include it in the calc too.
-  (apply #'min (x obj) (mapcar #'left (reversed-descendants obj))))
+  ;; Don't need reversing here!!!
+  (apply #'min
+	 (x obj)
+	 (mapcar #'left (reverse (descendants obj)))))
 
 ;;; Beware! Changing left doesn't impact right
 (defmethod (setf left) (newl (obj form))
@@ -145,7 +129,7 @@
   newl)
 
 (defmethod calc-right ((obj form))
-  (apply #'max (x obj) (mapcar #'right (reversed-descendants obj))))
+  (apply #'max (x obj) (mapcar #'right (reverse (descendants obj)))))
 
 (defmethod (setf right) (newr (obj form))
   ;; increment by delta-right
@@ -153,6 +137,7 @@
   newr)
 
 (defmethod calc-width ((obj form))
+  ;; This subtraction will cause Floating Nightmare! :-S
   (- (right obj) (left obj)))
 
 ;;; Changing WIDTH moves the RIGHT edge, LEFT remains untouched!
@@ -165,7 +150,7 @@
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a FORM to the rightmost
     ;; of it's children.
-    (setf (slot-value anc 'rslot) (apply #'max (mapcar #'right (reversed-descendants anc)))
+    (setf (slot-value anc 'rslot) (apply #'max (mapcar #'right (reverse (descendants anc))))
 	  (slot-value anc 'wslot) (calc-width anc)))
   neww)
 

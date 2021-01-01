@@ -141,7 +141,7 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
   ;; LR and then W
   (when l (setf (slot-value obj 'lslot) (calc-left obj)))
   (when r (setf (slot-value obj 'rslot) (calc-right obj)))  
-  (when w (setf (slot-value obj 'wslot) (calc-width obj)))  
+  (when w (setf (slot-value obj 'wslot) (calc-width obj)))
   ;; TB and then H
   (when top (setf (slot-value obj 'tslot) (refresh-top obj)))
   (when b (setf (slot-value obj 'bslot) (refresh-bottom obj)))

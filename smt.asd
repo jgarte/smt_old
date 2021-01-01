@@ -1,6 +1,7 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
 
+
 (defsystem "smt/xml"
   :serial t
   :depends-on ("cl-ppcre")
@@ -55,5 +56,8 @@
   :components ((:file "package")
 	       (:file "regtest"))
   :test-package :smt-test
-  :test-names (#:boundary-check)
+  :test-names (
+	       ;; fractional arithmetic rounding error
+	       ;; #:fare
+	       #:notehead-on-sform)
   )

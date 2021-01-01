@@ -2,143 +2,119 @@
 ;;; Regression testing for SMT and it's components
 
 (in-package #:tst)
+(setf *read-default-float-format* 'double-float)
+;;; https://floating-point-gui.de/errors/comparison/
+(defun nearly-equal-p (a b &optional (epsilon .01))
+  (let* ((absa (abs a))
+	 (absb (abs b))
+	 (diff (abs (- a b))))
+    (cond ((= a b) t)
+	  ((or (zerop a) (zerop b)
+	       (< (+ absa absb) least-positive-normalized-single-float))
+	   (< diff (* epsilon least-positive-normalized-single-float)))
+	  (t (< (/ diff (min (+ absa absb) most-positive-single-float))
+		epsilon)))))
 
-;;; Floating Point error restrained =, f2 is equal to f1
-;;; within the deviation +-DEV
-(defun non-flarer= (f1 f2 &optional (dev 0.0005))
-  (and (<= (- f1 dev) f2 (+ f1 dev))
-       (<= (- f2 dev) f1 (+ f2 dev))))
+
+
+(def-suite fare)
+
+(def-test test-f= (:suite fare)
+  (setf *num-trials* 100000
+	*max-trials* 100000)
+  (for-all ((f1 #'(lambda () (random 2000.0)))
+	    (f2 #'(lambda () (random .0005))))
+    (print (list f1 (+ f1 f2)))
+    (is (nearly-equal-p f1 (+ f1 f2)))))
+
+;; (loop for f from .5 to 10 by .1
+;;       unless
+;;       (loop repeat 100000
+;; 	    for f2 = (+ f (* (random .0005) (if (zerop (random 2)) 1 -1)))
+;; 	    do (print (list f f2))
+;; 	    always (nearly-equal-p f f2)
+;; 	    )
+;;       do (return (list f))
+;;       )
+
+;; (nearly-equal-p 0 0.000000000001 10)
+
+
 
 (defmacro are (&rest iss)
   `(progn ,@(mapcar #'(lambda (x) (list 'is x)) iss)))
 
-(setf *num-trials* 1000)
+(def-suite notehead-on-sform
+  :description "")
 
-(def-suite boundary-check)
+(setf *num-trials* 10000000
+      *max-trials* 10000000)
 
 ;;; These assertions come from inspecting the non-broken Engine!
 ;;; I know from INSPECTING that eg xs of notehead & it's parent
 ;;; sform are the same.
-(def-test notehead-default-coords-inheritance
-    (:suite boundary-check)
-  (let* (
-	 (n (make-notehead "s0"
+;;; x, l, r, w
+(def-test on-x-axis
+    (:suite notehead-on-sform)
+  (let* ((n (make-notehead "s0"
 			   :marker-vis-p t
 			   :id 'n))
 	 (s (sform :content (list n)
 		   :marker-vis-p t
 		   :toplevelp t
 		   :id 's))
-	 ;; These are affected by N being a child of S,
-	 ;; since happening after having declared them son&father
+	 ;; Record initials for comparison & resetting
 	 (nx (x n))
-	 (ny (y n))
-	 (nt (top n))
-	 (nb (bottom n))
 	 (nl (left n))
 	 (nr (right n))
-	 (nh (height n))
 	 (nw (width n))
 	 (sx (x s))
-	 (sy (y s))
-	 (st (top s))
-	 (sft (fixed-top s))	 
-	 (sb (bottom s))
-	 (sfb (fixed-bottom s))
 	 (sl (left s))
 	 (sr (right s))
-	 (sh (height s))
-	 (sfh (fixed-height s))
 	 (sw (width s))
 	 )
-    ;; Initials
-    (is (= nx sx))
-    (is (= ny sy))
-    (is (= st sft))
-    ;; > means lower on the page!
-    (is (> nt st))
-    (is (= sb sfb))
-    (is (< nb sb))
-    (is (= nl sl))
-    (is (= nr sr))
-    (is (non-flarer= sh sfh))
-    (is (non-flarer= sw nw))
-    ;; (is (= sh sfh))
-    ;; (is (= (width s) (width n)))
-    ;; Changing xy of notehead may not touch xy of sform
-    (for-all ((d (gen-integer :min -1000 :max 1000)))
+    (are (= nx sx) (= nl sl) (= nr sr)
+	 (nearly-equal-p sw nw))
+    ;; Changing x of notehead must:
+    (setf i 1)
+    (for-all ((d (gen-integer :min -10000 :max 10000)))
+      (format t "~&NX ~F" (x n))
       (incf (x n) d)
-      (is (= sx (x s)))
-      (incf (y n) d)
-      (is (= sy (y s))))
-    (psetf (x n) nx (y n) ny)
-    ;; The opposite is doesn't hold; changing xy of sform moves
-    ;; xy of it's child too.
-    (for-all ((d (gen-integer :min -1000 :max 1000)))
-      (incf (x s) d)
-      (is (non-flarer= (x n) (x s)))
-      (incf (y s) d)
-      (is (= (y n) (y s))))
-    (psetf (x s) sx (y s) sy (x n) nx (y n) ny)
+      ;; 1. not touch x of parent
+      ;; (is (= sx (x s)))
+      ;; ;; 2. Parent's left-right are setfed appropriately:
+      ;; (is (if (or (plusp d) (zerop d) (< (abs d) (width n)))
+      ;; 	      (= (right n) (right s))
+      ;; 	      ;; abs d >= width of n
+      ;; 	      (= sx (right s))))
+      
+      (is (if (or (plusp d) (zerop d))
+	      (progn
+		(print (list (incf i) d (x n) nx
+			     (x s)
+			     (left n) (left s) sl
+			     (= (left n) (left s))))
+		
+	       (nearly-equal-p sl (left s)))
+	      (= (left n) (left s))))
+      ;; Reset to initials after each iteration
+      ;; to avoid incremental changing!
+      (psetf (x n) nx
+	     (x s) sx
+	     ;; LR are incfed by setf x, W should be done manually
+	     (width s) sw)
+      )
+    ;; ;; Direct Inheritance of coords by child
+    ;; (for-all ((d (gen-integer :min -1000 :max 1000)))
+    ;;   (format t "Ghabl LS:~F LN:~F~%"(left s) (left n))
+    ;;   (incf (x s) d)
+    ;;   (format t "Bad LS:~F LN:~F~%+++++++++~%"(left s) (left n))
+    ;;   (are (nearly-equal-p (x s) (x n))
+    ;; 	   (= (left s) (left n))
+    ;; 	   (= (right s) (right n))
+	   
+    ;; 	   ))
 
-    ;; (inspect-br n)
-    ;; (inspect-br s)
     ;; (render (list s))
     )
   )
-
-
-(def-test multi-note-default-coords-inheritance
-    (:suite boundary-check)
-  (let* ((n1 (make-note nil))
-	 (s (sform :content (list n1)))
-	 (h (hform :content (list s) :toplevelp t))
-	 ;; Record the initial coords
-	 (n1hx (x (head n1))) (n1hy (y (head n1)))
-	 (n1x (x n1)) (n1y (y n1))
-	 (sx (x s)) (sy (y s))
-	 (hx (x h)) (hy (y h))
-	 )
-    ;; changing xy of notes must:
-    (for-all ((d1 (gen-integer :min -1000 :max 1000)))
-      (incf (x n1) d1) (incf (y n1) d1)
-      ;; 1- take xy of their heads along
-      (are (= (x (head n1)) (x n1))
-	(= (y (head n1)) (y n1)))
-      ;; 2- not change xy of parents
-      (are (= sx (x s)) (= hx (x h))
-	(= sy (y s)) (= hy (y h))))
-    (psetf (x n1) n1x (y n1) n1y
-	   (x (head n1)) n1hx (y (head n1)) n1hy)
-    ;; Changing XY of sform must:
-    (for-all ((d1 (gen-integer :min -1000 :max 1000)))
-      (incf (x s) d1) (incf (y s) d1)
-      (are
-	;; 1. take xy of children along
-	(non-flarer= (x s) (x n1))
-	(non-flarer= (y s) (y n1))
-	(non-flarer= (x s) (x (head n1)))
-	(non-flarer= (y s) (y (head n1)))
-	;; 2. not change xy of parent
-	(= hx (x h)) (= hy (y h)))     
-      )
-    ;; Reset s first, for not to double reset n & it's head!
-    ;; Look at (setf x) of FORM!
-    (psetf (x s) sx (y s) sy
-	   (x n1) n1x (y n1) n1y
-	   (x (head n1)) n1hx (y (head n1)) n1hy
-	   )
-    ;; Changing xy of hform must:
-    (for-all ((d (gen-integer :min -1000 :max 1000)))
-      (incf (x h) d) (incf (y h) d)
-      (are
-    	;; 1. take xy of all children layers along
-    	(non-flarer= (x h) (x s))
-    	(non-flarer= (y h) (y s))
-    	(non-flarer= (x h) (x n1))
-    	(non-flarer= (y h) (y n1))
-    	(non-flarer= (x h) (x (head n1)))
-    	(non-flarer= (y h) (y (head n1)))
-    	)
-      )
-    (render (list h))))

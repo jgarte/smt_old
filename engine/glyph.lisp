@@ -50,7 +50,7 @@ Composing Sticks."))
     (incf (slot-value obj 'xslot) dx)
     (incf (slot-value obj 'lslot) dx)
     (incf (slot-value obj 'rslot) dx))
-  ;; Anc kann NUR ein Form sein!
+  ;; Direction of setfing: from innermost to outermost
   (dolist (anc (reverse (ancestors obj)))
     (setf (slot-value anc 'rslot) (calc-right anc)
 	  (slot-value anc 'lslot) (calc-left anc)
