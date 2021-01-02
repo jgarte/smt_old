@@ -38,6 +38,8 @@
 		     :initform t
 		     :accessor marker-vis-p)))
 
+
+
 (defun root (obj)
   "Returns the farthest parent (toplevel) of obj"
   (let ((root (car (ancestors obj))))
@@ -256,7 +258,7 @@
 	(replace-with-transform! elem)))
     (svg:write-svg (svg:g
 		    ;; Setting the toplevel scaling of the score
-		    :attributes `(("transform" . ,(svg:transform (svg:scale %scale% %scale%))))
+		    :attributes `(("transform" . ,(svg::transform (svg:scale %scale% %scale%))))
 		    :content (append (list (mapcar #'svglst lst)
 					   (svg:rect 0 0 1 6
 						     :fill "red"

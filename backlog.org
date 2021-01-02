@@ -1,4 +1,7 @@
 * TODO Floating Arithmetic Error?
+** Calibrate the whole, then de-calibrate at the 
+final step when want to write to .svg
+https://en.wikipedia.org/wiki/Calibration
 * TODO feature?
 Operations can be invoked directly, or examined to see what their
 effects would be without performing them.

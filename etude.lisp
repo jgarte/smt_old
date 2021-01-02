@@ -111,8 +111,8 @@
 
 (ruledocs)
 *ruleidx*
-(apply #'remrules (mapcar #'car (ruledocs)))
-(remrules 0)
+
+(remrules 1)
 
 (defrule content (horizontal-form) (t)
     ("Compute widths ")
@@ -138,11 +138,11 @@
 			 for color = "black"
 			 ;; (nth (random 5)
 				     ;; 	  '("green" "orange" "red" "pink" "blue"))
-			 collect (sform :content (list (make-note (cons pitch
-								   (1+ oct))
-							     :dur dur
-							     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
-							     :head-color color)
+			 collect (sform :content (list ;; (make-note (cons pitch
+						       ;; 		   (1+ oct))
+						       ;; 	     :dur dur
+						       ;; 	     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
+						       ;; 	     :head-color color)
 						       (make-note (cons pitch oct)
 							     :dur dur
 							     :head-color color)
@@ -182,30 +182,35 @@
 
 ;;;;;;;;;;;;;;;;;;;;;test
 (let* ((n (make-note '(c . 4)
+		     :id 'n
+		     :head (make-notehead "s0" :id 'nh)
 		     :canvas-vis-p nil))
        (n2 (make-note '(f . 4) :id 'n2
+			       :head (make-notehead "s0" :id 'nh2)
 			       :canvas-vis-p nil))
-       (s (sform :content (list n)
+       (s (sform :content (list n (make-note nil :id 'n3
+
+					     :head (make-notehead "s0" :id 'nh3)))
+		 :id 's
 		 :canvas-vis-p t))
-       (s2 (sform :content (list n2)
+       (s2 (sform :content (list n2) :id 's2
 		  :canvas-color "green"))
-       (h (hform :content (list s s2)
+       (h (hform :content (list s s2) :id 'h
 		 :canvas-color "green"
 		 :canvas-vis-p nil
 		 :toplevelp t)))
   (render (list h))
-)
-(glyph-color (make-notehead "s0" ))
+  ;; (mapcar #'id (descendants h))
+   )
 
-(let* ((n (make-notehead "s0" :id 'n
+
+(let* ((n (make-notehead "s1" :id 'n
 			 :canvas-color "green"))
        (s (sform :content (list n) :id 's :toplevelp t)))
   ;; (print (mapcar #'top (list n s)))
-  (inspbcr n)
-  (inspbcr s)
+
   (render (list s))
   )
-
 
 
 

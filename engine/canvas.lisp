@@ -132,7 +132,7 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 (defmethod left ((obj canvas)) (slot-value obj 'lslot))
 (defmethod width ((obj canvas)) (slot-value obj 'wslot))
 
-(defmethod refresh-bcr! ((obj canvas) &key x y l r ((:t top) nil) b w h)
+(defmethod refresh-bcr! ((obj canvas) &key x y l r ((:t top)) b w h)
   "Storing rectangular coordinates"
   ;; X&y first, this order of computation is VERY important:
   ;; e.g. for a stick, (re)computing width happens based on it's r & l etc.

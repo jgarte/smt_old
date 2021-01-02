@@ -27,6 +27,13 @@
 
 (defun formp (obj) (typep obj 'form))
 
+;;; Ersetzen wenn verstanden was mit den descendants Alles passiert
+(defun descendants0 (x)
+  (if (or (glyphp x) (null (content x)))
+      ()
+      (mapcan #'(lambda (a) (cons a (f a))) (content x))
+      ))
+
 ;;; Children
 (defun descendants (form)
   "Returns form's descendants."
@@ -62,23 +69,19 @@
 
 
 (defmethod initialize-instance :after ((obj form) &key)
-  (let ((unfolded (reverse (descendants obj))))
-    (dolist (desc unfolded)
-      ;; Tell all my kids about that im their Parent.
-      ;; Don't push if obj already in the parents list,
-      ;; otherwise there will be duplicates of obj there!
-      ;; Nur ein Stick kann Vorfahren anderer Dinge sein (ein glyph nicht).
-      ;; The Farthest of ancestors is in the front of the list.
-      (pushnew obj (ancestors desc)))
+  (let ((desc (reverse (descendants obj))))
+    (dolist (d desc)
+      ;; is pushnew safe for this???
+      (pushnew obj (ancestors d)))
     ;; At this time every obj has it's full ancestors list
     (when (toplevelp obj)
       ;; (dolist (d (append (remove-if-not #'glyphp (unfold-contents obj))
       ;; 		       (remove-if-not #'formp (unfold-contents obj))))   
       ;;   (refresh-bcr! d :x t :y t :l t :r t :t t :b t :w t :h t))
       ;; Mtype init get-bcr first, da diese unabhängig von Allem sind
-      (dolist (g (remove-if-not #'glyphp unfolded))      
+      (dolist (g (remove-if-not #'glyphp desc))      
 	(refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
-      (dolist (f (remove-if-not #'formp unfolded))
+      (dolist (f (remove-if-not #'formp desc))
 	(refresh-bcr! f :x t :y t :l t :r t :t t :b t :w t :h t))
       (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t))))
 
@@ -129,7 +132,10 @@
   newl)
 
 (defmethod calc-right ((obj form))
-  (apply #'max (x obj) (mapcar #'right (reverse (descendants obj)))))
+  (apply #'max
+	 (x obj)
+	 ;; (mapcar #'right (reverse (descendants obj)))
+	 (mapcar #'right (descendants obj))))
 
 (defmethod (setf right) (newr (obj form))
   ;; increment by delta-right
@@ -138,6 +144,7 @@
 
 (defmethod calc-width ((obj form))
   ;; This subtraction will cause Floating Nightmare! :-S
+  ;; #'right #'left are slot-value readers
   (- (right obj) (left obj)))
 
 ;;; Changing WIDTH moves the RIGHT edge, LEFT remains untouched!
@@ -150,8 +157,10 @@
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a FORM to the rightmost
     ;; of it's children.
-    (setf (slot-value anc 'rslot) (apply #'max (mapcar #'right (reverse (descendants anc))))
-	  (slot-value anc 'wslot) (calc-width anc)))
+    (setf (slot-value anc 'rslot)
+	  (apply #'max (mapcar #'right (reverse (descendants anc))))
+	  (slot-value anc 'wslot)
+	  (calc-width anc)))
   neww)
 
 ;;; Vertical stuff ↓

@@ -10,12 +10,9 @@
   (sort (alexandria:hash-table-alist *ruledocs*) #'<
 	:key #'car))
 
-(defun remrules (idx &rest idcs)
+(defun remrule (idx)
   (remhash idx *ruletable*)
-  (remhash idx *ruledocs*)
-  (dolist (i idcs)
-    (remhash i *ruletable*)
-    (remhash i *ruledocs*)))
+  (remhash idx *ruledocs*))
 
 (defun examine-clauses (clauses)
   (dolist (clause clauses)

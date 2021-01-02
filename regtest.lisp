@@ -2,61 +2,79 @@
 ;;; Regression testing for SMT and it's components
 
 (in-package #:tst)
-(setf *read-default-float-format* 'double-float)
+
+;; (setf *read-default-float-format* 'double-float)
+
+;; (defun close-enough-p (f1 f2 &optional (epsilon 0.0005))
+;;   (declare (type real f1 f2 epsilon))
+;;   (let ((delta (* (abs f1) epsilon)))
+;;     (<= (- f1 delta)
+;;         f2
+;;         (+ f1 delta))))
+(defparameter *tolerance* .0005)
+(defun ~ (a b &optional (tol *tolerance*))
+  (<= (abs (- a b)) tol))
+
+;; (setf *read-default-float-format* 'double-float)
 ;;; https://floating-point-gui.de/errors/comparison/
-(defun nearly-equal-p (a b &optional (epsilon .01))
-  (let* ((absa (abs a))
-	 (absb (abs b))
-	 (diff (abs (- a b))))
-    (cond ((= a b) t)
-	  ((or (zerop a) (zerop b)
-	       (< (+ absa absb) least-positive-normalized-single-float))
-	   (< diff (* epsilon least-positive-normalized-single-float)))
-	  (t (< (/ diff (min (+ absa absb) most-positive-single-float))
-		epsilon)))))
+;; (defun ~ (a b &optional (epsilon .01))
+;;   (let* ((absa (abs a))
+;; 	 (absb (abs b))
+;; 	 (diff (abs (- a b))))
+;;     (cond ((= a b) t)
+;; 	  ((or (zerop a) (zerop b)
+;; 	       (< (+ absa absb) least-positive-normalized-single-float))
+;; 	   (< diff (* epsilon least-positive-normalized-single-float)))
+;; 	  (t (< (/ diff (min (+ absa absb) most-positive-single-float))
+;; 		epsilon)))))
 
 
 
 (def-suite fare)
 
 (def-test test-f= (:suite fare)
-  (setf *num-trials* 100000
-	*max-trials* 100000)
+  (setf *num-trials* 100000000
+	*max-trials* 100000000)
   (for-all ((f1 #'(lambda () (random 2000.0)))
-	    (f2 #'(lambda () (random .0005))))
-    (print (list f1 (+ f1 f2)))
-    (is (nearly-equal-p f1 (+ f1 f2)))))
+	    (f2 #'(lambda () (random .000499))))
+    (is (~ f1 (+ f1 f2)))))
 
 ;; (loop for f from .5 to 10 by .1
 ;;       unless
 ;;       (loop repeat 100000
 ;; 	    for f2 = (+ f (* (random .0005) (if (zerop (random 2)) 1 -1)))
 ;; 	    do (print (list f f2))
-;; 	    always (nearly-equal-p f f2)
+;; 	    always (~ f f2)
 ;; 	    )
 ;;       do (return (list f))
 ;;       )
 
-;; (nearly-equal-p 0 0.000000000001 10)
+;; (~ 0 0.000000000001 10)
 
 
 
 (defmacro are (&rest iss)
-  `(progn ,@(mapcar #'(lambda (x) (list 'is x)) iss)))
+  `(progn ,@(mapcar #'(lambda (x) `(is ,x)) iss)))
 
-(def-suite notehead-on-sform
+(def-suite horizontal
   :description "")
 
-(setf *num-trials* 10000000
-      *max-trials* 10000000)
+;; First how is the construction of the glyph??????
+;; X is more right than right? (BR-right is neg), then
+;; is left also more left than x (Maybe NOT!)
+
+
 
 ;;; These assertions come from inspecting the non-broken Engine!
 ;;; I know from INSPECTING that eg xs of notehead & it's parent
 ;;; sform are the same.
 ;;; x, l, r, w
-(def-test on-x-axis
-    (:suite notehead-on-sform)
-  (let* ((n (make-notehead "s0"
+(def-test notehead-in-sform
+    (:suite horizontal)
+  (let* ((trials 1000000)
+	 (*num-trials* trials)
+	 (*max-trials* trials)
+	 (n (make-notehead "s0"
 			   :marker-vis-p t
 			   :id 'n))
 	 (s (sform :content (list n)
@@ -73,48 +91,52 @@
 	 (sr (right s))
 	 (sw (width s))
 	 )
-    (are (= nx sx) (= nl sl) (= nr sr)
-	 (nearly-equal-p sw nw))
+    (are (= nr sr)
+	 (= nx nl sx sl)
+	 ;; Width for form is right - left (floating arithmetic involved)
+	 (~ sw nw))
     ;; Changing x of notehead must:
-    (setf i 1)
     (for-all ((d (gen-integer :min -10000 :max 10000)))
-      (format t "~&NX ~F" (x n))
       (incf (x n) d)
-      ;; 1. not touch x of parent
-      ;; (is (= sx (x s)))
-      ;; ;; 2. Parent's left-right are setfed appropriately:
-      ;; (is (if (or (plusp d) (zerop d) (< (abs d) (width n)))
-      ;; 	      (= (right n) (right s))
-      ;; 	      ;; abs d >= width of n
-      ;; 	      (= sx (right s))))
-      
-      (is (if (or (plusp d) (zerop d))
-	      (progn
-		(print (list (incf i) d (x n) nx
-			     (x s)
-			     (left n) (left s) sl
-			     (= (left n) (left s))))
-		
-	       (nearly-equal-p sl (left s)))
-	      (= (left n) (left s))))
+      ;; 1. not touch
+      (is (= sx (x s)))
+      (cond ((or (plusp d) (zerop d))
+	     (are (= (right n) (right s))
+		  (> (right s) sx)
+		  (~ (right n) (+ (x n) (width n)))
+		  (~ sl (left s))
+		  (= (x n) (left n))
+		  (~ (width s) (+ (width n) (- (left n) (left s))))))
+	    ((< (abs d) (width n))
+	     (are (= (right n) (right s))
+		  (~ (width n) (width s))
+		  (> (right s) sx)
+		  (~ (right n) (+ (x n) (width n)))
+		  (= (left n) (left s))))
+	    (t (are (= (width s) (- (x s) (left n)))
+		    (= (right s) (x s))
+		    (>= (x s) (right n))
+		    (= (left n) (left s))
+		    (~ (width s) (+ (width n)
+				    (- (right s) (right n)))))))
+
       ;; Reset to initials after each iteration
       ;; to avoid incremental changing!
-      (psetf (x n) nx
-	     (x s) sx
-	     ;; LR are incfed by setf x, W should be done manually
-	     (width s) sw)
+      ;; This setfing involves incfing (floating arithmetic),
+      ;; Thus (x n/s) is never gonna be exact N/SX again (unless I don't incf when setfing)
+      (setf (x s) sx
+	    (x n) nx
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw)
       )
-    ;; ;; Direct Inheritance of coords by child
+    ;; Direct Inheritance of coords by child
     ;; (for-all ((d (gen-integer :min -1000 :max 1000)))
-    ;;   (format t "Ghabl LS:~F LN:~F~%"(left s) (left n))
     ;;   (incf (x s) d)
-    ;;   (format t "Bad LS:~F LN:~F~%+++++++++~%"(left s) (left n))
-    ;;   (are (nearly-equal-p (x s) (x n))
+    ;;   (are (~ (x s) (x n))
     ;; 	   (= (left s) (left n))
-    ;; 	   (= (right s) (right n))
-	   
+    ;; 	   (= (right s) (right n))	   
     ;; 	   ))
 
-    ;; (render (list s))
+    (render (list s))
     )
   )

@@ -42,8 +42,10 @@ Composing Sticks."))
   ;; Allow a glyph obj to be rendered as standalone when it's toplevel.
   ;; No need for :h :w, since already computed above!
   (when (toplevelp obj)
-   (refresh-bcr! obj :x t :y t :l t :r t :t t :b t))
+    (refresh-bcr! obj :x t :y t :l t :r t :t t :b t))
   )
+
+
 
 (defmethod (setf x) (newx (obj glyph))
   (let ((dx (- newx (x obj))))

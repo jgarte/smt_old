@@ -15,8 +15,7 @@
 (defsystem "smt/engine"
   :serial t
   :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
-  :components (;; (:file "package")
-	       
+  :components (;; (:file "package")	       
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
@@ -59,5 +58,6 @@
   :test-names (
 	       ;; fractional arithmetic rounding error
 	       ;; #:fare
-	       #:notehead-on-sform)
+	       #:horizontal
+	       )
   )
