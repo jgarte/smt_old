@@ -200,7 +200,7 @@
 		 :canvas-vis-p nil
 		 :toplevelp t)))
   (render (list h))
-  ;; (mapcar #'id (descendants h))
+  (mapcar #'id (descendants h))
    )
 
 

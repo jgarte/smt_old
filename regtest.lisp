@@ -3,7 +3,6 @@
 
 (in-package #:tst)
 
-;; (setf *read-default-float-format* 'double-float)
 
 (defparameter *tolerance* .0005)
 
@@ -161,6 +160,12 @@
 	     )
     )
   )
+(defmacro with-reset (places origvals reset-tests &body b)
+  `(progn ,@b
+	  (setf ,@(mapcan #'(lambda (x y) `(,x ,y)) places origvals))
+	  ,@reset-tests))
+
+
 
 (def-test 2notes-in-2sforms-in-hform (:suite horizontal)
   (let* (
@@ -184,21 +189,142 @@
     ;; Relationship of initials
     (are (= nh1x nh2x n1x n2x s1x s2x hx
 	    nh1l nh2l n1l n2l s1l s2l hl)
-	 (= nh1r nh2r n1r n2r s1r s2r hr) (= nh1w nh2w)
-	 (~~ nh1w n1w n2w s1w s2w hw)
-	 )
-    (for-all ((d (gen-integer :min -10000 :max 10000)))
-      (incf (x h) d)
-      (are (apply #'= (mapcar #'x
-			      (list h s1 s2 n1 n2 nh1 nh2)))
-	   (apply #'= (mapcar #'right
-			      (list h s1 s2 n1 n2 nh1 nh2)))
-	   (apply #'= (mapcar #'left
-			      (list h s1 s2 n1 n2 nh1 nh2)))
-	   ;; Widths haven't changed
-	   (every #'identity
-		  (mapcar #'=
-			  (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-			  (list hw s1w s2w n1w n2w nh1w nh2w)))
-	   ))))
+	 (= nh1r nh2r n1r n2r s1r s2r hr)
+	 (= nh1w nh2w)
+	 (~~ nh1w n1w n2w s1w s2w hw))
+    (for-all ((d (gen-integer :min -10000 :max 10000)))          
+      (with-reset ((x h)) (hx)
+	  (
+	   ;; Almost successfully reset?
+	   (are (every #'identity
+		       (mapcar #'(lambda (a b) (~ (x a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hx s1x s2x n1x n2x nh1x nh2x)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (left a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hl s1l s2l n1l n2l nh1l nh2l)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (right a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hr s1r s2r n1r n2r nh1r nh2r)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (width a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hw s1w s2w n1w n2w nh1w nh2w))))
+	   )
+	(incf (x h) d)
+	;; X &left is only for Noteheads the same!
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right
+				 (list h s1 s2 n1 n2 nh1 nh2)))	   
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))
+      ;; ;;;;;;;;;;;;;;;;;;;;
+      (with-reset ((left h)) (hl)
+	  ;; Almost successfully reset?
+	  ((are (every #'identity
+		       (mapcar #'(lambda (a b) (~ (x a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hx s1x s2x n1x n2x nh1x nh2x)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (left a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hl s1l s2l n1l n2l nh1l nh2l)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (right a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hr s1r s2r n1r n2r nh1r nh2r)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (width a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
+	(incf (left h) d)
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right
+				 (list h s1 s2 n1 n2 nh1 nh2)))
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))
+      
+      ;; ;;;;;;;;;;;;;;;;;
+      (with-reset ((right h)) (hr)
+	  (;; Almost successfully reset?
+	   (are (every #'identity
+		       (mapcar #'(lambda (a b) (~ (x a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hx s1x s2x n1x n2x nh1x nh2x)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (left a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hl s1l s2l n1l n2l nh1l nh2l)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (right a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hr s1r s2r n1r n2r nh1r nh2r)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (width a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
+	(incf (right h) d)
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))
+      ;; ;;;;;;;;;;;;;;;;;;;width of h changes
+      (with-reset ((width h)) (hw)
+	  (;; Almost successfully reset?
+	   (are (every #'identity
+		       (mapcar #'(lambda (a b) (~ (x a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hx s1x s2x n1x n2x nh1x nh2x)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (left a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hl s1l s2l n1l n2l nh1l nh2l)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (right a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hr s1r s2r n1r n2r nh1r nh2r)))
+		(every #'identity
+		       (mapcar #'(lambda (a b) (~ (width a) b))
+			       (list h s1 s2 n1 n2 nh1 nh2)
+			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
+	(incf (width h) d)
+	(are (every #'identity
+		    (mapcar #'(lambda (a b) (~ (x a) b))
+			    (list h s1 s2 n1 n2 nh1 nh2)
+			    (list hx s1x s2x n1x n2x nh1x nh2x)))
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (left a) b))
+			    (list h s1 s2 n1 n2 nh1 nh2)
+			    (list hl s1l s2l n1l n2l nh1l nh2l)))
+	     ;; Only r&w of h has changed
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (right a) b))
+			    (list s1 s2 n1 n2 nh1 nh2)
+			    (list s1r s2r n1r n2r nh1r nh2r)))
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (width a) b))
+			    (list s1 s2 n1 n2 nh1 nh2)
+			    (list s1w s2w n1w n2w nh1w nh2w)))
+	     (~ (right h) (+ hl (width h)))
+	     ))
+      
+      )
+    ))
 
