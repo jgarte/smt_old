@@ -3,9 +3,8 @@
 
 (in-package #:tst)
 
-
-(defparameter *tolerance* .0005)
-
+(defparameter *tolerance* .05)
+;; (abs (- ))
 (defun ~ (a b &optional (tol *tolerance*))
   (<= (abs (- a b)) tol))
 
@@ -47,7 +46,7 @@
 ;; X is more right than right? (BR-right is neg), then
 ;; is left also more left than x (Maybe NOT!)
 
-(setf *num-trials* 100000
+(setf *num-trials* 10000
       *max-trials* *num-trials*)
 
 ;;; These assertions come from inspecting the non-broken Engine!
@@ -116,7 +115,7 @@
 	     (incf (x s) d)
 	     (are (~ (x s) (x n))
     		  (~ (left s) (left n))
-    		  (= (right s) (right n))
+    		  (~ (right s) (right n))
 		  (~ (width n) (width s))
     		  )
 	     (setf (x s) sx 
@@ -128,7 +127,7 @@
 	     (incf (right s) d)
 	     (are (~ (x s) (x n))
     		  (~ (left s) (left n))
-    		  (= (right s) (right n))
+    		  (~ (right s) (right n))
 		  (~ (width n) (width s))
     		  )
 	     (setf (x s) sx 
@@ -139,7 +138,7 @@
 	     (incf (left s) d)
 	     (are (~ (x s) (x n))
     		  (~ (left s) (left n))
-    		  (= (right s) (right n))
+    		  (~ (right s) (right n))
 		  (~ (width n) (width s))
     		  )
 	     (setf (x s) sx 
@@ -160,10 +159,23 @@
 	     )
     )
   )
-(defmacro with-reset (places origvals reset-tests &body b)
+(defmacro with-horizontal-reset-check (places resetvals &body b)
   `(progn ,@b
-	  (setf ,@(mapcan #'(lambda (x y) `(,x ,y)) places origvals))
-	  ,@reset-tests))
+	  (setf ,@(mapcan #'(lambda (x y) `(,x ,y)) places resetvals))
+	  (ARE
+	   (EVERY #'IDENTITY
+		  (MAPCAR #'(LAMBDA (A B) (~ (X A) B)) (LIST H S1 S2 N1 N2 NH1 NH2)
+			  (LIST HX S1X S2X N1X N2X NH1X NH2X)))
+	   (EVERY #'IDENTITY
+		  (MAPCAR #'(LAMBDA (A B) (~ (LEFT A) B)) (LIST H S1 S2 N1 N2 NH1 NH2)
+			  (LIST HL S1L S2L N1L N2L NH1L NH2L)))
+	   (EVERY #'IDENTITY
+		  (MAPCAR #'(LAMBDA (A B) (~ (RIGHT A) B)) (LIST H S1 S2 N1 N2 NH1 NH2)
+			  (LIST HR S1R S2R N1R N2R NH1R NH2R)))
+	   (EVERY #'IDENTITY
+		  (MAPCAR #'(LAMBDA (A B) (~ (WIDTH A) B)) (LIST H S1 S2 N1 N2 NH1 NH2)
+			  (LIST HW S1W S2W N1W N2W NH1W NH2W))))))
+
 
 
 
@@ -193,138 +205,93 @@
 	 (= nh1w nh2w)
 	 (~~ nh1w n1w n2w s1w s2w hw))
     (for-all ((d (gen-integer :min -10000 :max 10000)))          
-      (with-reset ((x h)) (hx)
-	  (
-	   ;; Almost successfully reset?
-	   (are (every #'identity
-		       (mapcar #'(lambda (a b) (~ (x a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hx s1x s2x n1x n2x nh1x nh2x)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (left a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hl s1l s2l n1l n2l nh1l nh2l)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (right a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hr s1r s2r n1r n2r nh1r nh2r)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (width a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hw s1w s2w n1w n2w nh1w nh2w))))
-	   )
-	(incf (x h) d)
-	;; X &left is only for Noteheads the same!
-	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-	     (apply #'~~ (mapcar #'right
-				 (list h s1 s2 n1 n2 nh1 nh2)))	   
-	     ;; Widths haven't changed
-	     (every #'identity
-		    (mapcar #'=
-			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-			    (list hw s1w s2w n1w n2w nh1w nh2w)))
-	     ))
-      ;; ;;;;;;;;;;;;;;;;;;;;
-      (with-reset ((left h)) (hl)
-	  ;; Almost successfully reset?
-	  ((are (every #'identity
-		       (mapcar #'(lambda (a b) (~ (x a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hx s1x s2x n1x n2x nh1x nh2x)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (left a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hl s1l s2l n1l n2l nh1l nh2l)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (right a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hr s1r s2r n1r n2r nh1r nh2r)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (width a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
-	(incf (left h) d)
-	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-	     (apply #'~~ (mapcar #'right
-				 (list h s1 s2 n1 n2 nh1 nh2)))
-	     ;; Widths haven't changed
-	     (every #'identity
-		    (mapcar #'=
-			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-			    (list hw s1w s2w n1w n2w nh1w nh2w)))
-	     ))
-      
-      ;; ;;;;;;;;;;;;;;;;;
-      (with-reset ((right h)) (hr)
-	  (;; Almost successfully reset?
-	   (are (every #'identity
-		       (mapcar #'(lambda (a b) (~ (x a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hx s1x s2x n1x n2x nh1x nh2x)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (left a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hl s1l s2l n1l n2l nh1l nh2l)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (right a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hr s1r s2r n1r n2r nh1r nh2r)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (width a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
-	(incf (right h) d)
-	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-	     (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
-	     ;; Widths haven't changed
-	     (every #'identity
-		    (mapcar #'=
-			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-			    (list hw s1w s2w n1w n2w nh1w nh2w)))
-	     ))
-      ;; ;;;;;;;;;;;;;;;;;;;width of h changes
-      (with-reset ((width h)) (hw)
-	  (;; Almost successfully reset?
-	   (are (every #'identity
-		       (mapcar #'(lambda (a b) (~ (x a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hx s1x s2x n1x n2x nh1x nh2x)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (left a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hl s1l s2l n1l n2l nh1l nh2l)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (right a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hr s1r s2r n1r n2r nh1r nh2r)))
-		(every #'identity
-		       (mapcar #'(lambda (a b) (~ (width a) b))
-			       (list h s1 s2 n1 n2 nh1 nh2)
-			       (list hw s1w s2w n1w n2w nh1w nh2w)))))
-	(incf (width h) d)
-	(are (every #'identity
-		    (mapcar #'(lambda (a b) (~ (x a) b))
-			    (list h s1 s2 n1 n2 nh1 nh2)
-			    (list hx s1x s2x n1x n2x nh1x nh2x)))
-	     (every #'identity
-		    (mapcar #'(lambda (a b) (~ (left a) b))
-			    (list h s1 s2 n1 n2 nh1 nh2)
-			    (list hl s1l s2l n1l n2l nh1l nh2l)))
-	     ;; Only r&w of h has changed
-	     (every #'identity
-		    (mapcar #'(lambda (a b) (~ (right a) b))
-			    (list s1 s2 n1 n2 nh1 nh2)
-			    (list s1r s2r n1r n2r nh1r nh2r)))
-	     (every #'identity
-		    (mapcar #'(lambda (a b) (~ (width a) b))
-			    (list s1 s2 n1 n2 nh1 nh2)
-			    (list s1w s2w n1w n2w nh1w nh2w)))
-	     (~ (right h) (+ hl (width h)))
-	     ))
-      
-      )
+	     (with-horizontal-reset-check ((x h)) (hx)
+	       (incf (x h) d)
+	       ;; X &left is only for Noteheads the same!
+	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))	   
+		    ;; Widths haven't changed
+		    (every #'identity
+			   (mapcar #'=
+				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+				   (list hw s1w s2w n1w n2w nh1w nh2w)))
+		    ))
+	     ;; ;;;;;;;;;;;;;;;;;;;;
+	     (with-horizontal-reset-check ((left h)) (hl)	
+	       (incf (left h) d)
+	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
+		    ;; Widths haven't changed
+		    (every #'identity
+			   (mapcar #'=
+				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+				   (list hw s1w s2w n1w n2w nh1w nh2w)))
+		    ))      
+	     ;; ;;;;;;;;;;;;;;;;;
+	     (with-horizontal-reset-check ((right h)) (hr)
+	       (incf (right h) d)
+	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
+		    ;; Widths haven't changed
+		    (every #'identity
+			   (mapcar #'=
+				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+				   (list hw s1w s2w n1w n2w nh1w nh2w)))
+		    ))
+	     ;; ;;;;;;;;;;;;;;;;;;;width of h changes
+	     (with-horizontal-reset-check ((width h)) (hw)
+	       (incf (width h) d)
+	       (are (every #'identity
+			   (mapcar #'(lambda (a b) (~ (x a) b))
+				   (list h s1 s2 n1 n2 nh1 nh2)
+				   (list hx s1x s2x n1x n2x nh1x nh2x)))
+		    (every #'identity
+			   (mapcar #'(lambda (a b) (~ (left a) b))
+				   (list h s1 s2 n1 n2 nh1 nh2)
+				   (list hl s1l s2l n1l n2l nh1l nh2l)))
+		    ;; Only r of h has changed
+		    (~ (right h) (+ hl (width h)))
+		    (every #'identity
+			   (mapcar #'(lambda (a b) (~ (right a) b))
+				   (list s1 s2 n1 n2 nh1 nh2)
+				   (list s1r s2r n1r n2r nh1r nh2r)))
+		    (every #'identity
+			   (mapcar #'(lambda (a b) (~ (width a) b))
+				   (list s1 s2 n1 n2 nh1 nh2)
+				   (list s1w s2w n1w n2w nh1w nh2w)))	     
+		    )))
+    ;; ;;;;;;;;;;;;;;Sform ändern
+    ;; s2 grenzt genau an die rechte Seite vom s1 ein.
+    (setf (left s2) (right s1))
+    ;; Widths
+    (is (~~ s1w (width s1) n1w (width n1) nh1w (width nh1)))
+    (is (~~ s2w (width s2) n2w (width n2) nh2w (width nh2)))
+    (is (~ (width h) (+ (width s1) (width s2))))
+    ;; Rights
+    (is (~~ s1r (right s1) n1r (right n1) nh1r (right nh1)))
+    (is (~~ (right s2) (right n2) (right nh2) (right h)))
+    ;; Left, X
+    (is (~~ (left s1) (left n1) (left nh1) (left h)
+	    s1l n1l nh1l hl
+	    (x s1) (x n1) (x nh1) (x h)
+	    s1x n1x nh1x hx))
+    (is (~~ (left s2) (left n2) (left nh2)
+	    (x s2) (x n2) (x nh2)))
+    ;; Exemplarisch
+    (is (~~ (x s1) (- (left s2) (width s1)) (- (right h) (width s2) (width s1))))
+    (is (~~ (x s2) (+ (left h) (width nh1))))
+;;;;;;;;;;;;;; Reinit & test it
+    (setf (left s2) s2l)
+    (flet ((is-like-init-p ()
+	     (are (~ (x h) hx) (~ (width h) hw) (~ (left h) hl) (~ (right h) hr)
+		  (~ (x s1) s1x) (~ (width s1) s1w) (~ (left s1) s1l) (~ (right s1) s1r)
+		  (~ (x n1) n1x) (~ (width n1) n1w) (~ (left n1) n1l) (~ (right n1) n1r)
+		  (~ (x nh1) nh1x) (~ (width nh1) nh1w) (~ (left nh1) nh1l) (~ (right nh1) nh1r)
+		  (~ (x s2) s2x) (~ (width s2) s2w) (~ (left s2) s2l) (~ (right s2) s2r)
+		  (~ (x n2) n2x) (~ (width n2) n2w) (~ (left n2) n2l) (~ (right n2) n2r)
+		  (~ (x nh2) nh2x) (~ (width nh2) nh2w) (~ (left nh2) nh2l) (~ (right nh2) nh2r))))
+      (is-like-init-p))
     ))
-
