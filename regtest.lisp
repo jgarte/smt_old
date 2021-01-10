@@ -205,64 +205,64 @@
 	 (= nh1w nh2w)
 	 (~~ nh1w n1w n2w s1w s2w hw))
     (for-all ((d (gen-integer :min -10000 :max 10000)))          
-	     (with-horizontal-reset-check ((x h)) (hx)
-	       (incf (x h) d)
-	       ;; X &left is only for Noteheads the same!
-	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))	   
-		    ;; Widths haven't changed
-		    (every #'identity
-			   (mapcar #'=
-				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-				   (list hw s1w s2w n1w n2w nh1w nh2w)))
-		    ))
-	     ;; ;;;;;;;;;;;;;;;;;;;;
-	     (with-horizontal-reset-check ((left h)) (hl)	
-	       (incf (left h) d)
-	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
-		    ;; Widths haven't changed
-		    (every #'identity
-			   (mapcar #'=
-				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-				   (list hw s1w s2w n1w n2w nh1w nh2w)))
-		    ))      
-	     ;; ;;;;;;;;;;;;;;;;;
-	     (with-horizontal-reset-check ((right h)) (hr)
-	       (incf (right h) d)
-	       (are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
-				       (mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
-		    (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
-		    ;; Widths haven't changed
-		    (every #'identity
-			   (mapcar #'=
-				   (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
-				   (list hw s1w s2w n1w n2w nh1w nh2w)))
-		    ))
-	     ;; ;;;;;;;;;;;;;;;;;;;width of h changes
-	     (with-horizontal-reset-check ((width h)) (hw)
-	       (incf (width h) d)
-	       (are (every #'identity
-			   (mapcar #'(lambda (a b) (~ (x a) b))
-				   (list h s1 s2 n1 n2 nh1 nh2)
-				   (list hx s1x s2x n1x n2x nh1x nh2x)))
-		    (every #'identity
-			   (mapcar #'(lambda (a b) (~ (left a) b))
-				   (list h s1 s2 n1 n2 nh1 nh2)
-				   (list hl s1l s2l n1l n2l nh1l nh2l)))
-		    ;; Only r of h has changed
-		    (~ (right h) (+ hl (width h)))
-		    (every #'identity
-			   (mapcar #'(lambda (a b) (~ (right a) b))
-				   (list s1 s2 n1 n2 nh1 nh2)
-				   (list s1r s2r n1r n2r nh1r nh2r)))
-		    (every #'identity
-			   (mapcar #'(lambda (a b) (~ (width a) b))
-				   (list s1 s2 n1 n2 nh1 nh2)
-				   (list s1w s2w n1w n2w nh1w nh2w)))	     
-		    )))
+      (with-horizontal-reset-check ((x h)) (hx)
+	(incf (x h) d)
+	;; X &left is only for Noteheads the same!
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))	   
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))
+      ;; ;;;;;;;;;;;;;;;;;;;;
+      (with-horizontal-reset-check ((left h)) (hl)	
+	(incf (left h) d)
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))      
+      ;; ;;;;;;;;;;;;;;;;;
+      (with-horizontal-reset-check ((right h)) (hr)
+	(incf (right h) d)
+	(are (apply #'= (append (mapcar #'x (list h s1 s2 n1 n2 nh1 nh2))
+				(mapcar #'left (list h s1 s2 n1 n2 nh1 nh2))))
+	     (apply #'~~ (mapcar #'right (list h s1 s2 n1 n2 nh1 nh2)))
+	     ;; Widths haven't changed
+	     (every #'identity
+		    (mapcar #'=
+			    (mapcar #'width (list h s1 s2 n1 n2 nh1 nh2))
+			    (list hw s1w s2w n1w n2w nh1w nh2w)))
+	     ))
+      ;; ;;;;;;;;;;;;;;;;;;;width of h changes
+      (with-horizontal-reset-check ((width h)) (hw)
+	(incf (width h) d)
+	(are (every #'identity
+		    (mapcar #'(lambda (a b) (~ (x a) b))
+			    (list h s1 s2 n1 n2 nh1 nh2)
+			    (list hx s1x s2x n1x n2x nh1x nh2x)))
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (left a) b))
+			    (list h s1 s2 n1 n2 nh1 nh2)
+			    (list hl s1l s2l n1l n2l nh1l nh2l)))
+	     ;; Only r of h has changed
+	     (~ (right h) (+ hl (width h)))
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (right a) b))
+			    (list s1 s2 n1 n2 nh1 nh2)
+			    (list s1r s2r n1r n2r nh1r nh2r)))
+	     (every #'identity
+		    (mapcar #'(lambda (a b) (~ (width a) b))
+			    (list s1 s2 n1 n2 nh1 nh2)
+			    (list s1w s2w n1w n2w nh1w nh2w)))	     
+	     )))
     ;; ;;;;;;;;;;;;;;Sform2 an sofrm1 hängen
     ;; s2 grenzt genau an die rechte Seite vom s1 ein.
     (setf (left s2) (right s1))
@@ -297,60 +297,118 @@
       (is-like-init-p)
       ;; Sform2 Koordinaten versetzen
       (for-all ((d (gen-integer :min -10000 :max 10000)))
-	       (incf (x S2) d)
-	       ;; these all move together
-	       (is (~~ (x s2) (x n2) (x nh2) (left s2) (left n2) (left nh2)))
-	       ;; Wenn d + ist oder 0, sind die lefts nicht angefasst,
-	       ;; aber rechts wird erweitert (+) oder bleibt wo es war (0)
-	       (cond ((zerop d) (is-like-init-p))
-		     ((plusp d) (are (~~ (right h) (right s2) (right n2) (right nh2))
-	      			     (~ (+ s2w d) (width h))
-	      			     ;; shouldn't have changed
-	      			     (~~ hl hx
-	      		      		 (left h) (left s1) (left n1) (left nh1)
-	      		      		 (x h) (x s1) (x n1) (x nh1))
-	      			     (~~ s1w (width s1) (width n1) (width nh1)
-					 s2w (width s2) (width n2) (width nh2))
-				     (~~ s1r (right s1) (right n1) (right nh1))
-	      			     ))
-		     ;; d is -
-		     (t (Are
-			 ;; right of whole is still at where s1r is (since it still ist the rightmost one)
-			 (~~ s1r (right h) (right s1) (right n1) (right nh1))
-			 ;; shouldn't have changed: x,left of s1 family and x of h
-			 (~~ s1l n1x (left s1) (left n1) (left nh1)
-			     (x s1) (x n1) (x nh1)
-			     (x h))
-			 ;; shouldn't have changed: all widths except with H
-			 (~~ s1w (width s1) (width n1) (width nh1)
-			     s2w (width s2) (width n2) (width nh2))
-			 ;; Lefts of h and s2 family or drawn back
-			 (~~ (left h) (left s2) (left n2) (left nh2)
-			     (x s2) (x n2) (x nh2))
-			 (~ (- s2w d) (width h))
-			 ))
-		     )
-	       (setf (x S2) S2X)
-	       (is-like-init-p)
-	       )
+	(incf (x S2) d)
+	;; these all move together
+	(is (~~ (x s2) (x n2) (x nh2) (left s2) (left n2) (left nh2)))
+	;; Wenn d + ist oder 0, sind die lefts nicht angefasst,
+	;; aber rechts wird erweitert (+) oder bleibt wo es war (0)
+	(cond ((zerop d) (is-like-init-p))
+	      ((plusp d) (are (~~ (right h) (right s2) (right n2) (right nh2))
+	      		      (~ (+ s2w d) (width h))
+	      		      ;; shouldn't have changed
+	      		      (~~ hl hx
+	      		      	  (left h) (left s1) (left n1) (left nh1)
+	      		      	  (x h) (x s1) (x n1) (x nh1))
+	      		      (~~ s1w (width s1) (width n1) (width nh1)
+				  s2w (width s2) (width n2) (width nh2))
+			      (~~ s1r (right s1) (right n1) (right nh1))
+	      		      ))
+	      ;; d is -
+	      (t (Are
+		  ;; right of whole is still at where s1r is (since it still ist the rightmost one)
+		  (~~ s1r (right h) (right s1) (right n1) (right nh1))
+		  ;; shouldn't have changed: x,left of s1 family and x of h
+		  (~~ s1l n1x (left s1) (left n1) (left nh1)
+		      (x s1) (x n1) (x nh1)
+		      (x h))
+		  ;; shouldn't have changed: all widths except with H
+		  (~~ s1w (width s1) (width n1) (width nh1)
+		      s2w (width s2) (width n2) (width nh2))
+		  ;; Lefts of h and s2 family or drawn back
+		  (~~ (left h) (left s2) (left n2) (left nh2)
+		      (x s2) (x n2) (x nh2))
+		  (~ (- s2w d) (width h))
+		  ))
+	      )
+	(setf (x S2) S2X)
+	(is-like-init-p)
+	)
       ;; Left ,right muss genau wie x sein; überspringen
       ;; Width von s2 ändern
       (for-all ((d (gen-integer :min 0 :max 10000)))
-      	       (incf (width s2) d)	       
-	       ;; Sollten sich nicht verändert haben
-	       (are (~~ hr (right n2) (right nh2)
-			(right s1) (right n1) (right nh1))
-		    (~~ hw (width n2) (width nh2)
-			(width s1) (width n1) (width nh1))
-		    (~~ hl (left s2) (left n2) (left nh2)
-			(left s1) (left n1) (left nh1)
-			(left h)
-			(x s2) (x n2) (x nh2) (x s1) (x n1) (x nh1) (x h)))
-	       (if (zerop d)
-		   (is-like-init-p)
-		   (are (~ (right s2) (right h)) (~ (width s2) (width h))))
-	       (setf (width s2) s2w)
-	       (is-like-init-p))
-      
+      	(incf (width s2) d)	       
+	;; Sollten sich nicht verändert haben
+	(are (~~ hr (right n2) (right nh2)
+		 (right s1) (right n1) (right nh1))
+	     (~~ hw (width n2) (width nh2)
+		 (width s1) (width n1) (width nh1))
+	     (~~ hl (left s2) (left n2) (left nh2)
+		 (left s1) (left n1) (left nh1)
+		 (left h)
+		 (x s2) (x n2) (x nh2) (x s1) (x n1) (x nh1) (x h)))
+	(if (zerop d)
+	    (is-like-init-p)
+	    (are (~ (right s2) (right h)) (~ (width s2) (width h))))
+	(setf (width s2) s2w)
+	(is-like-init-p))
+      ;; x von n1, ähnlich wird es sein mit left , right
+      (for-all ((d (gen-integer :min -10000 :max 10000)))
+	(incf (x n1) d)
+	;; Sollten sich nicht verändert haben:
+	;; die ganze x,left Koordinaten außer n1 und sein baby
+	(are (~~ s2x (x s2) (x n2) (x nh2)
+		 (left s2) (left n2) (left nh2)
+		 (x h)
+		 ;; (left h)
+		 (x s1)
+		 ;; (left s1)
+		 )
+	     (~~ s2r (right s2) (right n2) (right nh2))
+	     ;; alle widths außer von h und s1
+	     (~~ s2w (width s2) (width n2) (width nh2)
+		 (width n1) (width nh1))
+	     )
+	(cond ((zerop d) (is-like-init-p))
+	      ((plusp d)
+	       (is (~~ (right h) (right s1)
+		       (right n1) (right nh1)))
+	       (is (~~ (+ (width n1) d) (width h) (width s1)))
+	       (is (~~ hl (left h) (left s1)))
+	       )
+	      (t (is (~~ hr (right h) (right s2) (right n2) (right nh2)))
+		 (is (~~ (+ hl d) (left h) (left s1) (left n1) (left nh1)
+			 (x n1) (x nh1)))
+		 ;; Right vom h hängt noch fest an right vom n2
+		 (is (~ (- n2w d) (width h)))
+		 ;; Wie viel sind wir von der X Achse
+		 ;; nach links gerütscjht?
+		 (if (<= (- d) s1w)
+		     ;; Noch die X achse nicht unterschritten
+		     ;; Width ist wie das alte
+		     (is (~ s1w (width s1)))
+		     ;; X Achse wurdew unterschritten
+		     (is (~ (- d) (width s1)))
+		     )
+		 ))
+	(setf (x n1) n1x)
+	(is-like-init-p)
+	)
+      (for-all ((d (gen-integer :min 0 :max 10000)))
+      	(incf (width n1) d)
+	;; Darf sich nicht verändert haben
+	(is (~~ s2x n2l (x s2) (x n2) (x nh2)
+		(left s2) (left n2) (left nh2)
+		(left s1) (left n1) (left nh1) (left h)
+		(x s1) (x n1) (x nh1) (x h)))
+	;; S2 ist unberührt
+	(is (~~ s2r (right s2) (right n2) (right nh2)))
+	(is (~~ (right n1) (right s1) (right h)))
+	(is (~~ (width n1) (width s1) (width h)))
+	(unless (zerop d)
+	  ;; Width von n1's baby darf sich nicht verändert haben!
+	  (is-false (~ (width n1) (width nh1))))
+	(setf (width n1) n1w)
+	)
       )
     ))
+

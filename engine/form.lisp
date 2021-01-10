@@ -104,6 +104,7 @@
 	  (slot-value anc 'wslot) (calc-width anc)))
   newx)
 
+
 (defmethod (setf y) (newy (obj form))  
   (let ((dy (- newy (slot-value obj 'yslot))))
     (dolist (d (reverse (descendants obj)))
