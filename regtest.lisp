@@ -3,8 +3,8 @@
 
 (in-package #:tst)
 
-(defparameter *tolerance* .05)
-;; (abs (- ))
+(defparameter *tolerance* .1)
+
 (defun ~ (a b &optional (tol *tolerance*))
   (<= (abs (- a b)) tol))
 
@@ -47,7 +47,7 @@
 ;; is left also more left than x (Maybe NOT!)
 
 (setf *num-trials* 10000
-      *max-trials* *num-trials*)
+       *max-trials* *num-trials*)
 
 ;;; These assertions come from inspecting the non-broken Engine!
 ;;; I know from INSPECTING that eg xs of notehead & it's parent
@@ -263,7 +263,7 @@
 				   (list s1 s2 n1 n2 nh1 nh2)
 				   (list s1w s2w n1w n2w nh1w nh2w)))	     
 		    )))
-    ;; ;;;;;;;;;;;;;;Sform ändern
+    ;; ;;;;;;;;;;;;;;Sform2 an sofrm1 hängen
     ;; s2 grenzt genau an die rechte Seite vom s1 ein.
     (setf (left s2) (right s1))
     ;; Widths
@@ -283,9 +283,9 @@
     ;; Exemplarisch
     (is (~~ (x s1) (- (left s2) (width s1)) (- (right h) (width s2) (width s1))))
     (is (~~ (x s2) (+ (left h) (width nh1))))
-;;;;;;;;;;;;;; Reinit & test it
-    (setf (left s2) s2l)
+    ;; Reinit & test it    
     (flet ((is-like-init-p ()
+	     ;; Drehe (x h) und hx um
 	     (are (~ (x h) hx) (~ (width h) hw) (~ (left h) hl) (~ (right h) hr)
 		  (~ (x s1) s1x) (~ (width s1) s1w) (~ (left s1) s1l) (~ (right s1) s1r)
 		  (~ (x n1) n1x) (~ (width n1) n1w) (~ (left n1) n1l) (~ (right n1) n1r)
@@ -293,5 +293,64 @@
 		  (~ (x s2) s2x) (~ (width s2) s2w) (~ (left s2) s2l) (~ (right s2) s2r)
 		  (~ (x n2) n2x) (~ (width n2) n2w) (~ (left n2) n2l) (~ (right n2) n2r)
 		  (~ (x nh2) nh2x) (~ (width nh2) nh2w) (~ (left nh2) nh2l) (~ (right nh2) nh2r))))
-      (is-like-init-p))
+      (setf (left s2) s2l)
+      (is-like-init-p)
+      ;; Sform2 Koordinaten versetzen
+      (for-all ((d (gen-integer :min -10000 :max 10000)))
+	       (incf (x S2) d)
+	       ;; these all move together
+	       (is (~~ (x s2) (x n2) (x nh2) (left s2) (left n2) (left nh2)))
+	       ;; Wenn d + ist oder 0, sind die lefts nicht angefasst,
+	       ;; aber rechts wird erweitert (+) oder bleibt wo es war (0)
+	       (cond ((zerop d) (is-like-init-p))
+		     ((plusp d) (are (~~ (right h) (right s2) (right n2) (right nh2))
+	      			     (~ (+ s2w d) (width h))
+	      			     ;; shouldn't have changed
+	      			     (~~ hl hx
+	      		      		 (left h) (left s1) (left n1) (left nh1)
+	      		      		 (x h) (x s1) (x n1) (x nh1))
+	      			     (~~ s1w (width s1) (width n1) (width nh1)
+					 s2w (width s2) (width n2) (width nh2))
+				     (~~ s1r (right s1) (right n1) (right nh1))
+	      			     ))
+		     ;; d is -
+		     (t (Are
+			 ;; right of whole is still at where s1r is (since it still ist the rightmost one)
+			 (~~ s1r (right h) (right s1) (right n1) (right nh1))
+			 ;; shouldn't have changed: x,left of s1 family and x of h
+			 (~~ s1l n1x (left s1) (left n1) (left nh1)
+			     (x s1) (x n1) (x nh1)
+			     (x h))
+			 ;; shouldn't have changed: all widths except with H
+			 (~~ s1w (width s1) (width n1) (width nh1)
+			     s2w (width s2) (width n2) (width nh2))
+			 ;; Lefts of h and s2 family or drawn back
+			 (~~ (left h) (left s2) (left n2) (left nh2)
+			     (x s2) (x n2) (x nh2))
+			 (~ (- s2w d) (width h))
+			 ))
+		     )
+	       (setf (x S2) S2X)
+	       (is-like-init-p)
+	       )
+      ;; Left ,right muss genau wie x sein; überspringen
+      ;; Width von s2 ändern
+      (for-all ((d (gen-integer :min 0 :max 10000)))
+      	       (incf (width s2) d)	       
+	       ;; Sollten sich nicht verändert haben
+	       (are (~~ hr (right n2) (right nh2)
+			(right s1) (right n1) (right nh1))
+		    (~~ hw (width n2) (width nh2)
+			(width s1) (width n1) (width nh1))
+		    (~~ hl (left s2) (left n2) (left nh2)
+			(left s1) (left n1) (left nh1)
+			(left h)
+			(x s2) (x n2) (x nh2) (x s1) (x n1) (x nh1) (x h)))
+	       (if (zerop d)
+		   (is-like-init-p)
+		   (are (~ (right s2) (right h)) (~ (width s2) (width h))))
+	       (setf (width s2) s2w)
+	       (is-like-init-p))
+      
+      )
     ))

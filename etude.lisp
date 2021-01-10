@@ -1,6 +1,7 @@
 ;;; Testing main xmlUTILS added locally
 
 
+
 (in-package :ngn)
 
 ;; (setq n 
@@ -225,3 +226,19 @@
       (cxml:with-element "bar"
 	(cxml:attribute "blub" "bla"))
       (cxml:text "Hi there."))))
+
+
+
+
+(in-package :5am)
+
+(test foo
+  (flet ((f1 (d)
+	   (and (is (= 7 d))
+		(is (< 0 d)))))
+    (for-all ((d (gen-integer :min -10 :max 10)))
+      (cond ((zerop d) (is (= 0 d)))
+	    ((plusp d) (f1 d))
+	    (t (pass)))
+      )))
+(run! 'foo)
