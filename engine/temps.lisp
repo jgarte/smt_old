@@ -1,8 +1,10 @@
-;;; Temporal symbols ie notes and rests
+;;; Temporal symbols ie notes, rests etc.
 
 (in-package #:smt-engine)
 
-
+(defclass temporal ()
+  ((duration :initarg :dur
+	     :accessor dur)))
 
 ;;; Notehead is not pitched!!!
 (defclass notehead (mchar)
