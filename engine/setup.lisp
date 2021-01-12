@@ -19,7 +19,7 @@
 
 ;;; Default font
 (defparameter *font-families* '(:haydn-11))
-(define-symbol-macro %font-family% (car *font-families*))
+(define-symbol-macro .font-family. (car *font-families*))
 
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
@@ -32,8 +32,9 @@
   (defun mm->px (mm) (* mm +px/mm+)))
 
 
-(defun chlapik-space (rastral-nr)
-  (ecase rastral-nr
+(defun chlapik-staff-space (rastral-no)
+  "Rastral Größen wie bei Chlapik S. 32 beschrieben."
+  (ecase rastral-no
     (2 (mm->px 1.88))
     (3 (mm->px 1.755))
     (4 (mm->px 1.6))
@@ -42,26 +43,23 @@
     (7 (mm->px 1.19))
     (8 (mm->px 1.02))))
 
-(defparameter *staff-space* (chlapik-space 2))
+(defparameter *staff-space* (chlapik-staff-space 2))
 
-
-;;; Scaling
-(declaim (type number *scale*))
 
 ;;; This is the user-interface,
 (defparameter *scale* 1
   "Global scaling factor for X and Y coordinates.")
 
 ;;; and the actual internal factor
-(define-symbol-macro %scale% (* *scale*
+(define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (bcr-height (get-bcr "clefs.C" %font-family%)))))
+				   (bcr-height (get-bcr "clefs.C" .font-family.)))))
 
 ;;; Line thickness for both cross and circle's contour
 (defparameter *marker-line-thickness* 4)
 ;;; Marker's Cross
-(defparameter *glyph-marker-cross-color* "deeppink")
+(defparameter *mchar-marker-cross-color* "deeppink")
 (defparameter *sform-marker-cross-color* "tomato")
 (defparameter *hform-marker-cross-color* "green")
 (defparameter *vform-marker-cross-color* "blue")
@@ -70,8 +68,8 @@
 (defparameter *marker-circle-r* 2)
 (defparameter *marker-circle-opac* .2)
 ;;; Marker's Circle
-(define-symbol-macro %glyph-marker-circle-color% *glyph-marker-cross-color*)
-(define-symbol-macro %glyph-marker-circle-contour-color% *glyph-marker-cross-color*)
+(define-symbol-macro %mchar-marker-circle-color% *mchar-marker-cross-color*)
+(define-symbol-macro %mchar-marker-circle-contour-color% *mchar-marker-cross-color*)
 (define-symbol-macro %sform-marker-circle-color% *sform-marker-cross-color*)
 (define-symbol-macro %sform-marker-circle-contour-color% *sform-marker-cross-color*)
 (define-symbol-macro %hform-marker-circle-color% *hform-marker-cross-color*)
@@ -80,7 +78,7 @@
 (define-symbol-macro %vform-marker-circle-contour-color% *vform-marker-cross-color*)
 
 ;;; Chase backgrounds follow their marker counterparts
-(define-symbol-macro %glyph-canvas-color% *glyph-marker-cross-color*)
+(define-symbol-macro %mchar-canvas-color% *mchar-marker-cross-color*)
 (define-symbol-macro %sform-canvas-color% *sform-marker-cross-color*)
 (define-symbol-macro %hform-canvas-color% *hform-marker-cross-color*)
 (define-symbol-macro %vform-canvas-color% *vform-marker-cross-color*)

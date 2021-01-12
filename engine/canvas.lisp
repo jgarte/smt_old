@@ -9,23 +9,23 @@
 (defun cascaded-x-scaler (canvobj self-scaling-p cutoff-pred upwardp)
   (apply #'*
 	 ;; This is the internal global calc-x scaling
-	 %scale%
+	 .scale.
 	 (if self-scaling-p (x-scaler canvobj) 1)
 	 (mapcar #'x-scaler (delimit-ancestors (ancestors canvobj) cutoff-pred upwardp))))
 
 (defun cascaded-y-scaler (canvobj self-scaling-p cutoff-pred upwardp)
   (apply #'*
 	 ;; This is the internal global calc-y scaling
-	 %scale%
+	 .scale.
 	 (if self-scaling-p (y-scaler canvobj) 1)
 	 (mapcar #'y-scaler (delimit-ancestors (ancestors canvobj) cutoff-pred upwardp))))
 
 (defun %x-scale (n canvobj)
-  (* n %scale% (x-scaler canvobj)))
+  (* n .scale. (x-scaler canvobj)))
 (defun %inverse-x-scale (n canvobj)
-  (/ n %scale% (x-scaler canvobj)))
+  (/ n .scale. (x-scaler canvobj)))
 (defun y-scale (n canvobj)
-  (* n %scale% (y-scaler canvobj)))
+  (* n .scale. (y-scaler canvobj)))
 ;;; Cascaded X scaled
 (defun embedding-x-scale (n canvobj &key cutoff-pred self-scaling-p (upwardp t))
   (* n (cascaded-x-scaler canvobj self-scaling-p cutoff-pred upwardp)))
@@ -52,7 +52,7 @@ SVG, N results. Preserves N through the svg-calculations!"
    
    ;; Move this to a FORM
    (family :initarg :family
-	   :initform %font-family%
+	   :initform .font-family.
 	   :accessor family
 	   :documentation "Wenn man den Font vom
 Ganzen Stick z.B. auf einmal ändern möchte.")

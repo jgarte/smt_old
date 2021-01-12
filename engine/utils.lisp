@@ -51,9 +51,9 @@
   (alexandria:lastcar (ancestors obj)))
 
 ;;; Toplevel scale
-(defun toplvl-scale (r) (* r %scale%))
+(defun toplvl-scale (r) (* r .scale.))
 ;;; Inverse toplevel scale
-(defun inv-toplvl-scale (r) (/ r %scale%))
+(defun inv-toplvl-scale (r) (/ r .scale.))
 
 
 (defun register-object (obj)
@@ -90,7 +90,7 @@
 
 
 ;; (or (typecase obj
-;;       (glyph %glyph-marker-circle-color%)
+;;       (mchar %mchar-marker-circle-color%)
 ;;       (stacked-form %sform-marker-circle-color%)
 ;;       (horizontal-form %hform-marker-circle-color%)
 ;;       (vertical-form %vform-marker-circle-color%))
@@ -100,22 +100,22 @@
 (defun svgize-marker (obj)
   (let ((half-line (/ *marker-cross-length* 2))
 	(circle-fill (typecase obj
-		       (glyph %glyph-marker-circle-color%)
+		       (mchar %mchar-marker-circle-color%)
 		       (stacked-form %sform-marker-circle-color%)
 		       (horizontal-form %hform-marker-circle-color%)
 		       (vertical-form %vform-marker-circle-color%)))
 	(circle-stroke (typecase obj
-			 (glyph %glyph-marker-circle-contour-color%)
+			 (mchar %mchar-marker-circle-contour-color%)
 			 (stacked-form %sform-marker-circle-contour-color%)
 			 (horizontal-form %hform-marker-circle-contour-color%)
 			 (vertical-form %vform-marker-circle-contour-color%)))
 	(cross-stroke (typecase obj
-			(glyph *glyph-marker-cross-color*)
+			(mchar *glyph-marker-cross-color*)
 			(stacked-form *sform-marker-cross-color*)
 			(horizontal-form *hform-marker-cross-color*)
 			(vertical-form *vform-marker-cross-color*)))
 	(comment-str (typecase obj
-		       (glyph (format nil "Glyph ~A Marker" (id obj)))
+		       (mchar (format nil "Character ~A Marker" (id obj)))
 		       (stacked-form (format nil "Sform ~A Marker" (id obj)))
 		       (horizontal-form (format nil "Hform ~A Marker" (id obj)))
 		       (vertical-form (format nil "Vform ~A Marker" (id obj))))))
@@ -144,7 +144,7 @@
 ;;     (list	   ;list upside-down, since pushing reverses the order
 ;;      (svg:circle (x obj) (y obj) *marker-circle-r*
 ;; 		 :fill (typecase obj
-;; 			 (glyph %glyph-marker-circle-color%)
+;; 			 (mchar %mchar-marker-circle-color%)
 ;; 			 (stacked-form %sform-marker-circle-color%)
 ;; 			 (horizontal-form %hform-marker-circle-color%)
 ;; 			 (vertical-form %vform-marker-circle-color%))
@@ -191,7 +191,7 @@
 ;; 		     (type-checker (getf rule-plist :ruleid-type-checker))
 ;; 		     (rulefn (funcall type-checker (ruleidval (nth rule-idx obj-ruleids) obj)))
 ;; 		     (lambda-lst-len (list-length (getf rule-plist :lambda-list))))
-;; 		;; Top-level glyph can't have access to non-existing ancestors,
+;; 		;; Top-level mchar can't have access to non-existing ancestors,
 ;; 		;; so args can be 0 or 1 (the obj itself)	  	    
 ;; 		(assert-toplevel-lll obj lambda-lst-len)
 ;; 		(cond
@@ -258,7 +258,7 @@
 	(replace-with-transform! elem)))
     (svg:write-svg (svg:g
 		    ;; Setting the toplevel scaling of the score
-		    :attributes `(("transform" . ,(svg::transform (svg:scale %scale% %scale%))))
+		    :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
 		    :content (append (list (mapcar #'svglst lst)
 					   (svg:rect 0 0 1 6
 						     :fill "red"

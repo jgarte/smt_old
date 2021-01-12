@@ -20,11 +20,11 @@
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
-			     (:file "fonts")
+			     (:file "glyphs")
 			     (:file "rules")     
 			     (:file "canvas")
 			     (:file "form")
-			     (:file "glyph")
+			     (:file "mchar")
 			     (:file "accidentals")
 			     (:file "tmpsyms")
 			     (:file "clefs")

@@ -29,7 +29,7 @@
 
 ;;; Ersetzen wenn verstanden was mit den descendants Alles passiert
 (defun descendants0 (x)
-  (if (or (glyphp x) (null (content x)))
+  (if (or (mcharp x) (null (content x)))
       ()
       (mapcan #'(lambda (a) (cons a (f a))) (content x))
       ))
@@ -75,11 +75,11 @@
       (pushnew obj (ancestors d)))
     ;; At this time every obj has it's full ancestors list
     (when (toplevelp obj)
-      ;; (dolist (d (append (remove-if-not #'glyphp (unfold-contents obj))
+      ;; (dolist (d (append (remove-if-not #'mcharp (unfold-contents obj))
       ;; 		       (remove-if-not #'formp (unfold-contents obj))))   
       ;;   (refresh-bcr! d :x t :y t :l t :r t :t t :b t :w t :h t))
       ;; Mtype init get-bcr first, da diese unabhängig von Allem sind
-      (dolist (g (remove-if-not #'glyphp desc))      
+      (dolist (g (remove-if-not #'mcharp desc))      
 	(refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
       (dolist (f (remove-if-not #'formp desc))
 	(refresh-bcr! f :x t :y t :l t :r t :t t :b t :w t :h t))
@@ -110,7 +110,7 @@
     (dolist (d (reverse (descendants obj)))
       (incf (slot-value d 'yslot) dy)))
   (setf (slot-value obj 'yslot) newy)
-  (dolist (mt (remove-if-not #'glyphp (descendants obj)))
+  (dolist (mt (remove-if-not #'mcharp (descendants obj)))
     (refresh-bcr! mt :t t :b t))
   (dolist (cs (remove-if-not #'formp (descendants obj)))
     (refresh-bcr! cs :t t :b t))

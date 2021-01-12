@@ -81,33 +81,31 @@
 
 
 
-(defun glyph-path-d (glyph-code family)
+(defun mchar-path-d (mchar-code family)
   (ecase family
-    (:lilyboulez-11 (cdr (assoc glyph-code *lilyboulez-11-paths* :test #'string=)))
-    (:haydn-11 (cdr (assoc glyph-code *haydn-11-paths* :test #'string=)))
-    (:beethoven-11 (cdr (assoc glyph-code *beethoven-11-paths* :test #'string=)))))
+    (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
-(defun get-bcr (glyph-code family)
+(defun get-bcr (mchar-code family)
   (ecase family
-    (:haydn-11 (cdr (assoc glyph-code *haydn-11-bcr* :test #'string=)))))
+    (:haydn-11 (cdr (assoc mchar-code *haydn-11-bcr* :test #'string=)))))
 
-(defun glyph-codes (family)
+(defun mchar-codes (family)
   "code = class.label"
   (mapcar #'car (ecase family (:haydn-11 *haydn-11-paths*))))
 
-(defun glyph-labels (class &optional (family %font-family%))
+(defun mchar-labels (class &optional (family .font-family.))
   (let ((classlen (length class)))
     (mapcar
      #'(lambda (name) (second (split-sequence:split-sequence #\. name)))
      (remove-if-not #'(lambda (s) (string= class s :end2 classlen))
-		    (remove-if #'(lambda (s) (<= (length s) classlen)) (glyph-codes family))))))
+		    (remove-if #'(lambda (s) (<= (length s) classlen)) (mchar-codes family))))))
 
-(defun glyph-label->glyph-code (label class family)
-  (assert (member label (glyph-labels class family) :test #'string=)
+(defun mchar-label->mchar-code (label class family)
+  (assert (member label (mchar-labels class family) :test #'string=)
 	  (label)
   	  "Invalid label ~A for ~A!" label class)
   (format nil "~A.~A" class label))
 
-;; (glyph-labels "noteheads" )
-;; (glyph-label->glyph-code "C" "clefs" :haydn-11)
+;; (mchar-labels "noteheads" )
+;; (mchar-label->mchar-code "C" "clefs" :haydn-11)
 

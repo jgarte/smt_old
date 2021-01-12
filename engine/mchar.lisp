@@ -1,22 +1,24 @@
 
 (in-package :smt-engine)
 
-(defclass glyph (canvas)
+
+;;; Music Character
+(defclass mchar (canvas)
   ((bcr :accessor bcr)   
-   (canvas-color :initform %glyph-canvas-color%
+   (canvas-color :initform %mchar-canvas-color%
 		 :documentation "Background color")
    (code :initarg :code
 	 :accessor code)
-   (glyph-vis-p :initarg :glyph-vis-p
+   (mchar-vis-p :initarg :mchar-vis-p
 		:initform t
-		:accessor glyph-vis-p)   
-   (glyph-color :initarg :glyph-color
+		:accessor mchar-vis-p)   
+   (mchar-color :initarg :mchar-color
 		:initform "black"
-		:accessor glyph-color
+		:accessor mchar-color
 		:documentation "Glyph's Face Color")
-   (glyph-opac :initarg :glyph-opac
+   (mchar-opac :initarg :mchar-opac
 	       :initform 1
-	       :accessor glyph-opac)
+	       :accessor mchar-opac)
    )
   (:documentation "A Movable Type is the smallest unit
 representing a single musical symbol. It's content consists
@@ -26,18 +28,18 @@ Composing Sticks."))
 
 
 
-(defun glyphp (obj) (typep obj 'glyph))
+(defun mcharp (obj) (typep obj 'mchar))
 
 ;;; A distinction should be made between su & uu:
 ;;; uu needs to be involving the scaling, for su which is used for putting svg elements
 ;;; together is unscaled, since the scaling is written to the transFORM attribute
-(defmethod initialize-instance :after ((obj glyph) &key)
+(defmethod initialize-instance :after ((obj mchar) &key)
   (setf (bcr obj) (get-bcr (code obj) (family obj))
 	;; Height and Width can be computed for Mtypes right away, since not
 	;; dependant on x or y!
 	(slot-value obj 'hslot) (refresh-height obj)
 	(slot-value obj 'wslot) (calc-width obj))
-  ;; Allow a glyph obj to be rendered as standalone when it's toplevel.
+  ;; Allow a mchar obj to be rendered as standalone when it's toplevel.
   ;; No need for :h :w, since already computed above!
   (when (toplevelp obj)
     (refresh-bcr! obj :x t :y t :l t :r t :t t :b t))
@@ -45,7 +47,7 @@ Composing Sticks."))
 
 
 
-(defmethod (setf x) (newx (obj glyph))
+(defmethod (setf x) (newx (obj mchar))
   (let ((dx (- newx (x obj))))
     (incf (slot-value obj 'xslot) dx)
     (incf (slot-value obj 'lslot) dx)
@@ -57,7 +59,7 @@ Composing Sticks."))
 	  (slot-value anc 'wslot) (calc-width anc)))
   newx)
 
-(defmethod (setf y) (newy (obj glyph))  
+(defmethod (setf y) (newy (obj mchar))  
   (setf (slot-value obj 'yslot) newy)
   (refresh-bcr! obj :t t :b t)
   ;; Ancestors of a Glyph can ONLY be sticks!!
@@ -77,27 +79,27 @@ Composing Sticks."))
 
 
 ;;; Faghat baraye CS!!!!
-(defmethod calc-left ((obj glyph))
+(defmethod calc-left ((obj mchar))
   (+ (x obj) (toplvl-scale (bcr-left (bcr obj)))))
 
-(defmethod calc-right ((obj glyph))
+(defmethod calc-right ((obj mchar))
   (+ (x obj) (toplvl-scale (bcr-right (bcr obj)))))
 
-(defmethod calc-width ((obj glyph))
+(defmethod calc-width ((obj mchar))
   (toplvl-scale (bcr-width (bcr obj))))
 
-(defmethod refresh-top ((obj glyph))
+(defmethod refresh-top ((obj mchar))
   (+ (y obj) (toplvl-scale (bcr-top (bcr obj)))))
 
-(defmethod refresh-height ((obj glyph))
+(defmethod refresh-height ((obj mchar))
   (toplvl-scale (bcr-height (bcr obj))))
 
-(defmethod refresh-bottom ((obj glyph))
+(defmethod refresh-bottom ((obj mchar))
   (+ (y obj) (toplvl-scale (bcr-bottom (bcr obj)))))
 
 
 ;;; Will be written to SVG
-(defmethod svgize-bcr ((obj glyph))
+(defmethod svgize-bcr ((obj mchar))
   (svg:rect (left obj)			;Is dependent on x
 	    (top obj)
 	    (width obj)
@@ -106,22 +108,22 @@ Composing Sticks."))
 	    :fill (or (canvas-color obj) "none")
 	    :fill-opacity (canvas-opac obj)))
 
-(defmethod pack-svglst ((obj glyph))  
+(defmethod pack-svglst ((obj mchar))  
   ;; Marker  
   (when (marker-vis-p obj)    
     ;; Since svgize-marker consists of more than one svg-element,
     ;; push each one seperately into SVGLST
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
-    (push (xml-base::comment (format nil "Glyph ~A, Marker" (id obj))) (svglst obj)))  
-  (push (svg:path (glyph-path-d (code obj) (family obj))
-		  :fill (glyph-color obj) 
-		  :fill-opacity (glyph-opac obj)
+    (push (xml-base::comment (format nil "Character ~A, Marker" (id obj))) (svglst obj)))  
+  (push (svg:path (mchar-path-d (code obj) (family obj))
+		  :fill (mchar-color obj) 
+		  :fill-opacity (mchar-opac obj)
 		  :id (symbol-name (id obj))
 		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (y-scaler obj))
 	(svglst obj))
-  (push (xml-base::comment (format nil "Glyph ~A" (id obj))) (svglst obj))
+  (push (xml-base::comment (format nil "Character ~A" (id obj))) (svglst obj))
   ;; BCR Rect
   (when (canvas-vis-p obj)
     (push (svgize-bcr obj) (svglst obj))
-    (push (xml-base::comment (format nil "Glyph ~A, BCR" (id obj))) (svglst obj)))  
+    (push (xml-base::comment (format nil "Character ~A, BCR" (id obj))) (svglst obj)))  
   )

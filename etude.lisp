@@ -213,6 +213,8 @@
   (render (list s))
   )
 
+(bcr-height (get-bcr "clefs.C" .font-family.))
+
 
 
 (ql:quickload "cxml")
