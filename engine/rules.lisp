@@ -27,20 +27,21 @@
   (examine-clauses clauses)
   (let ((rlrval (gensym)))
     `(prog1 ',ruler
-       (setf (gethash ,idx *ruledocs*) ,doc
-	     (gethash ,idx *ruletable*)	   
-    	     (list :rlrfn #'(lambda (,rlrval)
-			      (etypecase ,rlrval
-				,@(loop for clause in clauses
-		  			collect (destructuring-bind (typespec lambda-lst . body)
-						    clause
-						  `(,typespec (list :clsfn #'(lambda ,lambda-lst ,@body)
-								    :clsll ',lambda-lst
-								    :clsbd ',body))))))
-		   :trgts ',targets :dmns ',domains
-		   :rlr (function ,ruler)
-		   :clss ',clauses)
-	     ))))
+       (psetf (gethash ,idx *ruledocs*) ,doc
+	      (gethash ,idx *ruletable*)
+	      ;; Rule's plist
+    	      (list :rlrfn #'(lambda (,rlrval)
+			       (etypecase ,rlrval
+				 ,@(loop for clause in clauses
+		  			 collect (destructuring-bind (typespec lambda-lst . body)
+						     clause
+						   `(,typespec
+						     ;; Clause' Plist
+						     (list :clsfn #'(lambda ,lambda-lst ,@body)
+							   :clsll ',lambda-lst
+							   :clsbd ',body))))))
+		    :trgts ',targets :dmns ',domains :rlr (function ,ruler) :clss ',clauses)
+	      ))))
 
 
 
@@ -54,7 +55,7 @@
 	    "Toplevel ~A can't access non-existing ancestor parameters in it's rule's lambda-list!"
 	    (type-of obj))))
 
-(defun pass-args (obj fn lamlstlen)
+(defun pass-args-to-clause-func (obj fn lamlstlen)
   (cond
     ((zerop lamlstlen) (funcall fn))
     ((= lamlstlen 1) (funcall fn obj))
@@ -64,24 +65,29 @@
 	      ;; hence the reverse
 	      (reverse (last (ancestors obj) (1- lamlstlen)))))))
 
-(defun apply-rules (all)
-  (dolist (idx (sort (alexandria:hash-table-keys *ruletable*) #'<))
-    (let* ((plst (gethash idx *ruletable*))	   
+(defun apply-rules (flatt-doc-objs)
+  (dolist (idx (sort (alexandria:hash-table-keys *ruletable*) #'<))    
+    (let* ((plist (gethash idx *ruletable*)) ;Rule's plist
 	   ;; pick up objs with their types corresponding to trgts
-	   (trgts (getf plst :trgts))
-	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep)) all))
+	   (trgts (getf plist :trgts))
+	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep)) flatt-doc-objs))
 	   ;; pick up trgobjs with their dmns corresponding to dmns
-	   (dmns (getf plst :dmns))
-	   (dmnobjs (remove-if-not  #'(lambda (x)
-					(typep (domain x) (if (find t dmns)
-							      t
-							      `(member ,@dmns))))
-				    trgobjs)))
+	   (dmns (getf plist :dmns))
+	   ;; If domains contains T, all objects no matter in which domain, are adressed.
+	   (dmnobjs (if (find t dmns)
+			;; No removings!
+			trgobjs
+			(remove-if-not #'(lambda (x) (typep (domian x) `(member ,@dmns))) trgobjs)))
+	   ;; (dmnobjs (remove-if-not  #'(lambda (x)
+	   ;; 				(typep (domain x)
+	   ;; 				       (if (find t dmns) t `(member ,@dmns))))
+	   ;; 			    trgobjs))
+	   )
       (dolist (obj dmnobjs)
-	(let* ((clause-plst (funcall (getf plst :rlrfn)
-				     (funcall (getf plst :rlr) obj)))
-	       (clause-lamlstlen (list-length (getf clause-plst :clsll)))
-	       (clause-fn (getf clause-plst :clsfn)))
+	(let* ((clause-plist (funcall (getf plist :rlrfn)
+				      (funcall (getf plist :rlr) obj)))
+	       (clause-lamlstlen (list-length (getf clause-plist :clsll)))
+	       (clause-fn (getf clause-plist :clsfn)))
 	  (assert-toplevel-lamlstlen obj clause-lamlstlen)
-	  (pass-args obj clause-fn clause-lamlstlen))))))
+	  (pass-args-to-clause-func obj clause-fn clause-lamlstlen))))))
 

@@ -1,8 +1,6 @@
 
 (in-package :smt-engine)
 
-
-
 (defclass glyph (canvas)
   ((bcr :accessor bcr)   
    (canvas-color :initform %glyph-canvas-color%

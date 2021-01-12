@@ -70,9 +70,9 @@
 	(octave (cdr spn)))
     (or (>= octave 5)
 	(and (eq pitch-name 'b) (= octave 4)))))
-
+(ruledocs)
 (defrule null (note) (:treble)
-    ("Draws stem lines on the <correct> side of the note N.")  
+    ("Draws stem lines on the <correct> side of the note N.")
   (null (n)
 	;; Give the note object N a stem only when it's dur < whole-note
 	(when (< (dur n) 1)
@@ -112,12 +112,12 @@
 
 (ruledocs)
 *ruleidx*
+(remrule 6)
 
-(remrules 1)
 
 (defrule content (horizontal-form) (t)
-    ("Compute widths ")
-  ((cons snote)(hf) 
+    ("Compute widths " 6)
+  ((cons snote) (hf) 
    (dolist (d (content hf))
      (let ((n (car (content d))))
        (cond ((= (dur n) .25)
@@ -126,7 +126,7 @@
 	     ((= (dur n) 1) (incf (width d) (* 3 (width d)))))))
    (hlineup hf)))
 
-
+(ruledocs)
 
 (let ((h (hform
 	  :ruler 'content
