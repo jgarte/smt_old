@@ -110,7 +110,7 @@
 			 (horizontal-form %hform-marker-circle-contour-color%)
 			 (vertical-form %vform-marker-circle-contour-color%)))
 	(cross-stroke (typecase obj
-			(mchar *glyph-marker-cross-color*)
+			(mchar *mchar-marker-cross-color*)
 			(stacked-form *sform-marker-cross-color*)
 			(horizontal-form *hform-marker-cross-color*)
 			(vertical-form *vform-marker-cross-color*)))

@@ -23,6 +23,11 @@
 	    :initform ()
 	    :type list
 	    :accessor content)
+   (user-width :accessor user-width
+	       :initform nil
+	       :documentation "This is never touched and will
+be the value of WIDTH if non-nil."
+	       :initarg :width)
    ))
 
 (defun formp (obj) (typep obj 'form))
@@ -99,9 +104,12 @@
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a form to the rightmost
     ;; of it's children.
+    ;; Use SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
     (setf (slot-value anc 'rslot) (calc-right anc)
 	  (slot-value anc 'lslot) (calc-left anc)
-	  (slot-value anc 'wslot) (calc-width anc)))
+	  (slot-value anc 'wslot) (compwidth anc)
+	  )
+    )
   newx)
 
 
@@ -143,9 +151,16 @@
   (incf (x obj) (- newr (slot-value obj 'rslot)))
   newr)
 
-(defmethod calc-width ((obj form))
+
+(defmethod width ((obj form))
+  "only This is in the public interface for getting width,
+it takes care of chooising btwn userinputed width or system 
+computed width."
+  (or (user-width obj)
+      (slot-value obj 'wslot)))
+(defmethod compwidth ((obj form))
   ;; This subtraction will cause Floating Nightmare! :-S
-  ;; #'right #'left are slot-value readers
+  ;; #'right #'left are slot-value readers.
   (- (right obj) (left obj)))
 
 ;;; Changing WIDTH moves the RIGHT edge, LEFT remains untouched!
@@ -161,7 +176,7 @@
     (setf (slot-value anc 'rslot)
 	  (apply #'max (mapcar #'right (reverse (descendants anc))))
 	  (slot-value anc 'wslot)
-	  (calc-width anc)))
+	  (compwidth anc)))
   neww)
 
 ;;; Vertical stuff ↓
@@ -207,8 +222,7 @@
 
 (defclass horizontal-form (form)
   ((domain :initform 'horizontal)
-   (canvas-color :initform %hform-canvas-color%)
-  ))
+   (canvas-color :initform %hform-canvas-color%)))
 (defun hformp (obj) (typep obj 'horizontal-form))
 (defun hform (&rest initargs &key &allow-other-keys)
   (apply #'make-instance 'horizontal-form initargs))

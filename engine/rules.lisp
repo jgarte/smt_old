@@ -25,7 +25,7 @@
 
 (defmacro defrule (ruler targets domains (&optional doc (idx (incf *ruleidx*))) &body clauses)
   (examine-clauses clauses)
-  (let ((rlrval (gensym)))
+  (let ((rlrval (make-symbol "RLRVAL")))
     `(prog1 ',ruler
        (psetf (gethash ,idx *ruledocs*) ,doc
 	      (gethash ,idx *ruletable*)
@@ -42,6 +42,7 @@
 							   :clsbd ',body))))))
 		    :trgts ',targets :dmns ',domains :rlr (function ,ruler) :clss ',clauses)
 	      ))))
+
 
 
 
@@ -77,7 +78,7 @@
 	   (dmnobjs (if (find t dmns)
 			;; No removings!
 			trgobjs
-			(remove-if-not #'(lambda (x) (typep (domian x) `(member ,@dmns))) trgobjs)))
+			(remove-if-not #'(lambda (x) (typep (domain x) `(member ,@dmns))) trgobjs)))
 	   ;; (dmnobjs (remove-if-not  #'(lambda (x)
 	   ;; 				(typep (domain x)
 	   ;; 				       (if (find t dmns) t `(member ,@dmns))))

@@ -24,24 +24,24 @@
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
 
-(defconstant +px/mm+ 3.7795275591 "Pixels per mm")
+(defconstant +pxl-per-mm+ 3.7795275591 "Pixels per mm")
 
 (eval-when (:compile-toplevel :load-toplevel)
   ;; Need this for the margins constants later in the file
   ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
-  (defun mm->px (mm) (* mm +px/mm+)))
+  (defun mm-to-pxl (mm) (* mm +pxl-per-mm+)))
 
 
 (defun chlapik-staff-space (rastral-no)
   "Rastral Größen wie bei Chlapik S. 32 beschrieben."
   (ecase rastral-no
-    (2 (mm->px 1.88))
-    (3 (mm->px 1.755))
-    (4 (mm->px 1.6))
-    (5 (mm->px 1.532))
-    (6 (mm->px 1.4))
-    (7 (mm->px 1.19))
-    (8 (mm->px 1.02))))
+    (2 (mm-to-pxl 1.88))
+    (3 (mm-to-pxl 1.755))
+    (4 (mm-to-pxl 1.6))
+    (5 (mm-to-pxl 1.532))
+    (6 (mm-to-pxl 1.4))
+    (7 (mm-to-pxl 1.19))
+    (8 (mm-to-pxl 1.02))))
 
 (defparameter *staff-space* (chlapik-staff-space 2))
 
@@ -89,18 +89,18 @@
 (defconstant +stick-y-origin+ 0)
 
 ;;; Page margines: Measured from Schubert Sonate, Henle
-(defconstant +right-margin+ (mm->px 25))
-(defconstant +left-margin+ (mm->px 36))
-(defconstant +top-margin+ (mm->px 56))
+(defconstant +right-margin+ (mm-to-pxl 25))
+(defconstant +left-margin+ (mm-to-pxl 36))
+(defconstant +top-margin+ (mm-to-pxl 56))
 
 
 
 (defun page-size (format)
   "Returns format's page size in pixels. BB p.481"
   (ecase format
-    (:a3 (list :h (mm->px 420) :w (mm->px 297)))
-    (:b4 (list :h (mm->px 353) :w (mm->px 250)))
-    (:a4 (list :h (mm->px 297) :w (mm->px 210)))))
+    (:a3 (list :h (mm-to-pxl 420) :w (mm-to-pxl 297)))
+    (:b4 (list :h (mm-to-pxl 353) :w (mm-to-pxl 250)))
+    (:a4 (list :h (mm-to-pxl 297) :w (mm-to-pxl 210)))))
 
 (defparameter *page-format* :a4)
 

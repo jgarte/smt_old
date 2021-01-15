@@ -1,4 +1,4 @@
-;;; Temporal symbols ie notes, rests etc.
+;;; Temporal symbols ie notes (& it's components) and rests
 
 (in-package #:smt-engine)
 
@@ -25,7 +25,7 @@
 ;;;;;;;;;;;;;;;;;; note
 
 
-(defclass note (stacked-form)
+(defclass note (stacked-form temporal)
   ((domain :initform nil
 	   :documentation "We don't know what domain we want for note yet, 
 thus this can't be STACKED!")
@@ -37,10 +37,7 @@ thus this can't be STACKED!")
 	      :initarg :head-color)
    (spn :accessor spn
 	:initarg :spn
-	:initform nil)
-   (dur :initarg :dur
-	:accessor dur
-	:initform 1/4)))
+	:initform nil)))
 
 (defun notep (obj) (typep obj 'note))
 
@@ -73,9 +70,8 @@ thus this can't be STACKED!")
 	   initargs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Rests
-(defclass pause (mchar)
-  ((dur :initarg :dur
-	:accessor dur)))
+(defclass pause (mchar temporal)
+  ())
 
 (defun make-pause (&rest initargs &key &allow-other-keys)
   (let ((family (getf initargs :family .font-family.))

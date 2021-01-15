@@ -38,7 +38,7 @@ Composing Sticks."))
 	;; Height and Width can be computed for Mtypes right away, since not
 	;; dependant on x or y!
 	(slot-value obj 'hslot) (refresh-height obj)
-	(slot-value obj 'wslot) (calc-width obj))
+	(slot-value obj 'wslot) (compwidth obj))
   ;; Allow a mchar obj to be rendered as standalone when it's toplevel.
   ;; No need for :h :w, since already computed above!
   (when (toplevelp obj)
@@ -56,7 +56,7 @@ Composing Sticks."))
   (dolist (anc (reverse (ancestors obj)))
     (setf (slot-value anc 'rslot) (calc-right anc)
 	  (slot-value anc 'lslot) (calc-left anc)
-	  (slot-value anc 'wslot) (calc-width anc)))
+	  (slot-value anc 'wslot) (compwidth anc)))
   newx)
 
 (defmethod (setf y) (newy (obj mchar))  
@@ -85,7 +85,10 @@ Composing Sticks."))
 (defmethod calc-right ((obj mchar))
   (+ (x obj) (toplvl-scale (bcr-right (bcr obj)))))
 
-(defmethod calc-width ((obj mchar))
+
+(defmethod width ((obj mchar))
+  (slot-value obj 'wslot))
+(defmethod compwidth ((obj mchar))
   (toplvl-scale (bcr-width (bcr obj))))
 
 (defmethod refresh-top ((obj mchar))

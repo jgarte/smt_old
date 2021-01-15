@@ -3,7 +3,11 @@
 
 
 (in-package :ngn)
-
+(subtypep (typep (make-note nil) 'temporal) )
+(mapcar #'id (remove-if-not #'(lambda (x) (typep x 'temporal))
+		(list (make-note nil :id 'n1) (make-note nil :id 'n2)
+		      'asd (make-note nil :id 'n3) 3)
+		))
 ;; (setq n 
       
 ;;       )
@@ -42,7 +46,7 @@
 (ruledocs)
 (defrule spn (notehead) (:treble)
     ("Assigns correct vertical positions to note-heads,
- based on their pitch-name and their octave.")
+ based on their pitch-name and their octave." 1)
   ((cons symbol unsigned-byte)
    (me parent)
    (let ((pitch-name (car (spn me)))
@@ -98,63 +102,84 @@
 				    (+ stem-onset *octave-space*)
 				    (- stem-onset *octave-space*)
 				    ) 
-				:stroke-width (- *staff-line-thickness* 20)
+				:stroke-width (- *staff-line-thickness* 10)
 				:stroke-linecap "round"
 				:stroke "black"))))))
 
 
-(defun contnotep (f) (typep (car (content f)) 'note))
-(deftype snote () '(and stacked-form (satisfies contnotep)))
-(defun allsn (l)
-  (every #'(lambda (x) (typep x 'snote)) (content l)))
-(deftype hsnote () '(and horizontal-form (satisfies allsn)))
+;; (defun contnotep (f) (typep (car (content f)) 'note))
+;; (deftype snote () '(and stacked-form (satisfies contnotep)))
 
+(defun only-type-p (lst type)
+  (and (= (list-length lst) 1)
+       (typep (car lst) type)))
+
+(defun pure-temp-sform-seq-p (content)
+  "Einstimmig Noten oder Pausen"
+  (every #'(lambda (x) (and (sformp x)
+			    (only-type-p (content x)
+					 '(or note pause))))
+	 content))
+
+(deftype pure-temp-sform-seq () '(satisfies pure-temp-sform-seq-p))
 
 (ruledocs)
 *ruleidx*
 (remrule 6)
 
 
+
 (defrule content (horizontal-form) (t)
-    ("Compute widths " 6)
-  ((cons snote) (hf) 
-   (dolist (d (content hf))
-     (let ((n (car (content d))))
-       (cond ((= (dur n) .25)
-	      (incf (width d) (width d) ))
-	     ((= (dur n) .5) (incf (width d) (* 2 (width d))))
-	     ((= (dur n) 1) (incf (width d) (* 3 (width d)))))))
-   (hlineup hf)))
-
+    ("Compute widths so dass jede Note bzw.  Pause die dafür geltenden
+Bereich oder Platz oder Raum in Anspruch nimmt. Dies wird dann
+hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
+  (pure-temp-sform-seq (hf)
+		       (let* ((u (mm-to-pxl (/ 160 15.72)))
+			      (uh (* u (/ 5 3.5)))
+			      (uw (* u (/ 7 3.5))))
+			 (dolist (d (content hf))
+			   (let ((n (car (content d))))
+			     (cond ((= (dur n) .25)
+				    (setf (width d) u))
+				   ((= (dur n) .5) (setf (width d) uh))
+				   ((= (dur n) 1) (setf (width d) uw))))))
+		       (hlineup hf)))
 (ruledocs)
-
-(let ((h (hform
+;;; Unit of Space width
+(let* (
+       (h (hform
+	  :id 'h
 	  :ruler 'content
+	  :width (mm-to-pxl 160)
 	  :canvas-vis-p t
+	  :canvas-color "pink"
+	  :canvas-opac 1
 	  :marker-vis-p t
 	  :toplevelp t
-	  :content (loop for dur in (loop repeat 20 collect (expt 2 (nth (random 3) '(0 -1 -2))))
-			 for pitch in '(b a d f e a g f g c e d c)
-			 for oct in '(4 4 4 5 4 4 5 4 4 5 5 5 5)
-			 for color = "black"
-			 ;; (nth (random 5)
-				     ;; 	  '("green" "orange" "red" "pink" "blue"))
-			 collect (sform :content (list ;; (make-note (cons pitch
-						       ;; 		   (1+ oct))
-						       ;; 	     :dur dur
-						       ;; 	     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
-						       ;; 	     :head-color color)
-						       (make-note (cons pitch oct)
-							     :dur dur
-							     :head-color color)
-						       (make-note (cons pitch
-								   (1- oct))
-							     :dur dur
-							     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
-							     :head-color color))
-					))
+	  :content (loop
+		     for dur in '(.5 .5 .25 .25 .25 .25 1 .5 .5 .25 .25 .25 .25)
+		     ;; for dur in (loop repeat 10 collect (expt 2 (nth (random 3) '(0 -1 -2))))
+		     for pitch in '(a g f e f g a g f g f e d)
+		     for oct in '(4 4 4 4 4 4 4 4 4 4 4 4 4)
+		     for color = "black"
+		     ;; (nth (random 5)
+		     ;; 	  '("green" "orange" "red" "pink" "blue"))
+		     collect (sform :content (list ;; (make-note (cons pitch
+					      ;; 		   (1+ oct))
+					      ;; 	     :dur dur
+					      ;; 	     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
+					      ;; 	     :head-color color)
+					      ;; (make-note (cons pitch oct)
+					      ;; 	     :dur dur
+					      ;; 	     :head-color color)
+					      (make-note (cons pitch oct)
+							 :dur dur
+							 ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
+							 :head-color color))
+				    ))
 	  :preproc (preproc x
 	  	     ((typep x 'notehead)
+		      ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
 	  	      (setf (ruler x) 'spn
 	  		    (domain x) :treble
 	  		    (canvas-vis-p x) nil
@@ -165,14 +190,13 @@
 	  	       ;; Doubling the width temporarily to ease reading
 	  	       ;; (ruler x) '(:spn)
 	  	       (domain x) :treble
-	  	       (canvas-vis-p x) nil
+	  	       (canvas-vis-p x) t
 	  	       (marker-vis-p x) nil
 	  	       ))
 	  	     ((eq (class-name (class-of x)) 'stacked-form)
 	  	      (setf
-		       (canvas-color x) (nth (random 5)
-					  '("green" "orange" "red" "cyan" "blue"))
 	  	       (canvas-vis-p x) t
+		       (canvas-color x) "green"
 	  	       (marker-vis-p x) t
 	  	       ))
 	  	     )
@@ -187,6 +211,7 @@
 		     :head (make-notehead "s0" :id 'nh)
 		     :canvas-vis-p nil))
        (n2 (make-note '(f . 4) :id 'n2
+			       ;; :x-offset 20
 			       :head (make-notehead "s0" :id 'nh2)
 			       :canvas-vis-p nil))
        (s (sform :content (list n (make-note nil :id 'n3
@@ -195,14 +220,14 @@
 		 :id 's
 		 :canvas-vis-p t))
        (s2 (sform :content (list n2) :id 's2
-		  :canvas-color "green"))
+		  :canvas-color "green"
+		  ))
        (h (hform :content (list s s2) :id 'h
-		 :canvas-color "green"
-		 :canvas-vis-p nil
+		 :canvas-color "black"  :width 15
 		 :toplevelp t)))
   (render (list h))
-  (mapcar #'id (descendants h))
-   )
+  (width h)
+  )
 
 
 (let* ((n (make-notehead "s1" :id 'n
@@ -214,9 +239,36 @@
   )
 
 (bcr-height (get-bcr "clefs.C" .font-family.))
-
-
-
+(- 191 (+ 14 12 2.5 4.5
+    1 1.5 2 1.5 2.5 2 2.5 1
+    2.5 2
+    4 1.5
+	  1))133.0
+;;; Achtel
+(/ (+ 3 4 3 3 4 4 3 4 4 3.5 3.5 4 3.5 5)
+   14)3.6785715 mm
+;;; Viertel
+(/ (+ 4 4 6 6 4 5.5 6 6)
+   8)5.1875 mm
+(/ 5.1875 3.6785715)1.4101942		;Ein Viertel ist so viel mal größer als ein Achtel
+;;; Halbe
+(/ (+ 8 7 7.5) 3)7.5
+(/ 7.5 5.1875)1.4457831			;Halbe / Viertel
+;;; Halbe punktiert
+(/ (+ 9 9) 2)9
+(/ 9 7.5)1.2				;PHalbe / Halbe
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 1.4101942 : 1.4457831 : 1.2 ;;;
+#|
+1 Viertel 1.4101942 Achtelabstände
+1 Halbe  (* 1.4101942 1.4457831) => 2.038835 Achtelabstände
+1 Punktierte Halbe (* 2.038835 1.2) => 2.446602 Achtelabstände
+|#
+;;; Summe
+(+ (+ 3 4 3 3 4 4 3 4 4 3.5 3.5 4 3.5 5)
+       (+ 4 4 6 6 4 5.5 6 6) (+ 8 7 7.5) (+ 9 9))133.5
+(let ((u (/ 133 29.0)))
+  (+ (* 14 u) (* 8.8 u) (* 3.6 u) (* 2.6 u)))
+;;;;;;;;;;;
 (ql:quickload "cxml")
 
 (with-open-file (stream "/tmp/etude.xml" :direction :output :if-exists :supersede)
@@ -231,16 +283,3 @@
 
 
 
-
-(in-package :5am)
-
-(test foo
-  (flet ((f1 (d)
-	   (and (is (= 7 d))
-		(is (< 0 d)))))
-    (for-all ((d (gen-integer :min -10 :max 10)))
-      (cond ((zerop d) (is (= 0 d)))
-	    ((plusp d) (f1 d))
-	    (t (pass)))
-      )))
-(run! 'foo)

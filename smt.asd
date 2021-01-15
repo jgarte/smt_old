@@ -26,7 +26,7 @@
 			     (:file "form")
 			     (:file "mchar")
 			     (:file "accidentals")
-			     (:file "tmpsyms")
+			     (:file "temps")
 			     (:file "clefs")
 			     
 			     )
