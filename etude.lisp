@@ -102,10 +102,11 @@
 				    (+ stem-onset *octave-space*)
 				    (- stem-onset *octave-space*)
 				    ) 
-				:stroke-width (- *staff-line-thickness* 10)
+				:stroke-width (- *staff-line-thickness* 5)
 				:stroke-linecap "round"
 				:stroke "black"))))))
-
+(ruledocs)
+(remrule 2)
 
 ;; (defun contnotep (f) (typep (car (content f)) 'note))
 ;; (deftype snote () '(and stacked-form (satisfies contnotep)))
@@ -127,8 +128,6 @@
 *ruleidx*
 (remrule 6)
 
-
-
 (defrule content (horizontal-form) (t)
     ("Compute widths so dass jede Note bzw.  Pause die dafür geltenden
 Bereich oder Platz oder Raum in Anspruch nimmt. Dies wird dann
@@ -139,70 +138,252 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			      (uw (* u (/ 7 3.5))))
 			 (dolist (d (content hf))
 			   (let ((n (car (content d))))
-			     (cond ((= (dur n) .25)
-				    (setf (width d) u))
+			     (cond ((= (dur n) .25) (setf (width d) u))
 				   ((= (dur n) .5) (setf (width d) uh))
 				   ((= (dur n) 1) (setf (width d) uw))))))
-		       (hlineup hf)))
+		       (hlineup hf))
+  (t (hf)
+     (let* ((note-sforms (remove-if-not #'(lambda (x) (and (sformp x)
+							   (only-type-p (content x)
+									'note)))
+					(content hf)))
+	    (blinesforms (remove-if-not #'(lambda (x) (and (sformp x)
+							   (only-type-p (content x)
+									'barline)))
+					(content hf)))
+	    (qnote-sforms (remove-if-not #'(lambda (x) (= .25 (dur (car (content x))))) note-sforms))
+	    (hnote-sforms (remove-if-not #'(lambda (x) (= .5 (dur (car (content x))))) note-sforms))
+	    (u (/ (- (width hf)
+		     (* 2 (length blinesforms)))
+		  (+ (length qnote-sforms)
+		     (* (length hnote-sforms) (/ 5 3.5)))
+		  ;; 15.72
+		  ))
+	    (uh (* u (/ 5 3.5)))
+	    (uw (* u (/ 7 3.5)))
+	    (l (length (content hf))))
+       (dotimes (i l)
+	 (let* ((d (nth i (content hf)))
+		(n (car (content d))))
+	   (typecase n
+	     (note (cond ((= (dur n) .25) (setf (width d) u))
+			 ((= (dur n) .5) (setf (width d) uh))
+			 ((= (dur n) 1) (setf (width d) uw))))
+	     (barline (when (< i (1- l))
+			(setf (width d) (mm-to-pxl 2)))))))
+       )
+     (hlineup hf))
+  )
+
+(defrule null (barline) (t)
+    ("Barline" 8)
+  (null (me parent)
+	(packsvg parent
+		 (svg:line (left parent) (top parent)
+			   (left parent) (bottom parent)
+			   :stroke-width (+ *staff-line-thickness* 10)
+			   :stroke-linecap "square"
+			   :stroke "black")))
+  )
 (ruledocs)
+(remrule 7)
 ;;; Unit of Space width
-(let* (
+(let* ((absx 60)
+       (w 160)
        (h (hform
-	  :id 'h
-	  :ruler 'content
-	  :width (mm-to-pxl 160)
-	  :canvas-vis-p t
-	  :canvas-color "pink"
-	  :canvas-opac 1
-	  :marker-vis-p t
-	  :toplevelp t
-	  :content (loop
-		     for dur in '(.5 .5 .25 .25 .25 .25 1 .5 .5 .25 .25 .25 .25)
-		     ;; for dur in (loop repeat 10 collect (expt 2 (nth (random 3) '(0 -1 -2))))
-		     for pitch in '(a g f e f g a g f g f e d)
-		     for oct in '(4 4 4 4 4 4 4 4 4 4 4 4 4)
-		     for color = "black"
-		     ;; (nth (random 5)
-		     ;; 	  '("green" "orange" "red" "pink" "blue"))
-		     collect (sform :content (list ;; (make-note (cons pitch
-					      ;; 		   (1+ oct))
-					      ;; 	     :dur dur
-					      ;; 	     ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
-					      ;; 	     :head-color color)
-					      ;; (make-note (cons pitch oct)
-					      ;; 	     :dur dur
-					      ;; 	     :head-color color)
-					      (make-note (cons pitch oct)
-							 :dur dur
-							 ;; :x-offset (if (member dur '(1/2 .25) :test #'=) (- 5) 0)
-							 :head-color color))
-				    ))
-	  :preproc (preproc x
-	  	     ((typep x 'notehead)
-		      ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
-	  	      (setf (ruler x) 'spn
-	  		    (domain x) :treble
-	  		    (canvas-vis-p x) nil
-	  		    (marker-vis-p x) nil
-	  		    ))
-	  	     ((eq (class-name (class-of x)) 'note)
-	  	      (setf
-	  	       ;; Doubling the width temporarily to ease reading
-	  	       ;; (ruler x) '(:spn)
-	  	       (domain x) :treble
-	  	       (canvas-vis-p x) t
-	  	       (marker-vis-p x) nil
-	  	       ))
-	  	     ((eq (class-name (class-of x)) 'stacked-form)
-	  	      (setf
-	  	       (canvas-vis-p x) t
-		       (canvas-color x) "green"
-	  	       (marker-vis-p x) t
-	  	       ))
-	  	     )
-	  )))
+	   :id 'h
+	   :ruler 'content
+	   :width (mm-to-pxl w)
+	   :canvas-vis-p nil
+	   :canvas-color "pink"
+	   :canvas-opac 1
+	   :marker-vis-p nil
+	   :absx absx
+	   :toplevelp t
+	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4)))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2)))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4)))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4)))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red")))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(a . 4) :dur 1/2)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4)))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2)))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2)))
+			  (sform :content (list (make-instance 'barline)))
+			  )
+	   :preproc (preproc x
+	  	      ((typep x 'notehead)
+		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  	       (setf (ruler x) 'spn
+	  		     (domain x) :treble
+	  		     (canvas-vis-p x) nil
+	  		     (marker-vis-p x) nil
+	  		     ))
+	  	      ((eq (class-name (class-of x)) 'note)
+	  	       (setf
+	  		;; Doubling the width temporarily to ease reading
+	  		;; (ruler x) '(:spn)
+	  		(domain x) :treble
+	  		(canvas-vis-p x) nil
+	  		(marker-vis-p x) nil
+	  		))
+	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
+			   (typep x 'barline))
+	  	       (setf
+	  		(canvas-vis-p x) nil
+			(canvas-color x) "green"
+	  		(marker-vis-p x) nil
+	  		))
+	  	      )
+	   ))
+       ;; H2 line 2
+       (h2 (hform
+	    :ruler 'content
+	    :y-offset 100
+	    :absx absx
+	    :width (mm-to-pxl (- w 30))
+	    :canvas-vis-p nil
+	    :canvas-color "pink"
+	    :canvas-opac 1
+	    :marker-vis-p nil
+	    :toplevelp t
+	    :content (list (sform :content (list (make-note '(d . 5) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(g . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25 :head-color "blue")))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(g . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   )
+	    :preproc (preproc x
+	  	       ((typep x 'notehead)
+			;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  		(setf (ruler x) 'spn
+	  		      (domain x) :treble
+	  		      (canvas-vis-p x) nil
+	  		      (marker-vis-p x) nil
+	  		      ))
+	  	       ((eq (class-name (class-of x)) 'note)
+	  		(setf
+	  		 ;; Doubling the width temporarily to ease reading
+	  		 ;; (ruler x) '(:spn)
+	  		 (domain x) :treble
+	  		 (canvas-vis-p x) nil
+	  		 (marker-vis-p x) nil
+	  		 ))
+	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
+			    (typep x 'barline))
+	  		(setf
+	  		 (canvas-vis-p x) nil
+			 (canvas-color x) "green"
+	  		 (marker-vis-p x) nil
+	  		 ))
+	  	       )
+	    ))
+       ;; H3
+       (h3 (hform
+	    :ruler 'content
+	    :absx absx
+	    :y-offset 200
+	    :width (mm-to-pxl (- w 60))
+	    :canvas-vis-p nil
+	    :canvas-color "pink"
+	    :canvas-opac 1
+	    :marker-vis-p nil
+	    :toplevelp t
+	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(d . 5) :dur .5)))
+			   (sform :content (list (make-note '(c . 5) :dur .5)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(d . 5) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(d . 5) :dur .5)))
+			   (sform :content (list (make-note '(c . 5) :dur .5)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(d . 5) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(a . 4) :dur .25)))
+			   (sform :content (list (make-instance 'barline)))
+			   (sform :content (list (make-note '(b . 4) :dur .25)))
+			   (sform :content (list (make-note '(c . 5) :dur .25)))
+			   (sform :content (list (make-note '(d . 5) :dur .25)))
+			   (sform :content (list (make-note '(d . 5) :dur .25 :head-color "green")))
+			   (sform :content (list (make-instance 'barline)))
+			   )
+	    :preproc (preproc x
+	  	       ((typep x 'notehead)
+			;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  		(setf (ruler x) 'spn
+	  		      (domain x) :treble
+	  		      (canvas-vis-p x) nil
+	  		      (marker-vis-p x) nil
+	  		      ))
+	  	       ((eq (class-name (class-of x)) 'note)
+	  		(setf
+	  		 ;; Doubling the width temporarily to ease reading
+	  		 ;; (ruler x) '(:spn)
+	  		 (domain x) :treble
+	  		 (canvas-vis-p x) nil
+	  		 (marker-vis-p x) nil
+	  		 ))
+	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
+			    (typep x 'barline))
+	  		(setf
+	  		 (canvas-vis-p x) nil
+			 (canvas-color x) "green"
+	  		 (marker-vis-p x) nil
+	  		 ))
+	  	       )
+	    ))
+       )
   ;; (incf (left (car (content h))) 10)
-  (render (list h))
+  (render (list h h2 h3))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;test

@@ -122,6 +122,7 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
    (wslot :accessor wslot :initform nil)
    (hslot :accessor hslot :initform nil)
    ))
+
 (defmethod y ((obj canvas)) (slot-value obj 'yslot))
 (defmethod top ((obj canvas)) (slot-value obj 'tslot))
 (defmethod bottom ((obj canvas)) (slot-value obj 'bslot))
