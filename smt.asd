@@ -14,8 +14,10 @@
 
 (defsystem "smt/engine"
   :serial t
-  :depends-on ("smt/xml" "alexandria" "split-sequence" "cl-ppcre")
-  :components (;; (:file "package")	       
+  :depends-on ("smt/xml"
+	       "alexandria" "split-sequence" "cl-ppcre"
+	       "flexi-streams" "cxml")
+  :components ( 
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")

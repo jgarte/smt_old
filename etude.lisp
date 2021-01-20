@@ -985,4 +985,13 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
       (cxml:text "Hi there."))))
 
 
+(sb-ext:run-program
+ "/usr/bin/fontforge"
+ (list "-script" "/home/amir/Work/Lisp/smt/script.ff"
+       "/home/amir/haydn/svg/haydn-26.svg")
+ :output *standard-output*)
+
+
+
+
 

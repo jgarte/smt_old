@@ -109,3 +109,11 @@
 ;; (mchar-labels "noteheads" )
 ;; (mchar-label->mchar-code "C" "clefs" :haydn-11)
 
+(defun build-font (src)
+  (with-open-file (font (ensure-directories-exist
+			 (make-pathname :name (pathname-name src)
+					:type "lisp"
+					:directory '(:relative ".." "fonts"))
+			 :verbose t))))
+
+
