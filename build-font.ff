@@ -10,15 +10,25 @@ exportpath=$2;
 bboxpath=$3
 SelectWorthOutputting();
 
+
 foreach
- name=GlyphInfo("Name");
- bb=GlyphInfo("BBox");
- minx=ToString(bb[0]);
- miny=ToString(bb[1]);
- maxx=ToString(bb[2]);
- maxy=ToString(bb[3]);
- /*Invert top/y and bottom:*/
- WriteStringToFile(StrJoin([name,minx,miny,maxx,maxy,"\\n"]," "), bboxpath, 1);
- Export(exportpath+"%n.svg");
+
+name=GlyphInfo("Name");
+
+#shitty names
+if (Strsub(name,0,5) != "pedal")
+bb=GlyphInfo("BBox");
+minx=bb[0];
+miny=bb[1];
+maxx=bb[2];
+maxy=bb[3];
+/*maxy ist aus dem nicht-umgekehrtes Glyph (vertikal) berechnet, und
+ist */
+top=maxy*-1;
+bottom=miny*-1;
+WriteStringToFile(StrJoin([name,ToString(minx),ToString(top),ToString(maxx),ToString(bottom),ToString(maxx-minx),ToString(bottom-top),"\\n"]," "), bboxpath, 1);
+Export(exportpath+name+".svg");
+
+endif;
 
 endloop;

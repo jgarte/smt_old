@@ -17,11 +17,15 @@
   :depends-on ("smt/xml"
 	       "alexandria" "split-sequence" "cl-ppcre"
 	       "flexi-streams" "cxml")
-  :components ( 
+  :components ((:module "fonts"
+			;; Should rather Traverse through the dir
+			:components ((:file "haydn-11")))
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
+			     ;; install-font in glyph.lisp pushes font-name
+			     ;; to *font-list* in setup
 			     (:file "glyphs")
 			     (:file "rules")     
 			     (:file "canvas")
@@ -30,9 +34,11 @@
 			     (:file "accidentals")
 			     (:file "temps")
 			     (:file "clefs")
-			     
+			     ;;
+			     (:file "lines")
 			     )
-		))
+		)
+	       )
   )
 
 
@@ -44,10 +50,13 @@
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
   :components ((:file "package")
+	       ;; Call install-font here?	       
 	       (:module "rules"
 		:serial t
 		:components ((:file "types")
-			     (:file "cwmn")))))
+			     (:file "cwmn")))
+	       (:file "smt")
+	       ))
 
 (asdf:defsystem "smt/test"
   :serial t

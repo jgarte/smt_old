@@ -11,7 +11,7 @@
 
 (defun clef (spn &rest initargs &key &allow-other-keys)
   (apply #'make-instance 'clef :spn spn
-			       :code (clefspn->glyphname spn)
+			       ;; :code (clefspn->glyphname spn)
 			       initargs))
 
 

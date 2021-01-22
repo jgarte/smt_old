@@ -260,7 +260,7 @@
 		    ;; Setting the toplevel scaling of the score
 		    :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
 		    :content (append (list (mapcar #'svglst lst)
-					   (svg:rect 0 0 1 6
+					   (svg:rect 0 0 50 50
 						     :fill "red"
 						     :fill-opacity .7))))
 		   :width (getf (page-size page-format) :w)

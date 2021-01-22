@@ -34,7 +34,7 @@
 (defparameter *staff-line-thickness* 30)
 
 ;;; Stave
-(defrule null (stacked-form) (stacked) ("Drawing staff lines")
+(defrule null (stacked-form) (stacked) ("Drawing staff lines" 3)
   (null (me)
 	(loop
 	  :for line-idx :from -2 :to 2
@@ -44,6 +44,7 @@
 				    :stroke-linecap "round"
 				    :stroke "black")))))
 (ruledocs)
+(remrule 1)
 (defrule spn (notehead) (:treble)
     ("Assigns correct vertical positions to note-heads,
  based on their pitch-name and their octave." 1)
@@ -76,7 +77,7 @@
 	(and (eq pitch-name 'b) (= octave 4)))))
 (ruledocs)
 (defrule null (note) (:treble)
-    ("Draws stem lines on the <correct> side of the note N.")
+    ("Draws stem lines on the <correct> side of the note N." 2)
   (null (n)
 	;; Give the note object N a stem only when it's dur < whole-note
 	(when (< (dur n) 1)
@@ -119,7 +120,7 @@
   "Einstimmig Noten oder Pausen"
   (every #'(lambda (x) (and (sformp x)
 			    (only-type-p (content x)
-					 '(or note pause))))
+					 '(or note))))
 	 content))
 
 (deftype pure-temp-sform-seq () '(satisfies pure-temp-sform-seq-p))
@@ -176,7 +177,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
   )
 
 (defrule null (barline) (t)
-    ("Barline")
+    ("Barline" 4)
   (null (me parent)
 	(packsvg parent
 		 (svg:line (left parent) (top parent)
@@ -187,6 +188,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
   )
 (ruledocs)
 (remrule 7)
+
 ;;; Unit of Space width
 (let* ((absx 40)
        (w 184)
@@ -908,90 +910,162 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
   (render (list h h2 h3 h4 h5 h6 h7 h8 h9 h10 h11))
   )
 
+
 ;;;;;;;;;;;;;;;;;;;;;test
 (let* ((n (make-note '(c . 4)
 		     :id 'n
-		     :head (make-notehead "s0" :id 'nh)
-		     :canvas-vis-p nil))
+		     :head (make-notehead :name 'clefs.c :id 'nh)
+		     :canvas-vis-p t))
        (n2 (make-note '(f . 4) :id 'n2
-			       ;; :x-offset 20
-			       :head (make-notehead "s0" :id 'nh2)
-			       :canvas-vis-p nil))
-       (s (sform :content (list n (make-note nil :id 'n3
-
-					     :head (make-notehead "s0" :id 'nh3)))
+       			       ;; :x-offset 20
+       			       :head (make-notehead :name 'clefs.g :id 'nh2)
+       			       :canvas-vis-p t))
+       (s (sform :content (list n )
 		 :id 's
 		 :canvas-vis-p t))
        (s2 (sform :content (list n2) :id 's2
-		  :canvas-color "green"
-		  ))
+       		  :canvas-color "green"
+
+       		  ))
        (h (hform :content (list s s2) :id 'h
-		 :canvas-color "black"  :width 15
+		 :canvas-color "black"
 		 :toplevelp t)))
   (render (list h))
-  (width h)
   )
 
 
-(let* ((n (make-notehead "s1" :id 'n
-			 :canvas-color "green"))
-       (s (sform :content (list n) :id 's :toplevelp t)))
-  ;; (print (mapcar #'top (list n s)))
 
-  (render (list s))
+(render (list (make-notehead :name 'clefs.f :id 'nh :toplevelp t
+			     :absx 0 :absy 0
+			     :canvas-vis-p t
+			     :marker-vis-p nil
+			     :mchar-opac .4)
+	      ))
+(install-font "/home/amir/haydn/svg/haydn-11.svg")
+
+
+(let* ((absx 40)
+       (w 184)
+       (absy 100)
+       (h (hform
+	   :id 'h
+	   :absy absy
+	   :ruler 'content
+	   :width (mm-to-pxl w)
+	   :canvas-vis-p nil
+	   :canvas-color "pink"
+	   :canvas-opac 1
+	   :marker-vis-p nil
+	   :absx absx
+	   :toplevelp t
+	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-instance 'barline)))
+			  )
+	   :preproc (preproc x
+	  	      ((typep x 'notehead)
+		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  	       (setf (ruler x) 'spn
+	  		     (domain x) :treble
+	  		     (canvas-vis-p x) nil
+	  		     (marker-vis-p x) nil
+	  		     ))
+	  	      ((eq (class-name (class-of x)) 'note)
+	  	       (setf
+	  		;; Doubling the width temporarily to ease reading
+	  		;; (ruler x) '(:spn)
+	  		(domain x) :treble
+	  		(canvas-vis-p x) nil
+	  		(marker-vis-p x) nil
+	  		))
+	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
+			   (typep x 'barline))
+	  	       (setf
+	  		(canvas-vis-p x) nil
+			(canvas-color x) "green"
+	  		(marker-vis-p x) nil
+	  		)))))
+       (h1 (hform
+	   :id 'h
+	   :absy (incf absy 70)
+	   :ruler 'content
+	   :width (mm-to-pxl (- w 100))
+	   :canvas-vis-p nil
+	   :canvas-color "pink"
+	   :canvas-opac 1
+	   :marker-vis-p nil
+	   :absx absx
+	   :toplevelp t
+	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-instance 'barline)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-instance 'barline)))
+			  )
+	   :preproc (preproc x
+	  	      ((typep x 'notehead)
+		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  	       (setf (ruler x) 'spn
+	  		     (domain x) :treble
+	  		     (canvas-vis-p x) nil
+	  		     (marker-vis-p x) nil
+	  		     ))
+	  	      ((eq (class-name (class-of x)) 'note)
+	  	       (setf
+	  		;; Doubling the width temporarily to ease reading
+	  		;; (ruler x) '(:spn)
+	  		(domain x) :treble
+	  		(canvas-vis-p x) nil
+	  		(marker-vis-p x) nil
+	  		))
+	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
+			   (typep x 'barline))
+	  	       (setf
+	  		(canvas-vis-p x) nil
+			(canvas-color x) "green"
+	  		(marker-vis-p x) nil
+	  		)))))
+       )
+  ;; (incf (left (car (content h))) 10)
+  (render (list h h1))
   )
-
-(bcr-height (get-bcr "clefs.C" .font-family.))
-(- 191 (+ 14 12 2.5 4.5
-    1 1.5 2 1.5 2.5 2 2.5 1
-    2.5 2
-    4 1.5
-	  1))133.0
-;;; Achtel
-(/ (+ 3 4 3 3 4 4 3 4 4 3.5 3.5 4 3.5 5)
-   14)3.6785715 mm
-;;; Viertel
-(/ (+ 4 4 6 6 4 5.5 6 6)
-   8)5.1875 mm
-(/ 5.1875 3.6785715)1.4101942		;Ein Viertel ist so viel mal größer als ein Achtel
-;;; Halbe
-(/ (+ 8 7 7.5) 3)7.5
-(/ 7.5 5.1875)1.4457831			;Halbe / Viertel
-;;; Halbe punktiert
-(/ (+ 9 9) 2)9
-(/ 9 7.5)1.2				;PHalbe / Halbe
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 1.4101942 : 1.4457831 : 1.2 ;;;
-#|
-1 Viertel 1.4101942 Achtelabstände
-1 Halbe  (* 1.4101942 1.4457831) => 2.038835 Achtelabstände
-1 Punktierte Halbe (* 2.038835 1.2) => 2.446602 Achtelabstände
-|#
-;;; Summe
-(+ (+ 3 4 3 3 4 4 3 4 4 3.5 3.5 4 3.5 5)
-       (+ 4 4 6 6 4 5.5 6 6) (+ 8 7 7.5) (+ 9 9))133.5
-(let ((u (/ 133 29.0)))
-  (+ (* 14 u) (* 8.8 u) (* 3.6 u) (* 2.6 u)))
-;;;;;;;;;;;
-(ql:quickload "cxml")
-
-(with-open-file (stream "/tmp/etude.xml" :direction :output :if-exists :supersede)
-  (cxml:with-xml-output (cxml:make-character-stream-sink
-			 stream :indentation 2 :canonical nil)
-    (cxml:with-element "foo"
-      (cxml:attribute "xyz" "abc")
-      (cxml:attribute "asd" "8.123")
-      (cxml:with-element "bar"
-	(cxml:attribute "blub" "bla"))
-      (cxml:text "Hi there."))))
-
-
-(sb-ext:run-program
- "/usr/bin/fontforge"
- (list "-script" "/home/amir/Work/Lisp/smt/script.ff"
-       "/home/amir/haydn/svg/haydn-26.svg")
- :output *standard-output*)
-
-
-
-
-

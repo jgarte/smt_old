@@ -8,7 +8,7 @@
 ;; (load-time-value (defparameter *take* 0))
 
 
-(defstruct bcr x y width height top right bottom left)
+;; (defstruct bcr x y width height top right bottom left)
 
 (defparameter *central-registry* (make-hash-table)
   "Keep track of objects created")
@@ -18,8 +18,8 @@
 ;; (defparameter *xml-indentation-depth* 3)
 
 ;;; Default font
-(defparameter *font-families* '(:haydn-11))
-(define-symbol-macro .font-family. (car *font-families*))
+(defparameter *fonts* (list *haydn-11*))
+(define-symbol-macro .font. (car *fonts*))
 
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
@@ -50,11 +50,17 @@
 (defparameter *scale* 1
   "Global scaling factor for X and Y coordinates.")
 
+(defparameter *alto-name* 'clefs.c)
+
 ;;; and the actual internal factor
 (define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (bcr-height (get-bcr "clefs.C" .font-family.)))))
+				   (getf (mcharbb *alto-name*) 'height)
+				   ;; (bcr-height (mcharbb "uniE05C")
+				   ;; 	       ;; (get-bcr "clefs.C" .font.)
+				   ;; 	       )
+				   )))
 
 ;;; Line thickness for both cross and circle's contour
 (defparameter *marker-line-thickness* 4)

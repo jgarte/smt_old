@@ -31,89 +31,153 @@
     ;; Dynamic
     ("f" . "M-65,26c23.195301055908203,0,40,25,40,45c0,31,-19,31,-19,43c0,8,9.9375,9,18,9c38,0,90,-231,136,-383c3,-9,-7.753997802734375,-17,-16,-17l-58,0c-5.435550689697266,0,-8.232419967651367,-7.89544677734375,-8.232419967651367,-15.717193603515625c0,-7.67694091796875,2.6942901611328125,-15.282806396484375,8.232419967651367,-15.282806396484375l66,0c16,0,23.637001037597656,-8.644012451171875,29,-20c34.003997802734375,-71.99798583984375,106,-173,186,-173c46.8179931640625,0,90,23,90,79c0,29.4110107421875,-15,61,-46,61s-49,-11,-49,-41c0,-31,20,-29,20,-41c0,-6,-8.59698486328125,-8,-15,-8c-31,0,-43,64,-56,112c-1.990997314453125,7.35101318359375,2.753997802734375,17,11,17l53,0c7.143646240234375,0,10.619110107421875,9.5687255859375,10.619110107421875,19.226806640625c0,9.840179443359375,-3.607696533203125,19.773193359375,-10.619110107421875,19.773193359375l-70,0c-11.180999755859375,0,-20.958999633789062,5.240997314453125,-24,16c-26,92,-54.95500183105469,148.02100372314453,-90,223c-43,92,-117,201,-182,201c-56,0,-81,-32,-81,-74c0,-31.575199127197266,25,-57,57,-57Z")))
 
-(defparameter *haydn-11-bcr*
-  `(("noteheads.s0" . ,(make-bcr :bottom 141 :height 282 :left 0 :right 441
-				 :top -141 :width 441 :x 0 :y -141))
-    ("noteheads.s1" . ,(make-bcr :bottom 156 :height 312 :left 0
-				 :right 333 :top -156 :width 333 :x 0 :y -156))
-    ("noteheads.s2" . ,(make-bcr :bottom 139 :height 296 :left 0
-				 :right 300 :top -157 :width 300 :x 0 :y -157))
-    ("clefs.C" . ,(make-bcr :bottom 504.5333557128906
-    			    :height 1007.933349609375
-			    :left -2.6666717529296875
-    			    :right 669.0166778564453
-			    :top -503.3999938964844
-			    :width 671.683349609375
-			    :x -2.6666717529296875
-			    :y -503.3999938964844
-			    ))
-    ("clefs.F" . ,(make-bcr :bottom 579.2833251953125
-			    :height 829.2833251953125
-			    :left -84.16667175292969
-			    :right 699.0166778564453
-			    :top -250
-			    :width 783.183349609375
-			    :x -84.16667175292969
-			    :y -250
-			    ))
-    ("clefs.G" . ,(make-bcr :bottom 664.0167236328125
-			    :height 1778.4666748046875
-			    :left -16
-			    :right 632.0166625976562
-			    :top -1114.449951171875
-			    :width 648.0166625976562
-			    :x -16
-			    :y -1114.449951171875
-			    ))
-    ("f" . ,(make-bcr :bottom 157
-		      :height 658
-		      :left -122
-		      :right 407
-		      :top -501
-		      :width 529
-		      :x -122
-		      :y -501))))
+;; (defparameter *haydn-11-bcr*
+;;   `(("noteheads.s0" . ,(make-bcr :bottom 141 :height 282 :left 0 :right 441
+;; 				 :top -141 :width 441 :x 0 :y -141))
+;;     ("noteheads.s1" . ,(make-bcr :bottom 156 :height 312 :left 0
+;; 				 :right 333 :top -156 :width 333 :x 0 :y -156))
+;;     ("noteheads.s2" . ,(make-bcr :bottom 139 :height 296 :left 0
+;; 				 :right 300 :top -157 :width 300 :x 0 :y -157))
+;;     ("clefs.C" . ,(make-bcr :bottom 504.5333557128906
+;;     			    :height 1007.933349609375
+;; 			    :left -2.6666717529296875
+;;     			    :right 669.0166778564453
+;; 			    :top -503.3999938964844
+;; 			    :width 671.683349609375
+;; 			    :x -2.6666717529296875
+;; 			    :y -503.3999938964844
+;; 			    ))
+;;     ("clefs.F" . ,(make-bcr :bottom 579.2833251953125
+;; 			    :height 829.2833251953125
+;; 			    :left -84.16667175292969
+;; 			    :right 699.0166778564453
+;; 			    :top -250
+;; 			    :width 783.183349609375
+;; 			    :x -84.16667175292969
+;; 			    :y -250
+;; 			    ))
+;;     ("clefs.G" . ,(make-bcr :bottom 664.0167236328125
+;; 			    :height 1778.4666748046875
+;; 			    :left -16
+;; 			    :right 632.0166625976562
+;; 			    :top -1114.449951171875
+;; 			    :width 648.0166625976562
+;; 			    :x -16
+;; 			    :y -1114.449951171875
+;; 			    ))
+;;     ("f" . ,(make-bcr :bottom 157
+;; 		      :height 658
+;; 		      :left -122
+;; 		      :right 407
+;; 		      :top -501
+;; 		      :width 529
+;; 		      :x -122
+;; 		      :y -501))))
 
-
+;; (loop for (x . b) in *haydn-11-bcr*
+;;       always (and (= (bcr-x b) (bcr-left b))
+;; 		  (= (bcr-top b) (bcr-y b))
+;; 		  (= (bcr-width b) (- (bcr-right b) (bcr-left b)))
+;; 		  (= (bcr-height b) (- (bcr-bottom b) (bcr-top b)))
+;; 		  ))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; BEETHOVEN ;;;;;;;;;;;;;;;;;;;;;
+;;; https://common-lisp.net/project/cxml/quickstart.html
+(defun resolver (pubid sysid)
+  (declare (ignore pubid sysid))
+  (flexi-streams:make-in-memory-input-stream nil))
+;; (pathname-name "/tmp/")
+;;; uninstall-font
+(defun install-font (srcpath)
+  ;; Prepare data
+  (let* ((font-name (pathname-name srcpath))
+	 (exportpath (format nil "/tmp/~Aexport/" font-name))
+	 (bboxpath (format nil "/tmp/~A~A" font-name (string (gensym "BBOX")))))
+    (ensure-directories-exist exportpath)
+    (sb-ext:run-program
+     "/usr/bin/fontforge"
+     (list "-script" "/home/amir/Work/Lisp/smt/build-font.ff"
+    	   srcpath
+	   ;; $2 Where glyphs are exported (directory)
+	   (namestring exportpath)
+	   ;; $3 Where bboxes are written to (file),
+	   ;; this file will be created by Fontforge.
+	   bboxpath)
+     :output *standard-output*)
+    (with-open-file (font-file (format nil "/home/amir/Work/Lisp/smt/fonts/~A.lisp" font-name)
+    			       :direction :output
+    			       :if-does-not-exist :create
+    			       :if-exists :supersede)
+      (let ((xx
+	      ;; List name ,@bbox
+	      (with-open-file (bbox bboxpath)
+    		(loop for ln = (read-line bbox nil)
+    		      for trimln = (string-trim '(#\Space) ln)
+    		      for lst = (split-sequence:split-sequence
+    				 #\Space trimln)
+    		      while (and ln (not (string= (car lst) "")))
+		      ;; Keep the name of the glyph as string
+    		      collect (list (car lst) (mapcar #'read-from-string lst)))
+    		)))
+	;; Write to FONT-NAME.lisp
+	(format font-file "(in-package #:ngn)~%")
+	(format font-file "(defparameter *~A* '~A)~%" font-name
+		(loop for (str (name minx miny maxx maxy w h)) in xx
+		      for d = (second (second (second (fourth (fourth (cxml:parse-file (format nil "~A~A.svg" exportpath str)
+		      								       (cxml-xmls:make-xmls-builder)
+										       :entity-resolver #'resolver))))))
+		      collect (format nil "(~s ~a ~s)" name (list :x minx :left minx
+								  :y miny :top miny
+								  :right maxx :bottom maxy
+								  :width w :height h)
+				      d)))
+	;; Gather names
+	;; (format font-file "~&(defparameter *~A-names* '~A)" font-name (mapcar #'string (mapcar #'car xx)))
+	;; (format font-file "(push *~A* *fonts*)" font-name)
+	))
+    )
+  )
 
 
+;;;;;;;;;;;;;;;;;;
+;;; Font müssen alle geladen sein!
+(defun mchard (mchar-name &optional (font .font.))
+  (third (assoc mchar-name font)))
 
-(defun mchar-path-d (mchar-code family)
-  (ecase family
-    (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
+;; (bcr-height (second (assoc ".notdef" *bravura* :test #'string=)))
+;; (defun mchar-path-d (mchar-code family)
+;;   (ecase family
+;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
-(defun get-bcr (mchar-code family)
-  (ecase family
-    (:haydn-11 (cdr (assoc mchar-code *haydn-11-bcr* :test #'string=)))))
+(defun mcharbb (mchar-name &optional (font .font.))
+  (second (assoc mchar-name font)))
 
-(defun mchar-codes (family)
-  "code = class.label"
-  (mapcar #'car (ecase family (:haydn-11 *haydn-11-paths*))))
+;; (mcharbb 'uniE527)
+;; (defun bbx (bb) (getf  'x))
+;; (defun get-bcr (mchar-code family)
+;;   (ecase family
+;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-bcr* :test #'string=)))))
 
-(defun mchar-labels (class &optional (family .font-family.))
-  (let ((classlen (length class)))
-    (mapcar
-     #'(lambda (name) (second (split-sequence:split-sequence #\. name)))
-     (remove-if-not #'(lambda (s) (string= class s :end2 classlen))
-		    (remove-if #'(lambda (s) (<= (length s) classlen)) (mchar-codes family))))))
+;; (defun mchar-codes (family)
+;;   "code = class.label"
+;;   (mapcar #'car (ecase family (:haydn-11 *haydn-11-paths*))))
 
-(defun mchar-label->mchar-code (label class family)
-  (assert (member label (mchar-labels class family) :test #'string=)
-	  (label)
-  	  "Invalid label ~A for ~A!" label class)
-  (format nil "~A.~A" class label))
+;; (defun mchar-labels (class &optional (family .font.))
+;;   (let ((classlen (length class)))
+;;     (mapcar
+;;      #'(lambda (name) (second (split-sequence:split-sequence #\. name)))
+;;      (remove-if-not #'(lambda (s) (string= class s :end2 classlen))
+;; 		    (remove-if #'(lambda (s) (<= (length s) classlen)) (mchar-codes family))))))
+
+;; (defun mchar-label->mchar-code (label class family)
+;;   (assert (member label (mchar-labels class family) :test #'string=)
+;; 	  (label)
+;;   	  "Invalid label ~A for ~A!" label class)
+;;   (format nil "~A.~A" class label))
 
 ;; (mchar-labels "noteheads" )
 ;; (mchar-label->mchar-code "C" "clefs" :haydn-11)
 
-(defun build-font (src)
-  (with-open-file (font (ensure-directories-exist
-			 (make-pathname :name (pathname-name src)
-					:type "lisp"
-					:directory '(:relative ".." "fonts"))
-			 :verbose t))))
 
 

@@ -14,11 +14,11 @@
 	:initform nil)
    ))
 
-(defun make-notehead (label &rest initargs &key &allow-other-keys)
-  (let ((family (getf initargs :family .font-family.)))
+(defun make-notehead (&rest initargs &key &allow-other-keys)
+  (let ((family (getf initargs :family .font.)))
     (apply #'make-instance 'notehead
 	   :family family
-	   :code (mchar-label->mchar-code label "noteheads" family)
+	   ;; :code (mchar-label->mchar-code label "noteheads" family)
 	   initargs)))
 
 
@@ -48,14 +48,14 @@ thus this can't be STACKED!")
 
 (defun make-note (spn &rest initargs &key &allow-other-keys)
   ;; A certain notehead desired?
-  (let* ((family (getf initargs :family .font-family.))
+  (let* ((family (getf initargs :family .font.))
 	 (head-color (getf initargs :head-color "black"))
 	 (dur (getf initargs :dur 1/4))	 
 	 ;; If head supplied it's color is inside of it
 	 (head (lazy-getf initargs :head
-			  (make-notehead (duration->notehead-label dur)
-					 :family family
-					 :mchar-color head-color)))
+			  (make-notehead ;; (duration->notehead-label dur)
+			   :family family
+			   :mchar-color head-color)))
 	 )
     ;; (when head-color (setf (glyph-color head) head-color))
     ;; head inherits spn from note (need spn for rules referring to spn)
@@ -70,17 +70,17 @@ thus this can't be STACKED!")
 	   initargs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Rests
-(defclass pause (mchar temporal)
-  ())
+;; (defclass pause (mchar temporal)
+;;   ())
 
-(defun make-pause (&rest initargs &key &allow-other-keys)
-  (let ((family (getf initargs :family .font-family.))
-	(label (lazy-getf initargs :label (error "Making a pause requires label"))))
-    (apply #'make-instance 'pause
-	   :family family
-	   :code (mchar-label->mchar-code label "rests" family)
-	   initargs)))
-(defun pausep (obj) (typep obj 'pause))
+;; (defun make-pause (&rest initargs &key &allow-other-keys)
+;;   (let ((family (getf initargs :family .font.))
+;; 	(label (lazy-getf initargs :label (error "Making a pause requires label"))))
+;;     (apply #'make-instance 'pause
+;; 	   :family family
+;; 	   :code (mchar-label->mchar-code label "rests" family)
+;; 	   initargs)))
+;; (defun pausep (obj) (typep obj 'pause))
 
 
 ;;;;;;;;;;;;;;;;;;; Chord

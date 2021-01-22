@@ -9,6 +9,7 @@
 		 :documentation "Background color")
    (code :initarg :code
 	 :accessor code)
+   (name :initarg :name :reader name)
    (mchar-vis-p :initarg :mchar-vis-p
 		:initform t
 		:accessor mchar-vis-p)   
@@ -34,7 +35,9 @@ Composing Sticks."))
 ;;; uu needs to be involving the scaling, for su which is used for putting svg elements
 ;;; together is unscaled, since the scaling is written to the transFORM attribute
 (defmethod initialize-instance :after ((obj mchar) &key)
-  (setf (bcr obj) (get-bcr (code obj) (family obj))
+  (setf (bcr obj) (mcharbb (name obj))
+	;; (get-bcr (code obj) (family obj))
+	
 	;; Height and Width can be computed for Mtypes right away, since not
 	;; dependant on x or y!
 	(slot-value obj 'hslot) (refresh-height obj)
@@ -80,25 +83,37 @@ Composing Sticks."))
 
 ;;; Faghat baraye CS!!!!
 (defmethod calc-left ((obj mchar))
-  (+ (x obj) (toplvl-scale (bcr-left (bcr obj)))))
+  (+ (x obj) (toplvl-scale (getf (bcr obj) 'left)
+	      ;; (bcr-left (bcr obj))
+	      )))
 
 (defmethod calc-right ((obj mchar))
-  (+ (x obj) (toplvl-scale (bcr-right (bcr obj)))))
+  (+ (x obj) (toplvl-scale (getf (bcr obj) 'right)
+	      ;; (bcr-right (bcr obj))
+	      )))
 
 
 (defmethod width ((obj mchar))
   (slot-value obj 'wslot))
 (defmethod compwidth ((obj mchar))
-  (toplvl-scale (bcr-width (bcr obj))))
+  (toplvl-scale (getf (bcr obj) 'width)
+   ;; (bcr-width (bcr obj))
+   ))
 
 (defmethod refresh-top ((obj mchar))
-  (+ (y obj) (toplvl-scale (bcr-top (bcr obj)))))
+  (+ (y obj) (toplvl-scale (getf (bcr obj) 'top)
+	      ;; (bcr-top (bcr obj))
+	      )))
 
 (defmethod refresh-height ((obj mchar))
-  (toplvl-scale (bcr-height (bcr obj))))
+  (toplvl-scale (getf (bcr obj) 'height)
+   ;; (bcr-height (bcr obj))
+   ))
 
 (defmethod refresh-bottom ((obj mchar))
-  (+ (y obj) (toplvl-scale (bcr-bottom (bcr obj)))))
+  (+ (y obj) (toplvl-scale (getf (bcr obj) 'bottom)
+	      ;; (bcr-bottom (bcr obj))
+	      )))
 
 
 ;;; Will be written to SVG
@@ -118,11 +133,13 @@ Composing Sticks."))
     ;; push each one seperately into SVGLST
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     (push (xml-base::comment (format nil "Character ~A, Marker" (id obj))) (svglst obj)))  
-  (push (svg:path (mchar-path-d (code obj) (family obj))
+  (push (svg:path ;; (mchar-path-d (code obj) (family obj))
+		  (mchard (name obj))
 		  :fill (mchar-color obj) 
 		  :fill-opacity (mchar-opac obj)
 		  :id (symbol-name (id obj))
-		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (y-scaler obj))
+		  ;; Flip the glyph path vertically here (SY)
+		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
 	(svglst obj))
   (push (xml-base::comment (format nil "Character ~A" (id obj))) (svglst obj))
   ;; BCR Rect

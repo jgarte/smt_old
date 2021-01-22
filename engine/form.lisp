@@ -63,13 +63,29 @@ be the value of WIDTH if non-nil."
 ;;; Bei Mtype sind es alle so , vlcht sollte ich diese bei Mtype
 ;;; alle fixed-nennen????????????
 (defmethod fixed-top ((obj form))
-  (+ (y obj) (toplvl-scale (bcr-top (get-bcr "clefs.C" (family obj))))))
+  (+ (y obj) (toplvl-scale (getf (mcharbb *alto-name*) 'top)
+	      ;; (bcr-top
+	      ;; 		    (mcharbb "uniE05C")
+	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
+	      ;; 		    )
+	      )))
 
 (defmethod fixed-bottom ((obj form))
-  (+ (y obj) (toplvl-scale (bcr-bottom (get-bcr "clefs.C" (family obj))))))
+  ;; "uniE05C" is bravura alto, should find a solution to
+  ;; find out the alto clef of a font!!!
+  (+ (y obj) (toplvl-scale (getf (mcharbb *alto-name*) 'bottom)
+	      ;; (bcr-bottom (mcharbb "uniE05C")
+	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
+	      ;; 		    )
+	      )))
 
 (defmethod fixed-height ((obj form))
-  (toplvl-scale (bcr-height (get-bcr "clefs.C" (family obj)))))
+  ;; This is bravura alto clef
+  (toplvl-scale (getf (mcharbb *alto-name*) 'height)
+   ;; (bcr-height (mcharbb "uniE05C")
+		;; 	    ;; (get-bcr "clefs.C" (family obj))
+		;; 	    )
+		))
 
 
 

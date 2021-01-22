@@ -6,6 +6,11 @@
 ;; (defstruct ud
 ;;   left)
 
+;; (defun bcr-height (bblst)
+;;   (getf bblst 'height))
+;; (defun bcr-bottom (bbclst)
+;;   (getf bblst 'bottom))
+
 (defun cascaded-x-scaler (canvobj self-scaling-p cutoff-pred upwardp)
   (apply #'*
 	 ;; This is the internal global calc-x scaling
@@ -52,7 +57,7 @@ SVG, N results. Preserves N through the svg-calculations!"
    
    ;; Move this to a FORM
    (family :initarg :family
-	   :initform .font-family.
+	   :initform .font.
 	   :accessor family
 	   :documentation "Wenn man den Font vom
 Ganzen Stick z.B. auf einmal ändern möchte.")
