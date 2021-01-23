@@ -941,8 +941,8 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			     :marker-vis-p nil
 			     :mchar-opac .4)
 	      ))
-(install-font "/home/amir/haydn/svg/haydn-11.svg")
-.curfont. .fonts.
+(install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
+.font. .fonts.
 (font-chars)
 (getf (mcharbb 'clefs.c) :x)
 (setf *alto-name* 'clefs.c)

@@ -133,13 +133,13 @@
     )
   )
 
-(defun fontht (&optional (font .curfont.))
+(defun fontht (&optional (font .font.))
   (gethash font *fonts-hash-table*))
-(defun font-chars (&optional (font .curfont.))
+(defun font-chars (&optional (font .font.))
   (alexandria:hash-table-keys (fontht font)))
 ;;;;;;;;;;;;;;;;;;
 ;;; Font müssen alle geladen sein!
-(defun mchard (mcharsym &optional (font .curfont.))
+(defun mchard (mcharsym &optional (font .font.))
   (third (gethash mcharsym (gethash font *fonts-hash-table*))))
 
 
@@ -148,7 +148,7 @@
 ;;   (ecase family
 ;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
-(defun mcharbb (mcharsym &optional (font .curfont.))
+(defun mcharbb (mcharsym &optional (font .font.))
   (second (gethash mcharsym (gethash font *fonts-hash-table*))))
 
 

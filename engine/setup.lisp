@@ -20,7 +20,7 @@
 ;;; Default font
 (defparameter *fonts-hash-table* (make-hash-table))
 (define-symbol-macro .fonts. (alexandria:hash-table-keys *fonts-hash-table*))
-(define-symbol-macro .curfont. (car .fonts.))
+(define-symbol-macro .font. (car .fonts.))
 
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
