@@ -107,9 +107,9 @@ Composing Sticks."))
 	      )))
 
 (defmethod refresh-height ((obj mchar))
-  (print (toplvl-scale (getf (bcr obj) :height)
-		 ;; (bcr-height (bcr obj))
-		 )))
+  (toplvl-scale (getf (bcr obj) :height)
+		;; (bcr-height (bcr obj))
+		))
 
 (defmethod refresh-bottom ((obj mchar))
   (+ (y obj) (toplvl-scale (getf (bcr obj) :bottom)

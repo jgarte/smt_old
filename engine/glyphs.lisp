@@ -94,12 +94,12 @@
   (remhash font-name *fonts-hash-table*))
 
 (defun install-font (srcpath &optional (vsrg 'clefs.c) (update-current-font t))
+  (setf *vertical-space-reference-glyph* vsrg)
   ;; Prepare data
   (let* ((font-name (pathname-name srcpath))
 	 (font-sym (intern (string-upcase font-name)))
 	 (exportpath (format nil "/tmp/~AEXPORT/" font-name))
-	 (bboxpath (format nil "/tmp/~A~A" font-name (string (gensym "BBOX")))))
-    (setf *vertical-space-reference-glyph* vsrg)
+	 (bboxpath (format nil "/tmp/~A~A" font-name (string (gensym "BBOX")))))    
     (when update-current-font (setf *font* font-sym))
     (ensure-directories-exist exportpath)
     (sb-ext:run-program
