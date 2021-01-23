@@ -77,10 +77,10 @@
 	(and (eq pitch-name 'b) (= octave 4)))))
 (ruledocs)
 (defrule null (note) (:treble)
-    ("Draws stem lines on the <correct> side of the note N." 2)
+    ("Draws stem lines on the <correct> side of the note N. aber nicht für rests" 2)
   (null (n)
 	;; Give the note object N a stem only when it's dur < whole-note
-	(when (< (dur n) 1)
+	(when (and (< (dur n) 1) (not (eq (id n) 'r)))
 	  (let* ((dx .44)
 		 (dy 1.3)
 		 (head-top (top (head n)))
@@ -201,7 +201,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :canvas-vis-p nil
 	   :canvas-color "pink"
 	   :canvas-opac 1
-	   :marker-vis-p nil
+	   :origin-visible-p nil
 	   :absx absx
 	   :toplevelp t
 	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2)))
@@ -235,7 +235,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  	       (setf (ruler x) 'spn
 	  		     (domain x) :treble
 	  		     (canvas-vis-p x) nil
-	  		     (marker-vis-p x) nil
+	  		     (origin-visible-p x) nil
 	  		     ))
 	  	      ((eq (class-name (class-of x)) 'note)
 	  	       (setf
@@ -243,14 +243,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		;; (ruler x) '(:spn)
 	  		(domain x) :treble
 	  		(canvas-vis-p x) nil
-	  		(marker-vis-p x) nil
+	  		(origin-visible-p x) nil
 	  		))
 	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
 			   (typep x 'barline))
 	  	       (setf
 	  		(canvas-vis-p x) nil
 			(canvas-color x) "green"
-	  		(marker-vis-p x) nil
+	  		(origin-visible-p x) nil
 	  		))
 	  	      )
 	   ))
@@ -263,7 +263,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(d . 5) :dur .25)))
 			   (sform :content (list (make-note '(c . 5) :dur .25)))
@@ -302,7 +302,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -310,14 +310,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -331,7 +331,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -367,7 +367,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -375,14 +375,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -396,7 +396,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -432,7 +432,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -440,14 +440,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -461,7 +461,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -497,7 +497,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -505,14 +505,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -526,7 +526,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -562,7 +562,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -570,14 +570,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -591,7 +591,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -627,7 +627,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -635,14 +635,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -656,7 +656,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -692,7 +692,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -700,14 +700,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -721,7 +721,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -757,7 +757,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -765,14 +765,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -786,7 +786,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -822,7 +822,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -830,14 +830,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -850,7 +850,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	    :canvas-vis-p nil
 	    :canvas-color "pink"
 	    :canvas-opac 1
-	    :marker-vis-p nil
+	    :origin-visible-p nil
 	    :toplevelp t
 	    :content (list (sform :content (list (make-note '(a . 4) :dur .5)))
 			   (sform :content (list (make-note '(b . 4) :dur .25)))
@@ -886,7 +886,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble
 	  		      (canvas-vis-p x) nil
-	  		      (marker-vis-p x) nil
+	  		      (origin-visible-p x) nil
 	  		      ))
 	  	       ((eq (class-name (class-of x)) 'note)
 	  		(setf
@@ -894,14 +894,14 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		 ;; (ruler x) '(:spn)
 	  		 (domain x) :treble
 	  		 (canvas-vis-p x) nil
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
 			    (typep x 'barline))
 	  		(setf
 	  		 (canvas-vis-p x) nil
 			 (canvas-color x) "green"
-	  		 (marker-vis-p x) nil
+	  		 (origin-visible-p x) nil
 	  		 ))
 	  	       )
 	    ))
@@ -935,21 +935,24 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 
 (mcharbb 'clefs.f)
 
-(render (list (make-notehead :name 'clefs.f :id 'nh :toplevelp t
-			     :absx 0 :absy 0
+(render (list (make-notehead :name 'noteheads.s1 :id 'nh :toplevelp t
+			     ;; :absx 0 :absy 0
 			     :canvas-vis-p t
-			     :marker-vis-p nil
+			     :origin-visible-p nil
 			     :mchar-opac .4)
 	      ))
 
+(mcharbb 'noteheads.s1)
 
-(alexandria:hash-table-values (fontht))
-(getf (mcharbb 'clefs.c) :x)
-(setf *alto-name* 'clefs.c)
+
 (setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
+.fonts. *fonts-hash-table*
+
 (define-symbol-macro rndmchars (nth (random (length (alexandria:hash-table-keys (fontht)))) (alexandria:hash-table-keys (fontht))))
-(uninstall-font 'gutenberg1939-11)
+(uninstall-font 'svg)
 (install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
+(dolist (f .fonts.) (uninstall-font f))
+(glyph-present-p 'rests.2)
 (let* ((absx 40)
        (w 184)
        (absy 100)
@@ -961,10 +964,10 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :canvas-vis-p nil
 	   :canvas-color "pink"
 	   :canvas-opac 1
-	   :marker-vis-p nil
+	   :origin-visible-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'scripts.varsegno))))
+	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
@@ -974,7 +977,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'rests.2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'rests.2) :id 'r)))
 			  (sform :content (list (make-instance 'barline)))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
@@ -995,7 +998,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  	       (setf (ruler x) 'spn
 	  		     (domain x) :treble
 	  		     (canvas-vis-p x) nil
-	  		     (marker-vis-p x) nil
+	  		     (origin-visible-p x) t
 	  		     ))
 	  	      ((eq (class-name (class-of x)) 'note)
 	  	       (setf
@@ -1003,75 +1006,83 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	  		;; (ruler x) '(:spn)
 	  		(domain x) :treble
 	  		(canvas-vis-p x) nil
-	  		(marker-vis-p x) nil
+	  		(origin-visible-p x) nil
 	  		))
 	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
 			   (typep x 'barline))
 	  	       (setf
 	  		(canvas-vis-p x) nil
 			(canvas-color x) "green"
-	  		(marker-vis-p x) nil
+	  		(origin-visible-p x) nil
 	  		)))))
        (h1 (hform
-	   :id 'h
-	   :absy (incf absy 70)
-	   :ruler 'content
-	   :width (mm-to-pxl w)
-	   :canvas-vis-p nil
-	   :canvas-color "pink"
-	   :canvas-opac 1
-	   :marker-vis-p nil
-	   :absx absx
-	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'rests.2))))
-			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-instance 'barline)))
-			  )
-	   :preproc (preproc x
-	  	      ((typep x 'notehead)
-		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
-	  	       (setf (ruler x) 'spn
-	  		     (domain x) :treble
-	  		     (canvas-vis-p x) nil
-	  		     (marker-vis-p x) nil
-	  		     ))
-	  	      ((eq (class-name (class-of x)) 'note)
-	  	       (setf
-	  		;; Doubling the width temporarily to ease reading
-	  		;; (ruler x) '(:spn)
-	  		(domain x) :treble
-	  		(canvas-vis-p x) nil
-	  		(marker-vis-p x) nil
-	  		))
-	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
-			   (typep x 'barline))
-	  	       (setf
-	  		(canvas-vis-p x) nil
-			(canvas-color x) "green"
-	  		(marker-vis-p x) nil
-	  		)))))
+	    :id 'h
+	    :absy (incf absy 70)
+	    :ruler 'content
+	    :width (mm-to-pxl w)
+	    :canvas-vis-p nil
+	    :canvas-color "pink"
+	    :canvas-opac 1
+	    :origin-visible-p nil
+	    :absx absx
+	    :toplevelp t
+	    :content (list
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name 'clefs.g) :id 'r)))
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name 'clefs.g_change) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'clefs.f) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'clefs.f_change) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'clefs.c) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'clefs.c_change) :id 'r)))
+		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'scripts.upmordent))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.u2tiwalker))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2lawalker))))
+		      (sform :content (list (make-instance 'barline)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s0blackmensural))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s0blackmensural))))
+		      (sform :content (list (make-instance 'barline)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-instance 'barline)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'rests.2) :id 'r)))
+		      (sform :content (list (make-instance 'barline)))
+		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-instance 'barline)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+		      (sform :content (list (make-instance 'barline)))
+		      )
+	    :preproc (preproc x
+	  	       ((typep x 'notehead)
+			;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  		(setf (ruler x) 'spn
+	  		      (domain x) :treble
+	  		      (canvas-vis-p x) nil
+	  		      (origin-visible-p x) t
+	  		      ))
+	  	       ((eq (class-name (class-of x)) 'note)
+	  		(setf
+	  		 ;; Doubling the width temporarily to ease reading
+	  		 ;; (ruler x) '(:spn)
+	  		 (domain x) :treble
+	  		 (canvas-vis-p x) nil
+	  		 (origin-visible-p x) nil
+	  		 ))
+	  	       ((or (eq (class-name (class-of x)) 'stacked-form)
+			    (typep x 'barline))
+	  		(setf
+	  		 (canvas-vis-p x) nil
+			 (canvas-color x) "green"
+	  		 (origin-visible-p x) nil
+	  		 )))))
        )
   ;; (incf (left (car (content h))) 10)
   (render (list h h1))
   )
+(getf (mcharbb 'scripts.downmordent) :height)

@@ -93,15 +93,16 @@
   (delete font-name .fonts.)
   (remhash font-name *fonts-hash-table*))
 
-(defun install-font (srcpath)
+(defun install-font (srcpath &optional (vsrg 'clefs.c))
   ;; Prepare data
+  (setf *vertical-space-reference-glyph* vsrg)
   (let* ((font-name (pathname-name srcpath))
-	 (exportpath (format nil "/tmp/~Aexport/" font-name))
+	 (exportpath (format nil "/tmp/~AEXPORT/" font-name))
 	 (bboxpath (format nil "/tmp/~A~A" font-name (string (gensym "BBOX")))))
     (ensure-directories-exist exportpath)
     (sb-ext:run-program
      "/usr/bin/fontforge"
-     (list "-script" "/home/amir/Work/Lisp/smt/build-font.ff"
+     (list "-script" "/home/amir/Work/Lisp/smt/fontinstprep.ff"
     	   srcpath
 	   ;; $2 Where glyphs are exported (directory)
 	   (namestring exportpath)
@@ -140,10 +141,12 @@
   (gethash font *fonts-hash-table*))
 (defun font-chars (&optional (font .font.))
   (alexandria:hash-table-keys (fontht font)))
+(defun glyph-present-p (mchar-name &optional (font .font.))
+  (find mchar-name (font-chars font)))
 ;;;;;;;;;;;;;;;;;;
 ;;; Font müssen alle geladen sein!
 (defun mchard (mcharsym &optional (font .font.))
-  (third (gethash mcharsym (gethash font *fonts-hash-table*))))
+  (third (gethash mcharsym (fontht font))))
 
 
 ;; (bcr-height (second (assoc ".notdef" *bravura* :test #'string=)))
@@ -152,7 +155,7 @@
 ;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
 (defun mcharbb (mcharsym &optional (font .font.))
-  (second (gethash mcharsym (gethash font *fonts-hash-table*))))
+  (second (gethash mcharsym (fontht font))))
 
 
 ;; (defun bbx (bb) (getf  'x))

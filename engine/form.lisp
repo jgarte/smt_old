@@ -63,7 +63,7 @@ be the value of WIDTH if non-nil."
 ;;; Bei Mtype sind es alle so , vlcht sollte ich diese bei Mtype
 ;;; alle fixed-nennen????????????
 (defmethod fixed-top ((obj form))
-  (+ (y obj) (toplvl-scale (getf (mcharbb *alto-name*) :top)
+  (+ (y obj) (toplvl-scale (getf (mcharbb *vertical-space-reference-glyph*) :top)
 	      ;; (bcr-top
 	      ;; 		    (mcharbb "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
@@ -73,7 +73,7 @@ be the value of WIDTH if non-nil."
 (defmethod fixed-bottom ((obj form))
   ;; "uniE05C" is bravura alto, should find a solution to
   ;; find out the alto clef of a font!!!
-  (+ (y obj) (toplvl-scale (getf (mcharbb *alto-name*) :bottom)
+  (+ (y obj) (toplvl-scale (getf (mcharbb *vertical-space-reference-glyph*) :bottom)
 	      ;; (bcr-bottom (mcharbb "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
 	      ;; 		    )
@@ -81,7 +81,7 @@ be the value of WIDTH if non-nil."
 
 (defmethod fixed-height ((obj form))
   ;; This is bravura alto clef
-  (toplvl-scale (getf (mcharbb *alto-name*) :height)
+  (toplvl-scale (getf (mcharbb *vertical-space-reference-glyph*) :height)
    ;; (bcr-height (mcharbb "uniE05C")
 		;; 	    ;; (get-bcr "clefs.C" (family obj))
 		;; 	    )
@@ -279,7 +279,7 @@ computed width."
 
 (defmethod pack-svglst ((obj form))
   ;; Marker
-  (when (marker-vis-p obj)    
+  (when (origin-visible-p obj)    
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     ;; (push (svgize-marker obj) (svglst obj))
     (push (xml-base::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))

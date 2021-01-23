@@ -51,13 +51,17 @@
 (defparameter *scale* 1
   "Global scaling factor for X and Y coordinates.")
 
-(defparameter *alto-name* 'clefs.c)
+(defparameter *vertical-space-reference-glyph* 'clefs.c
+  "The relation between 4 staff spaces and the vertical dimension 
+of this glyph is used to find the global internal factor, by which all
+glyphs are scaled to ... By convention the vertical space of 
+stave is equal to the height of the alto clef, hence the default glyph.")
 
 ;;; and the actual internal factor
 (define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (getf (mcharbb *alto-name*) :height)
+				   (getf (mcharbb *vertical-space-reference-glyph*) :height)
 				   ;; (bcr-height (mcharbb "uniE05C")
 				   ;; 	       ;; (get-bcr "clefs.C" .font.)
 				   ;; 	       )

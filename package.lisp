@@ -27,7 +27,7 @@
 	   #:left #:width #:y #:x #:height
 	   #:spn #:top #:right #:stacked-form #:horizontal-form
 	   #:vertical-form #:ruledocs #:remrule #:content #:dur
-	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:marker-vis-p
+	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
 	   #:head #:canvas-color #:mchar-color #:render
 	   #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
 	   #:make-note #:make-notehead #:inspect-br

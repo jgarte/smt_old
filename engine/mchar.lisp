@@ -128,7 +128,7 @@ Composing Sticks."))
 
 (defmethod pack-svglst ((obj mchar))  
   ;; Marker  
-  (when (marker-vis-p obj)    
+  (when (origin-visible-p obj)    
     ;; Since svgize-marker consists of more than one svg-element,
     ;; push each one seperately into SVGLST
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))

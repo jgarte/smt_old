@@ -34,9 +34,9 @@
 	   :accessor domain)
    (ancestors :accessor ancestors
 	      :initform ())   
-   (marker-vis-p :initarg :marker-vis-p
+   (origin-visible-p :initarg :origin-visible-p
 		     :initform t
-		     :accessor marker-vis-p)))
+		     :accessor origin-visible-p)))
 
 
 

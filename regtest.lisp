@@ -56,10 +56,10 @@
 (def-test notehead-in-sform
     (:suite horizontal)
   (let* ((n (make-notehead "s0"
-			   :marker-vis-p t
+			   :origin-visible-p t
 			   :id 'n))
 	 (s (sform :content (list n)
-		   :marker-vis-p t
+		   :origin-visible-p t
 		   :toplevelp t
 		   :id 's))
 	 ;; Record initials for comparison & resetting
