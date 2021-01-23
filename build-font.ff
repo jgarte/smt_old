@@ -8,7 +8,7 @@ box array [minx,miny,maxx,maxy] of each glyph.*/
 Open($1);
 exportpath=$2;
 bboxpath=$3
-SelectWorthOutputting();
+SelectAll();
 
 
 foreach

@@ -941,8 +941,11 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			     :marker-vis-p nil
 			     :mchar-opac .4)
 	      ))
-(install-font "/home/amir/haydn/svg/haydn-11.svg")
-
+(install-font "/home/amir/lilyjazz/svg/lilyjazz-11.svg")
+(push *lilyjazz-11* *fonts* )
+(setf *alto-name* 'clefs.c)
+(setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
+(define-symbol-macro rndmchars (nth (random (length (mapcar #'first .font.))) (mapcar #'first .font.)))
 
 (let* ((absx 40)
        (w 184)
@@ -958,8 +961,8 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :marker-vis-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name rndmchars))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name rndmchars))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
 			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
@@ -1010,7 +1013,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :id 'h
 	   :absy (incf absy 70)
 	   :ruler 'content
-	   :width (mm-to-pxl (- w 100))
+	   :width (mm-to-pxl w)
 	   :canvas-vis-p nil
 	   :canvas-color "pink"
 	   :canvas-opac 1
