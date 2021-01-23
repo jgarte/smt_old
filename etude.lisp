@@ -941,14 +941,15 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			     :marker-vis-p nil
 			     :mchar-opac .4)
 	      ))
-(install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
-.font. .fonts.
-(font-chars)
+
+
+(alexandria:hash-table-values (fontht))
 (getf (mcharbb 'clefs.c) :x)
 (setf *alto-name* 'clefs.c)
 (setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
 (define-symbol-macro rndmchars (nth (random (length (alexandria:hash-table-keys (fontht)))) (alexandria:hash-table-keys (fontht))))
-
+(uninstall-font 'gutenberg1939-11)
+(install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
 (let* ((absx 40)
        (w 184)
        (absy 100)
@@ -963,7 +964,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :marker-vis-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'scripts.varsegno))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))

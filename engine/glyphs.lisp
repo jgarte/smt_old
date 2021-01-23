@@ -89,6 +89,9 @@
   (flexi-streams:make-in-memory-input-stream nil))
 ;; (pathname-name "/tmp/")
 ;;; uninstall-font
+(defun uninstall-font (font-name)
+  (delete font-name .fonts.)
+  (remhash font-name *fonts-hash-table*))
 
 (defun install-font (srcpath)
   ;; Prepare data
