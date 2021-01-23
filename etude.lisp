@@ -933,7 +933,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
   (render (list h))
   )
 
-
+(mcharbb 'clefs.f)
 
 (render (list (make-notehead :name 'clefs.f :id 'nh :toplevelp t
 			     :absx 0 :absy 0
@@ -941,11 +941,13 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			     :marker-vis-p nil
 			     :mchar-opac .4)
 	      ))
-(install-font "/home/amir/lilyjazz/svg/lilyjazz-11.svg")
-(push *lilyjazz-11* *fonts* )
+(install-font "/home/amir/haydn/svg/haydn-11.svg")
+.curfont. .fonts.
+(font-chars)
+(getf (mcharbb 'clefs.c) :x)
 (setf *alto-name* 'clefs.c)
 (setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
-(define-symbol-macro rndmchars (nth (random (length (mapcar #'first .font.))) (mapcar #'first .font.)))
+(define-symbol-macro rndmchars (nth (random (length (alexandria:hash-table-keys (fontht)))) (alexandria:hash-table-keys (fontht))))
 
 (let* ((absx 40)
        (w 184)
@@ -961,8 +963,8 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 	   :marker-vis-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name rndmchars))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name rndmchars))))
+	   :content (list (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
 			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
@@ -971,7 +973,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'rests.2))))
 			  (sform :content (list (make-instance 'barline)))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
@@ -1035,7 +1037,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'rests.2))))
 			  (sform :content (list (make-instance 'barline)))
 			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))

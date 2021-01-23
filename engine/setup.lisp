@@ -18,8 +18,9 @@
 ;; (defparameter *xml-indentation-depth* 3)
 
 ;;; Default font
-(defparameter *fonts* (list *haydn-11*))
-(define-symbol-macro .font. (car *fonts*))
+(defparameter *fonts-hash-table* (make-hash-table))
+(define-symbol-macro .fonts. (alexandria:hash-table-keys *fonts-hash-table*))
+(define-symbol-macro .curfont. (car .fonts.))
 
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
@@ -56,7 +57,7 @@
 (define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (getf (mcharbb *alto-name*) 'height)
+				   (getf (mcharbb *alto-name*) :height)
 				   ;; (bcr-height (mcharbb "uniE05C")
 				   ;; 	       ;; (get-bcr "clefs.C" .font.)
 				   ;; 	       )

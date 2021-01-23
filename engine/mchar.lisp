@@ -83,12 +83,12 @@ Composing Sticks."))
 
 ;;; Faghat baraye CS!!!!
 (defmethod calc-left ((obj mchar))
-  (+ (x obj) (toplvl-scale (getf (bcr obj) 'left)
+  (+ (x obj) (toplvl-scale (getf (bcr obj) :left)
 	      ;; (bcr-left (bcr obj))
 	      )))
 
 (defmethod calc-right ((obj mchar))
-  (+ (x obj) (toplvl-scale (getf (bcr obj) 'right)
+  (+ (x obj) (toplvl-scale (getf (bcr obj) :right)
 	      ;; (bcr-right (bcr obj))
 	      )))
 
@@ -96,22 +96,22 @@ Composing Sticks."))
 (defmethod width ((obj mchar))
   (slot-value obj 'wslot))
 (defmethod compwidth ((obj mchar))
-  (toplvl-scale (getf (bcr obj) 'width)
+  (toplvl-scale (getf (bcr obj) :width)
    ;; (bcr-width (bcr obj))
    ))
 
 (defmethod refresh-top ((obj mchar))
-  (+ (y obj) (toplvl-scale (getf (bcr obj) 'top)
+  (+ (y obj) (toplvl-scale (getf (bcr obj) :top)
 	      ;; (bcr-top (bcr obj))
 	      )))
 
 (defmethod refresh-height ((obj mchar))
-  (toplvl-scale (getf (bcr obj) 'height)
+  (toplvl-scale (getf (bcr obj) :height)
    ;; (bcr-height (bcr obj))
    ))
 
 (defmethod refresh-bottom ((obj mchar))
-  (+ (y obj) (toplvl-scale (getf (bcr obj) 'bottom)
+  (+ (y obj) (toplvl-scale (getf (bcr obj) :bottom)
 	      ;; (bcr-bottom (bcr obj))
 	      )))
 

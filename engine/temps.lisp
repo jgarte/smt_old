@@ -15,7 +15,7 @@
    ))
 
 (defun make-notehead (&rest initargs &key &allow-other-keys)
-  (let ((family (getf initargs :family .font.)))
+  (let ((family (getf initargs :family .curfont.)))
     (apply #'make-instance 'notehead
 	   :family family
 	   ;; :code (mchar-label->mchar-code label "noteheads" family)
@@ -48,7 +48,7 @@ thus this can't be STACKED!")
 
 (defun make-note (spn &rest initargs &key &allow-other-keys)
   ;; A certain notehead desired?
-  (let* ((family (getf initargs :family .font.))
+  (let* ((family (getf initargs :family .curfont.))
 	 (head-color (getf initargs :head-color "black"))
 	 (dur (getf initargs :dur 1/4))	 
 	 ;; If head supplied it's color is inside of it

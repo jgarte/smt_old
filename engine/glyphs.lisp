@@ -89,6 +89,7 @@
   (flexi-streams:make-in-memory-input-stream nil))
 ;; (pathname-name "/tmp/")
 ;;; uninstall-font
+
 (defun install-font (srcpath)
   ;; Prepare data
   (let* ((font-name (pathname-name srcpath))
@@ -105,55 +106,52 @@
 	   ;; this file will be created by Fontforge.
 	   bboxpath)
      :output *standard-output*)
-    (with-open-file (font-file (format nil "/home/amir/Work/Lisp/smt/fonts/~A.lisp" font-name)
-    			       :direction :output
-    			       :if-does-not-exist :create
-    			       :if-exists :supersede)
-      (let ((xx
-	      ;; List name ,@bbox
-	      (with-open-file (bbox bboxpath)
-    		(loop for ln = (read-line bbox nil)
-    		      for trimln = (string-trim '(#\Space) ln)
-    		      for lst = (split-sequence:split-sequence
-    				 #\Space trimln)
-    		      while (and ln (not (string= (car lst) "")))
-		      ;; Keep the name of the glyph as string
-    		      collect (list (car lst) (mapcar #'read-from-string lst)))
-    		)))
-	;; Write to FONT-NAME.lisp
-	(format font-file "(in-package #:ngn)~%")
-	(format font-file "(defparameter *~A* '~A)~%" font-name
-		(loop for (str (name minx miny maxx maxy w h)) in xx
-		      for d = (second (second (second (fourth (fourth (cxml:parse-file (format nil "~A~A.svg" exportpath str)
-		      								       (cxml-xmls:make-xmls-builder)
-										       :entity-resolver #'resolver))))))
-		      collect (format nil "(~s ~a ~s)" name (list :x minx :left minx
-								  :y miny :top miny
-								  :right maxx :bottom maxy
-								  :width w :height h)
-				      d)))
-	;; Gather names
-	;; (format font-file "~&(defparameter *~A-names* '~A)" font-name (mapcar #'string (mapcar #'car xx)))
-	;; (format font-file "(push *~A* *fonts*)" font-name)
-	))
+    (setf (gethash (intern (string-upcase font-name)) *fonts-hash-table*) (make-hash-table))
+    (let ((xx
+	    ;; List name ,@bbox
+	    (with-open-file (bbox bboxpath)
+    	      (loop for ln = (read-line bbox nil)
+    		    for trimln = (string-trim '(#\Space) ln)
+    		    for lst = (split-sequence:split-sequence
+    			       #\Space trimln)
+    		    while (and ln (not (string= (car lst) "")))
+		    ;; Keep the name of the glyph as string
+    		    collect (list (car lst) (mapcar #'read-from-string lst)))
+    	      )))
+      (loop for (str (name minx miny maxx maxy w h)) in xx
+	    for d = (second (second (second (fourth (fourth (cxml:parse-file (format nil "~A~A.svg" exportpath str)
+		      							     (cxml-xmls:make-xmls-builder)
+									     :entity-resolver #'resolver))))))
+	    do (setf (gethash (intern (string-upcase name))
+			      (gethash (intern (string-upcase font-name)) *fonts-hash-table*))
+		     (list name (list :x minx :left minx
+				      :y miny :top miny
+				      :right maxx :bottom maxy
+				      :width w :height h) d))
+	    )
+      )
     )
   )
 
-
+(defun fontht (&optional (font .curfont.))
+  (gethash font *fonts-hash-table*))
+(defun font-chars (&optional (font .curfont.))
+  (alexandria:hash-table-keys (fontht font)))
 ;;;;;;;;;;;;;;;;;;
 ;;; Font müssen alle geladen sein!
-(defun mchard (mchar-name &optional (font .font.))
-  (third (assoc mchar-name font)))
+(defun mchard (mcharsym &optional (font .curfont.))
+  (third (gethash mcharsym (gethash font *fonts-hash-table*))))
+
 
 ;; (bcr-height (second (assoc ".notdef" *bravura* :test #'string=)))
 ;; (defun mchar-path-d (mchar-code family)
 ;;   (ecase family
 ;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
-(defun mcharbb (mchar-name &optional (font .font.))
-  (second (assoc mchar-name font)))
+(defun mcharbb (mcharsym &optional (font .curfont.))
+  (second (gethash mcharsym (gethash font *fonts-hash-table*))))
 
-;; (mcharbb 'uniE527)
+
 ;; (defun bbx (bb) (getf  'x))
 ;; (defun get-bcr (mchar-code family)
 ;;   (ecase family

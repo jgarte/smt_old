@@ -17,9 +17,7 @@
   :depends-on ("smt/xml"
 	       "alexandria" "split-sequence" "cl-ppcre"
 	       "flexi-streams" "cxml")
-  :components ((:module "fonts"
-			;; Should rather Traverse through the dir
-			:components ((:file "haydn-11")))
+  :components (
 	       (:module "engine"
 		:serial t
 		:components ((:file "setup")
