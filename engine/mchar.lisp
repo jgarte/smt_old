@@ -35,7 +35,7 @@ Composing Sticks."))
 ;;; uu needs to be involving the scaling, for su which is used for putting svg elements
 ;;; together is unscaled, since the scaling is written to the transFORM attribute
 (defmethod initialize-instance :after ((obj mchar) &key)
-  (setf (bcr obj) (mcharbb (name obj))
+  (setf (bcr obj) (glyph-bbox (name obj))
 	;; (get-bcr (code obj) (family obj))
 	
 	;; Height and Width can be computed for Mtypes right away, since not
@@ -44,6 +44,7 @@ Composing Sticks."))
 	(slot-value obj 'wslot) (compwidth obj))
   ;; Allow a mchar obj to be rendered as standalone when it's toplevel.
   ;; No need for :h :w, since already computed above!
+
   (when (toplevelp obj)
     (refresh-bcr! obj :x t :y t :l t :r t :t t :b t))
   )
@@ -106,9 +107,9 @@ Composing Sticks."))
 	      )))
 
 (defmethod refresh-height ((obj mchar))
-  (toplvl-scale (getf (bcr obj) :height)
-   ;; (bcr-height (bcr obj))
-   ))
+  (print (toplvl-scale (getf (bcr obj) :height)
+		 ;; (bcr-height (bcr obj))
+		 )))
 
 (defmethod refresh-bottom ((obj mchar))
   (+ (y obj) (toplvl-scale (getf (bcr obj) :bottom)

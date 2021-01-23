@@ -90,15 +90,17 @@
 ;; (pathname-name "/tmp/")
 ;;; uninstall-font
 (defun uninstall-font (font-name)
-  (delete font-name .fonts.)
+  (delete font-name .installed-fonts.)
   (remhash font-name *fonts-hash-table*))
 
-(defun install-font (srcpath &optional (vsrg 'clefs.c))
+(defun install-font (srcpath &optional (vsrg 'clefs.c) (update-current-font t))
   ;; Prepare data
-  (setf *vertical-space-reference-glyph* vsrg)
   (let* ((font-name (pathname-name srcpath))
+	 (font-sym (intern (string-upcase font-name)))
 	 (exportpath (format nil "/tmp/~AEXPORT/" font-name))
 	 (bboxpath (format nil "/tmp/~A~A" font-name (string (gensym "BBOX")))))
+    (setf *vertical-space-reference-glyph* vsrg)
+    (when update-current-font (setf *font* font-sym))
     (ensure-directories-exist exportpath)
     (sb-ext:run-program
      "/usr/bin/fontforge"
@@ -110,7 +112,7 @@
 	   ;; this file will be created by Fontforge.
 	   bboxpath)
      :output *standard-output*)
-    (setf (gethash (intern (string-upcase font-name)) *fonts-hash-table*) (make-hash-table))
+    (setf (gethash font-sym *fonts-hash-table*) (make-hash-table))
     (let ((xx
 	    ;; List name ,@bbox
 	    (with-open-file (bbox bboxpath)
@@ -137,16 +139,16 @@
     )
   )
 
-(defun fontht (&optional (font .font.))
+(defun fontht (&optional (font *font*))
   (gethash font *fonts-hash-table*))
-(defun font-chars (&optional (font .font.))
+(defun font-chars (&optional (font *font*))
   (alexandria:hash-table-keys (fontht font)))
-(defun glyph-present-p (mchar-name &optional (font .font.))
+(defun glyph-present-p (mchar-name &optional (font *font*))
   (find mchar-name (font-chars font)))
 ;;;;;;;;;;;;;;;;;;
 ;;; Font müssen alle geladen sein!
-(defun mchard (mcharsym &optional (font .font.))
-  (third (gethash mcharsym (fontht font))))
+(defun mchard (glyph-name &optional (font *font*))
+  (third (gethash glyph-name (fontht font))))
 
 
 ;; (bcr-height (second (assoc ".notdef" *bravura* :test #'string=)))
@@ -154,8 +156,8 @@
 ;;   (ecase family
 ;;     (:haydn-11 (cdr (assoc mchar-code *haydn-11-paths* :test #'string=)))))
 
-(defun mcharbb (mcharsym &optional (font .font.))
-  (second (gethash mcharsym (fontht font))))
+(defun glyph-bbox (glyph-name &optional (font *font*))
+  (second (gethash glyph-name (fontht font))))
 
 
 ;; (defun bbx (bb) (getf  'x))
@@ -167,7 +169,7 @@
 ;;   "code = class.label"
 ;;   (mapcar #'car (ecase family (:haydn-11 *haydn-11-paths*))))
 
-;; (defun mchar-labels (class &optional (family .font.))
+;; (defun mchar-labels (class &optional (family *font*))
 ;;   (let ((classlen (length class)))
 ;;     (mapcar
 ;;      #'(lambda (name) (second (split-sequence:split-sequence #\. name)))

@@ -36,6 +36,10 @@
 			     (:file "lines")
 			     )
 		)
+	       (:module "rules"
+		:serial t
+		:components ((:file "types")
+			     (:file "cwmn")))
 	       )
   )
 
@@ -47,12 +51,7 @@
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
-  :components ((:file "package")
-	       ;; Call install-font here?	       
-	       (:module "rules"
-		:serial t
-		:components ((:file "types")
-			     (:file "cwmn")))
+  :components ((:file "package")	       
 	       (:file "smt")
 	       ))
 

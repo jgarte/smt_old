@@ -22,16 +22,28 @@
 
 (defpackage #:smt-engine
   (:use #:cl) (:nicknames "NGN")
-  (:export #:sform #:hform #:defrule #:packsvg
-	   #:*staff-line-thickness*
-	   #:left #:width #:y #:x #:height
-	   #:spn #:top #:right #:stacked-form #:horizontal-form
-	   #:vertical-form #:ruledocs #:remrule #:content #:dur
-	   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
-	   #:head #:canvas-color #:mchar-color #:render
-	   #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
-	   #:make-note #:make-notehead #:inspect-br
-	   ))
+  (:export
+   ;; Forms
+   #:sformp
+   #:sform #:hform #:defrule #:packsvg
+   #:*staff-line-thickness*
+   #:left #:width #:y #:x #:height
+   #:spn #:top #:right #:stacked-form #:horizontal-form
+   #:vertical-form #:ruledocs #:remrule #:content #:dur
+   #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
+   #:head #:canvas-color #:mchar-color #:render
+   #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
+   #:make-note #:make-notehead #:inspect-br
+   ;; Notes
+   #:note #:notehead
+   ;; Lines
+   #:barline
+   ;;
+   #:mm-to-px
+   ;; Fonts
+   #:install-font #:uninstall-font #:*font* #:.installed-fonts. #:*fonts-hash-table*
+   #:glyph-present-p #:glyph-bbox
+   ))
 
 (defpackage #:smt
   (:use #:cl #:ngn)

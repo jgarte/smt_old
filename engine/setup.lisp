@@ -19,30 +19,31 @@
 
 ;;; Default font
 (defparameter *fonts-hash-table* (make-hash-table))
-(define-symbol-macro .fonts. (alexandria:hash-table-keys *fonts-hash-table*))
-(define-symbol-macro .font. (car .fonts.))
+(define-symbol-macro .installed-fonts. (alexandria:hash-table-keys *fonts-hash-table*))
+(defparameter *font* 'haydn-11)
+
 
 ;;; Converting mm to pixel and vv.
 ;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
 
-(defconstant +pxl-per-mm+ 3.7795275591 "Pixels per mm")
+(defconstant +px-per-mm+ 3.7795275591 "Pixels per mm")
 
 (eval-when (:compile-toplevel :load-toplevel)
   ;; Need this for the margins constants later in the file
   ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
-  (defun mm-to-pxl (mm) (* mm +pxl-per-mm+)))
+  (defun mm-to-px (mm) (* mm +px-per-mm+)))
 
 
 (defun chlapik-staff-space (rastral-no)
   "Rastral Größen wie bei Chlapik S. 32 beschrieben."
   (ecase rastral-no
-    (2 (mm-to-pxl 1.88))
-    (3 (mm-to-pxl 1.755))
-    (4 (mm-to-pxl 1.6))
-    (5 (mm-to-pxl 1.532))
-    (6 (mm-to-pxl 1.4))
-    (7 (mm-to-pxl 1.19))
-    (8 (mm-to-pxl 1.02))))
+    (2 (mm-to-px 1.88))
+    (3 (mm-to-px 1.755))
+    (4 (mm-to-px 1.6))
+    (5 (mm-to-px 1.532))
+    (6 (mm-to-px 1.4))
+    (7 (mm-to-px 1.19))
+    (8 (mm-to-px 1.02))))
 
 (defparameter *staff-space* (chlapik-staff-space 2))
 
@@ -61,8 +62,8 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (getf (mcharbb *vertical-space-reference-glyph*) :height)
-				   ;; (bcr-height (mcharbb "uniE05C")
+				   (getf (glyph-bbox *vertical-space-reference-glyph*) :height)
+				   ;; (bcr-height (glyph-bbox "uniE05C")
 				   ;; 	       ;; (get-bcr "clefs.C" .font.)
 				   ;; 	       )
 				   )))
@@ -100,18 +101,18 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (defconstant +stick-y-origin+ 0)
 
 ;;; Page margines: Measured from Schubert Sonate, Henle
-(defconstant +right-margin+ (mm-to-pxl 25))
-(defconstant +left-margin+ (mm-to-pxl 36))
-(defconstant +top-margin+ (mm-to-pxl 56))
+(defconstant +right-margin+ (mm-to-px 25))
+(defconstant +left-margin+ (mm-to-px 36))
+(defconstant +top-margin+ (mm-to-px 56))
 
 
 
 (defun page-size (format)
   "Returns format's page size in pixels. BB p.481"
   (ecase format
-    (:a3 (list :h (mm-to-pxl 420) :w (mm-to-pxl 297)))
-    (:b4 (list :h (mm-to-pxl 353) :w (mm-to-pxl 250)))
-    (:a4 (list :h (mm-to-pxl 297) :w (mm-to-pxl 210)))))
+    (:a3 (list :h (mm-to-px 420) :w (mm-to-px 297)))
+    (:b4 (list :h (mm-to-px 353) :w (mm-to-px 250)))
+    (:a4 (list :h (mm-to-px 297) :w (mm-to-px 210)))))
 
 (defparameter *page-format* :a4)
 

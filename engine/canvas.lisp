@@ -57,7 +57,7 @@ SVG, N results. Preserves N through the svg-calculations!"
    
    ;; Move this to a FORM
    (family :initarg :family
-	   :initform .font.
+	   :initform *font*
 	   :accessor family
 	   :documentation "Wenn man den Font vom
 Ganzen Stick z.B. auf einmal ändern möchte.")
