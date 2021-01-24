@@ -789,16 +789,15 @@
 
 
 
-
 (install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
 .installed-fonts. *font*
 
 (dolist (f .fonts.) (uninstall-font f))
 (glyph-present-p 'clefs.c)
 
-(let* ((absx 20)
+(let* ((absx 30)
        (w 184)
-       (absy 100)
+       (absy 40)
        (h (hform
 	   :id 'h
 	   :absy absy

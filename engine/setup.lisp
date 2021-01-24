@@ -72,31 +72,31 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 				   )))
 
 ;;; Line thickness for both cross and circle's contour
-(defparameter *marker-line-thickness* 4)
+(defparameter *origin-line-thickness* 10)
 ;;; Marker's Cross
-(defparameter *mchar-marker-cross-color* "deeppink")
-(defparameter *sform-marker-cross-color* "tomato")
-(defparameter *hform-marker-cross-color* "green")
-(defparameter *vform-marker-cross-color* "blue")
-(defparameter *marker-cross-length* 40 "Line length")
+(defparameter *mchar-origin-cross-color* "deeppink")
+(defparameter *sform-origin-cross-color* "tomato")
+(defparameter *hform-origin-cross-color* "green")
+(defparameter *vform-origin-cross-color* "blue")
+(defparameter *origin-cross-length* 40 "Line length")
 
-(defparameter *marker-circle-r* 2)
-(defparameter *marker-circle-opac* .2)
+(defparameter *origin-circle-r* 4)
+(defparameter *origin-circle-opac* .3)
 ;;; Marker's Circle
-(define-symbol-macro %mchar-marker-circle-color% *mchar-marker-cross-color*)
-(define-symbol-macro %mchar-marker-circle-contour-color% *mchar-marker-cross-color*)
-(define-symbol-macro %sform-marker-circle-color% *sform-marker-cross-color*)
-(define-symbol-macro %sform-marker-circle-contour-color% *sform-marker-cross-color*)
-(define-symbol-macro %hform-marker-circle-color% *hform-marker-cross-color*)
-(define-symbol-macro %hform-marker-circle-contour-color% *hform-marker-cross-color*)
-(define-symbol-macro %vform-marker-circle-color% *vform-marker-cross-color*)
-(define-symbol-macro %vform-marker-circle-contour-color% *vform-marker-cross-color*)
+(define-symbol-macro %mchar-origin-circle-color% *mchar-origin-cross-color*)
+(define-symbol-macro %mchar-origin-circle-contour-color% *mchar-origin-cross-color*)
+(define-symbol-macro %sform-origin-circle-color% *sform-origin-cross-color*)
+(define-symbol-macro %sform-origin-circle-contour-color% *sform-origin-cross-color*)
+(define-symbol-macro %hform-origin-circle-color% *hform-origin-cross-color*)
+(define-symbol-macro %hform-origin-circle-contour-color% *hform-origin-cross-color*)
+(define-symbol-macro %vform-origin-circle-color% *vform-origin-cross-color*)
+(define-symbol-macro %vform-origin-circle-contour-color% *vform-origin-cross-color*)
 
 ;;; Chase backgrounds follow their marker counterparts
-(define-symbol-macro %mchar-canvas-color% *mchar-marker-cross-color*)
-(define-symbol-macro %sform-canvas-color% *sform-marker-cross-color*)
-(define-symbol-macro %hform-canvas-color% *hform-marker-cross-color*)
-(define-symbol-macro %vform-canvas-color% *vform-marker-cross-color*)
+(define-symbol-macro %mchar-canvas-color% *mchar-origin-cross-color*)
+(define-symbol-macro %sform-canvas-color% *sform-origin-cross-color*)
+(define-symbol-macro %hform-canvas-color% *hform-origin-cross-color*)
+(define-symbol-macro %vform-canvas-color% *vform-origin-cross-color*)
 
 ;;; Just name the origin-point of the sticks (no magical numbers),
 ;;; XY origins are always 0!

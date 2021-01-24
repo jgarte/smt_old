@@ -9,8 +9,8 @@ SelectAll();
 
 foreach
 
-name=GlyphInfo("Name");
-
+ name=GlyphInfo("Name");
+ Print(name);
  #shitty names!
  /*Error about bravura names:
  It should be printable ASCII,

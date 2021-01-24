@@ -287,9 +287,9 @@ computed width."
 (defmethod pack-svglst ((obj form))
   ;; Marker
   (when (origin-visible-p obj)    
-    (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
-    ;; (push (svgize-marker obj) (svglst obj))
-    (push (xml-base::comment (format nil "Composing Stick ~A, Marker" (id obj))) (svglst obj)))
+    (dolist (elem (svgize-origin obj)) (push elem (svglst obj)))
+    ;; (push (svgize-origin obj) (svglst obj))
+    (push (xml-base::comment (format nil "Composing Stick ~A, Origin Point" (id obj))) (svglst obj)))
   ;; (push (xml-base::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
   (dolist (d (content obj))
     ;; Children's scales are multiplied by parent's scales

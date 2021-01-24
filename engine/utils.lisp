@@ -90,78 +90,78 @@
 
 
 ;; (or (typecase obj
-;;       (mchar %mchar-marker-circle-color%)
-;;       (stacked-form %sform-marker-circle-color%)
-;;       (horizontal-form %hform-marker-circle-color%)
-;;       (vertical-form %vform-marker-circle-color%))
+;;       (mchar %mchar-origin-circle-color%)
+;;       (stacked-form %sform-origin-circle-color%)
+;;       (horizontal-form %hform-origin-circle-color%)
+;;       (vertical-form %vform-origin-circle-color%))
 ;;     "none")
 
 
-(defun svgize-marker (obj)
-  (let ((half-line (/ *marker-cross-length* 2))
+(defun svgize-origin (obj)
+  (let ((half-line (/ *origin-cross-length* 2))
 	(circle-fill (typecase obj
-		       (mchar %mchar-marker-circle-color%)
-		       (stacked-form %sform-marker-circle-color%)
-		       (horizontal-form %hform-marker-circle-color%)
-		       (vertical-form %vform-marker-circle-color%)))
+		       (mchar %mchar-origin-circle-color%)
+		       (stacked-form %sform-origin-circle-color%)
+		       (horizontal-form %hform-origin-circle-color%)
+		       (vertical-form %vform-origin-circle-color%)))
 	(circle-stroke (typecase obj
-			 (mchar %mchar-marker-circle-contour-color%)
-			 (stacked-form %sform-marker-circle-contour-color%)
-			 (horizontal-form %hform-marker-circle-contour-color%)
-			 (vertical-form %vform-marker-circle-contour-color%)))
+			 (mchar %mchar-origin-circle-contour-color%)
+			 (stacked-form %sform-origin-circle-contour-color%)
+			 (horizontal-form %hform-origin-circle-contour-color%)
+			 (vertical-form %vform-origin-circle-contour-color%)))
 	(cross-stroke (typecase obj
-			(mchar *mchar-marker-cross-color*)
-			(stacked-form *sform-marker-cross-color*)
-			(horizontal-form *hform-marker-cross-color*)
-			(vertical-form *vform-marker-cross-color*)))
+			(mchar *mchar-origin-cross-color*)
+			(stacked-form *sform-origin-cross-color*)
+			(horizontal-form *hform-origin-cross-color*)
+			(vertical-form *vform-origin-cross-color*)))
 	(comment-str (typecase obj
-		       (mchar (format nil "Character ~A Marker" (id obj)))
-		       (stacked-form (format nil "Sform ~A Marker" (id obj)))
-		       (horizontal-form (format nil "Hform ~A Marker" (id obj)))
-		       (vertical-form (format nil "Vform ~A Marker" (id obj))))))
+		       (mchar (format nil "Character ~A Origin Point" (id obj)))
+		       (stacked-form (format nil "Sform ~A Origin Point" (id obj)))
+		       (horizontal-form (format nil "Hform ~A Origin Point" (id obj)))
+		       (vertical-form (format nil "Vform ~A Origin Point" (id obj))))))
     (list
      ;; circle
-     (svg:circle (x obj) (y obj) *marker-circle-r*
+     (svg:circle (x obj) (y obj) *origin-circle-r*
 		 :fill circle-fill
-		 :fill-opacity *marker-circle-opac*
+		 :fill-opacity *origin-circle-opac*
 		 :stroke circle-stroke
-		 :stroke-width *marker-line-thickness*)
+		 :stroke-width *origin-line-thickness*)
      ;; cross
      (svg:line (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
 	       :stroke cross-stroke
 	       :fill "none"
-	       :stroke-width *marker-line-thickness*)
+	       :stroke-width *origin-line-thickness*)
      (svg:line (x obj) (- (y obj) half-line) (x obj) (+ (y obj) half-line)
 	       :stroke cross-stroke
 	       :fill "none"
-	       :stroke-width *marker-line-thickness*)
+	       :stroke-width *origin-line-thickness*)
      (xml-base::comment comment-str))))
 
 
-;; (defun svgize-marker (obj)
+;; (defun svgize-origin (obj)
 ;;   "Pinpointe awaliye!"
-;;   (let ((half-marker-line-length (/ *marker-cross-length* 2)))
+;;   (let ((half-marker-line-length (/ *origin-cross-length* 2)))
 ;;     (list	   ;list upside-down, since pushing reverses the order
-;;      (svg:circle (x obj) (y obj) *marker-circle-r*
+;;      (svg:circle (x obj) (y obj) *origin-circle-r*
 ;; 		 :fill (typecase obj
-;; 			 (mchar %mchar-marker-circle-color%)
-;; 			 (stacked-form %sform-marker-circle-color%)
-;; 			 (horizontal-form %hform-marker-circle-color%)
-;; 			 (vertical-form %vform-marker-circle-color%))
-;; 		 :fill-opacity *marker-circle-opac*
+;; 			 (mchar %mchar-origin-circle-color%)
+;; 			 (stacked-form %sform-origin-circle-color%)
+;; 			 (horizontal-form %hform-origin-circle-color%)
+;; 			 (vertical-form %vform-origin-circle-color%))
+;; 		 :fill-opacity *origin-circle-opac*
 ;; 		 :stroke *marker-circle-line-color*
-;; 		 :stroke-width *marker-line-thickness*)
-;;      (xml-base::comment (format nil "~A, Marker Center" (id obj)))
+;; 		 :stroke-width *origin-line-thickness*)
+;;      (xml-base::comment (format nil "~A, Origin Point Center" (id obj)))
 ;;      (svg:line (- (x obj) half-marker-line-length) (y obj) (+ (x obj) half-marker-line-length) (y obj)
 ;; 	       :stroke (marker-stroke obj)
 ;; 	       :fill "none"
-;; 	       :stroke-width *marker-line-thickness*)
-;;      (xml-base::comment (format nil "~A, Marker Horizontal Line" (id obj)))
+;; 	       :stroke-width *origin-line-thickness*)
+;;      (xml-base::comment (format nil "~A, Origin Point Horizontal Line" (id obj)))
 ;;      (svg:line (x obj) (- (y obj) half-marker-line-length) (x obj) (+ (y obj) half-marker-line-length)
 ;; 	       :stroke (marker-stroke obj)
 ;; 	       :fill "none"
-;; 	       :stroke-width *marker-line-thickness*)
-;;      (xml-base::comment (format nil "~A, Marker Vertical Line" (id obj)))
+;; 	       :stroke-width *origin-line-thickness*)
+;;      (xml-base::comment (format nil "~A, Origin Point Vertical Line" (id obj)))
 ;;      )))
 
 

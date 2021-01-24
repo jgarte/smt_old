@@ -140,10 +140,10 @@ Composing Sticks."))
 (defmethod pack-svglst ((obj mchar))  
   ;; Marker  
   (when (origin-visible-p obj)    
-    ;; Since svgize-marker consists of more than one svg-element,
+    ;; Since svgize-origin consists of more than one svg-element,
     ;; push each one seperately into SVGLST
-    (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
-    (push (xml-base::comment (format nil "Character ~A, Marker" (id obj))) (svglst obj)))  
+    (dolist (elem (svgize-origin obj)) (push elem (svglst obj)))
+    (push (xml-base::comment (format nil "Character ~A, Origin Point" (id obj))) (svglst obj)))  
   (push (svg:path ;; (mchar-path-d (code obj) (family obj))
 	 ;; (get-glyph-d (name obj))
 	 (glyph-pathd (get-glyph (name obj) (font obj)))
