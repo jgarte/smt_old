@@ -796,7 +796,7 @@
 (dolist (f .fonts.) (uninstall-font f))
 (glyph-present-p 'clefs.c)
 
-(let* ((absx 40)
+(let* ((absx 20)
        (w 184)
        (absy 100)
        (h (hform
