@@ -781,7 +781,7 @@
 			     :mchar-opac .4)
 	      ))
 
-(glyph-bbox 'noteheads.s1)
+(glyph-bbox (get-glyph 'noteheads.s1))
 
 
 (setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
@@ -810,7 +810,7 @@
 	   :origin-visible-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1) :x-offset -20)))
+	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
 			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
@@ -871,12 +871,12 @@
 	    :absx absx
 	    :toplevelp t
 	    :content (list
-		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name 'clefs.g) :id 'r)))
-		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name 'clefs.g_change) :id 'r)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'clefs.f) :id 'r)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'clefs.f_change) :id 'r)))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'clefs.c) :id 'r)))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'clefs.c_change) :id 'r)))
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
 		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'scripts.upmordent))))
 		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.u2tiwalker))))
 		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2lawalker))))

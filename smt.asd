@@ -24,7 +24,7 @@
 			     (:file "utils")
 			     ;; install-font in glyph.lisp pushes font-name
 			     ;; to *font-list* in setup
-			     (:file "glyphs")
+			     (:file "font")
 			     (:file "rules")     
 			     (:file "canvas")
 			     (:file "form")

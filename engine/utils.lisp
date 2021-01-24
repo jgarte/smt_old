@@ -90,7 +90,7 @@
 
 
 ;; (or (typecase obj
-;;       (mchar %mchar-marker-circle-color%)
+;;       (mchar %glyph-marker-circle-color%)
 ;;       (stacked-form %sform-marker-circle-color%)
 ;;       (horizontal-form %hform-marker-circle-color%)
 ;;       (vertical-form %vform-marker-circle-color%))
@@ -100,17 +100,17 @@
 (defun svgize-marker (obj)
   (let ((half-line (/ *marker-cross-length* 2))
 	(circle-fill (typecase obj
-		       (mchar %mchar-marker-circle-color%)
+		       (mchar %glyph-marker-circle-color%)
 		       (stacked-form %sform-marker-circle-color%)
 		       (horizontal-form %hform-marker-circle-color%)
 		       (vertical-form %vform-marker-circle-color%)))
 	(circle-stroke (typecase obj
-			 (mchar %mchar-marker-circle-contour-color%)
+			 (mchar %glyph-marker-circle-contour-color%)
 			 (stacked-form %sform-marker-circle-contour-color%)
 			 (horizontal-form %hform-marker-circle-contour-color%)
 			 (vertical-form %vform-marker-circle-contour-color%)))
 	(cross-stroke (typecase obj
-			(mchar *mchar-marker-cross-color*)
+			(mchar *glyph-marker-cross-color*)
 			(stacked-form *sform-marker-cross-color*)
 			(horizontal-form *hform-marker-cross-color*)
 			(vertical-form *vform-marker-cross-color*)))
@@ -144,7 +144,7 @@
 ;;     (list	   ;list upside-down, since pushing reverses the order
 ;;      (svg:circle (x obj) (y obj) *marker-circle-r*
 ;; 		 :fill (typecase obj
-;; 			 (mchar %mchar-marker-circle-color%)
+;; 			 (mchar %glyph-marker-circle-color%)
 ;; 			 (stacked-form %sform-marker-circle-color%)
 ;; 			 (horizontal-form %hform-marker-circle-color%)
 ;; 			 (vertical-form %vform-marker-circle-color%))

@@ -2,6 +2,12 @@
 (in-package :smt-engine)
 
 
+(defun make-mchar (name &rest initargs &key &allow-other-keys)
+  (apply #'make-instance 'mchar
+	 :name name
+	 initargs))
+
+
 ;;; Music Character
 (defclass mchar (canvas)
   ((bcr :accessor bcr)   
@@ -35,7 +41,8 @@ Composing Sticks."))
 ;;; uu needs to be involving the scaling, for su which is used for putting svg elements
 ;;; together is unscaled, since the scaling is written to the transFORM attribute
 (defmethod initialize-instance :after ((obj mchar) &key)
-  (setf (bcr obj) (glyph-bbox (name obj))
+  (setf (bcr obj) (glyph-bbox (get-glyph (name obj) (font obj)))
+	;; (get-glyph-bbox (name obj))
 	;; (get-bcr (code obj) (family obj))
 	
 	;; Height and Width can be computed for Mtypes right away, since not
@@ -84,12 +91,14 @@ Composing Sticks."))
 
 ;;; Faghat baraye CS!!!!
 (defmethod calc-left ((obj mchar))
-  (+ (x obj) (toplvl-scale (getf (bcr obj) :left)
-	      ;; (bcr-left (bcr obj))
-	      )))
+  (+ (x obj) (toplvl-scale (bbox-left (glyph-bbox (get-glyph (name obj) (font obj))))
+			   ;; (getf (bcr obj) :left)
+			   ;; (bcr-left (bcr obj))
+			   )))
 
 (defmethod calc-right ((obj mchar))
-  (+ (x obj) (toplvl-scale (getf (bcr obj) :right)
+  (+ (x obj) (toplvl-scale (bbox-right (glyph-bbox (get-glyph (name obj) (font obj))))
+	      ;; (getf (bcr obj) :right)
 	      ;; (bcr-right (bcr obj))
 	      )))
 
@@ -97,22 +106,26 @@ Composing Sticks."))
 (defmethod width ((obj mchar))
   (slot-value obj 'wslot))
 (defmethod compwidth ((obj mchar))
-  (toplvl-scale (getf (bcr obj) :width)
+  (toplvl-scale (bbox-width (glyph-bbox (get-glyph (name obj) (font obj))))
+   ;; (getf (bcr obj) :width)
    ;; (bcr-width (bcr obj))
    ))
 
 (defmethod refresh-top ((obj mchar))
-  (+ (y obj) (toplvl-scale (getf (bcr obj) :top)
+  (+ (y obj) (toplvl-scale (bbox-top (glyph-bbox (get-glyph (name obj) (font obj))))
+	      ;; (getf (bcr obj) :top)
 	      ;; (bcr-top (bcr obj))
 	      )))
 
 (defmethod refresh-height ((obj mchar))
-  (toplvl-scale (getf (bcr obj) :height)
-		;; (bcr-height (bcr obj))
-		))
+  (toplvl-scale (bbox-height (glyph-bbox (get-glyph (name obj) (font obj))))
+   ;; (getf (bcr obj) :height)
+   ;; (bcr-height (bcr obj))
+   ))
 
 (defmethod refresh-bottom ((obj mchar))
-  (+ (y obj) (toplvl-scale (getf (bcr obj) :bottom)
+  (+ (y obj) (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph (name obj) (font obj))))
+	      ;; (getf (bcr obj) :bottom)
 	      ;; (bcr-bottom (bcr obj))
 	      )))
 
@@ -135,12 +148,13 @@ Composing Sticks."))
     (dolist (elem (svgize-marker obj)) (push elem (svglst obj)))
     (push (xml-base::comment (format nil "Character ~A, Marker" (id obj))) (svglst obj)))  
   (push (svg:path ;; (mchar-path-d (code obj) (family obj))
-		  (mchard (name obj))
-		  :fill (mchar-color obj) 
-		  :fill-opacity (mchar-opac obj)
-		  :id (symbol-name (id obj))
-		  ;; Flip the glyph path vertically here (SY)
-		  :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
+	 ;; (get-glyph-d (name obj))
+	 (glyph-pathd (get-glyph (name obj) (font obj)))
+	 :fill (mchar-color obj) 
+	 :fill-opacity (mchar-opac obj)
+	 :id (symbol-name (id obj))
+	 ;; Flip the mchar path vertically here (SY)
+	 :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
 	(svglst obj))
   (push (xml-base::comment (format nil "Character ~A" (id obj))) (svglst obj))
   ;; BCR Rect

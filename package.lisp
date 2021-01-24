@@ -42,7 +42,7 @@
    #:mm-to-px
    ;; Fonts
    #:install-font #:uninstall-font #:*font* #:.installed-fonts. #:*fonts-hash-table*
-   #:glyph-present-p #:glyph-bbox
+   #:glyph-bbox
    ))
 
 (defpackage #:smt

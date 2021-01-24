@@ -15,10 +15,10 @@
    ))
 
 (defun make-notehead (&rest initargs &key &allow-other-keys)
-  (let ((family (getf initargs :family *font*)))
+  (let ((font (getf initargs :font *font*)))
     (apply #'make-instance 'notehead
-	   :family family
-	   ;; :code (mchar-label->mchar-code label "noteheads" family)
+	   :font font
+	   ;; :code (mchar-label->mchar-code label "noteheads" font)
 	   initargs)))
 
 
@@ -48,13 +48,13 @@ thus this can't be STACKED!")
 
 (defun make-note (spn &rest initargs &key &allow-other-keys)
   ;; A certain notehead desired?
-  (let* ((family (getf initargs :family *font*))
+  (let* ((font (getf initargs :font *font*))
 	 (head-color (getf initargs :head-color "black"))
 	 (dur (getf initargs :dur 1/4))	 
 	 ;; If head supplied it's color is inside of it
 	 (head (lazy-getf initargs :head
 			  (make-notehead ;; (duration->notehead-label dur)
-			   :family family
+			   :font font
 			   :mchar-color head-color)))
 	 )
     ;; (when head-color (setf (glyph-color head) head-color))
@@ -74,11 +74,11 @@ thus this can't be STACKED!")
 ;;   ())
 
 ;; (defun make-pause (&rest initargs &key &allow-other-keys)
-;;   (let ((family (getf initargs :family *font*))
+;;   (let ((font (getf initargs :font *font*))
 ;; 	(label (lazy-getf initargs :label (error "Making a pause requires label"))))
 ;;     (apply #'make-instance 'pause
-;; 	   :family family
-;; 	   :code (mchar-label->mchar-code label "rests" family)
+;; 	   :font font
+;; 	   :code (mchar-label->mchar-code label "rests" font)
 ;; 	   initargs)))
 ;; (defun pausep (obj) (typep obj 'pause))
 
@@ -89,7 +89,7 @@ thus this can't be STACKED!")
    (spns :initarg :spns :accessor spns :initform ())))
 
 ;; (defun make-chord (&rest initargs &key &allow-other-keys)
-;;   (let ((family (getf initargs :family))
+;;   (let ((font (getf initargs :font))
 ;; 	(dur (getf initargs :dur)))
     
 ;;     (apply #'make-instance 'chord

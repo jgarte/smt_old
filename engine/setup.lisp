@@ -62,8 +62,11 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (define-symbol-macro .scale. (* *scale*
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
 				(/ (* 4 *staff-space*)
-				   (getf (glyph-bbox *vertical-space-reference-glyph*) :height)
-				   ;; (bcr-height (glyph-bbox "uniE05C")
+				   (bbox-height
+				    (glyph-bbox
+				     (get-glyph *vertical-space-reference-glyph*)))
+				   ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :height)
+				   ;; (bcr-height (get-glyph-bbox "uniE05C")
 				   ;; 	       ;; (get-bcr "clefs.C" .font.)
 				   ;; 	       )
 				   )))

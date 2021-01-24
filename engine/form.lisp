@@ -63,9 +63,12 @@ be the value of WIDTH if non-nil."
 ;;; Bei Mtype sind es alle so , vlcht sollte ich diese bei Mtype
 ;;; alle fixed-nennen????????????
 (defmethod fixed-top ((obj form))
-  (+ (y obj) (toplvl-scale (getf (glyph-bbox *vertical-space-reference-glyph*) :top)
+  (+ (y obj) (toplvl-scale
+	      ;; Which Font?????
+	      (bbox-top (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
+	      ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :top)
 	      ;; (bcr-top
-	      ;; 		    (glyph-bbox "uniE05C")
+	      ;; 		    (get-glyph-bbox "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
 	      ;; 		    )
 	      )))
@@ -73,16 +76,20 @@ be the value of WIDTH if non-nil."
 (defmethod fixed-bottom ((obj form))
   ;; "uniE05C" is bravura alto, should find a solution to
   ;; find out the alto clef of a font!!!
-  (+ (y obj) (toplvl-scale (getf (glyph-bbox *vertical-space-reference-glyph*) :bottom)
-	      ;; (bcr-bottom (glyph-bbox "uniE05C")
+  (+ (y obj) (toplvl-scale
+	      (bbox-bottom (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
+	      ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :bottom)
+	      ;; (bcr-bottom (get-glyph-bbox "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
 	      ;; 		    )
 	      )))
 
 (defmethod fixed-height ((obj form))
   ;; This is bravura alto clef
-  (toplvl-scale (getf (glyph-bbox *vertical-space-reference-glyph*) :height)
-   ;; (bcr-height (glyph-bbox "uniE05C")
+  (toplvl-scale
+   (bbox-height (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
+   ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :height)
+   ;; (bcr-height (get-glyph-bbox "uniE05C")
 		;; 	    ;; (get-bcr "clefs.C" (family obj))
 		;; 	    )
 		))

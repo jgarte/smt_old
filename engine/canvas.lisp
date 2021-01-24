@@ -56,10 +56,10 @@ SVG, N results. Preserves N through the svg-calculations!"
 		   :accessor chase-rotate-degrees)
    
    ;; Move this to a FORM
-   (family :initarg :family
-	   :initform *font*
-	   :accessor family
-	   :documentation "Wenn man den Font vom
+   (font :initarg :font
+	 :initform *font*
+	 :accessor font
+	 :documentation "Wenn man den Font vom
 Ganzen Stick z.B. auf einmal ändern möchte.")
    (toplevelp :initarg :toplevelp
 	      :initform nil
@@ -74,13 +74,13 @@ gesetzt nur vom User."
 		 :accessor canvas-color
 		 :documentation "This is the color of canvas's bg.")
    (canvas-opac :initarg :canvas-opac
-	       :documentation "Canvas' background opacity"
-	       :initform 0.3
-	       :accessor canvas-opac)
+		:documentation "Canvas' background opacity"
+		:initform 0.3
+		:accessor canvas-opac)
    (canvas-vis-p :initarg :canvas-vis-p
-		:initform t
-		;; Forget chase-chase-visible-p!!! :-0
-		:accessor canvas-vis-p)
+		 :initform t
+		 ;; Forget chase-chase-visible-p!!! :-0
+		 :accessor canvas-vis-p)
    ;; Diese überholen die Eltern Koordinaten und sind
    ;; stets in ABSOLUT Form zu verstehen, i.e. without scalings
    ;; being applied to them.
