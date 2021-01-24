@@ -70,7 +70,3 @@
 (defun get-glyph (glyph-name &optional (font *font*))
   "Returns the from Fontforge exported data of the glyph (a structure)."
   (gethash glyph-name (font-hashtable font)))
-;;;;;;;;;;;;;;;;;;
-;;; Font müssen alle geladen sein!
-(defun get-glyph-d (glyph-name &optional (font *font*))
-  (getf (get-glyph-plist glyph-name font) :d))

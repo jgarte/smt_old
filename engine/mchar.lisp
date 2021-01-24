@@ -41,10 +41,7 @@ Composing Sticks."))
 ;;; uu needs to be involving the scaling, for su which is used for putting svg elements
 ;;; together is unscaled, since the scaling is written to the transFORM attribute
 (defmethod initialize-instance :after ((obj mchar) &key)
-  (setf (bcr obj) (glyph-bbox (get-glyph (name obj) (font obj)))
-	;; (get-glyph-bbox (name obj))
-	;; (get-bcr (code obj) (family obj))
-	
+  (setf 
 	;; Height and Width can be computed for Mtypes right away, since not
 	;; dependant on x or y!
 	(slot-value obj 'hslot) (refresh-height obj)
