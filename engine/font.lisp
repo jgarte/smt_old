@@ -9,7 +9,7 @@
 ;;; uninstall-font
 (defun uninstall-font (font-name)
   (delete font-name .installed-fonts.)
-  (remhash font-name *fonts-hash-table*))
+  (remhash font-name *fonts-hashtable*))
 
 (defstruct bbox x y left right top bottom width height)
 ;;; This is one glyph exported by Fontforge
@@ -34,7 +34,7 @@
 	   ;; this file will be created by Fontforge.
 	   bboxpath)
      :output *standard-output*)
-    (setf (gethash font-sym *fonts-hash-table*) (make-hash-table))
+    (setf (gethash font-sym *fonts-hashtable*) (make-hash-table))
     (let ((xx
 	    ;; List name ,@bbox
 	    (with-open-file (bbox bboxpath)
@@ -51,7 +51,7 @@
 		      							     (cxml-xmls:make-xmls-builder)
 									     :entity-resolver #'resolver))))))
 	    do (setf (gethash (intern (string-upcase name))
-			      (gethash (intern (string-upcase font-name)) *fonts-hash-table*))
+			      (gethash (intern (string-upcase font-name)) *fonts-hashtable*))
 		     (make-glyph :name name :pathd d
 				 :bbox (make-bbox :x minx :y miny
 						  :left minx :right maxx
@@ -64,9 +64,11 @@
   )
 
 (defun font-hashtable (&optional (font *font*))
-  (gethash font *fonts-hash-table*))
+  (gethash font *fonts-hashtable*))
 (defun font-glyphs (&optional (font *font*))
   (alexandria:hash-table-keys (font-hashtable font)))
 (defun get-glyph (glyph-name &optional (font *font*))
   "Returns the from Fontforge exported data of the glyph (a structure)."
   (gethash glyph-name (font-hashtable font)))
+
+(install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")

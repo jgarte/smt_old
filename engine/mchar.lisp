@@ -88,16 +88,18 @@ Composing Sticks."))
 
 ;;; Faghat baraye CS!!!!
 (defmethod calc-left ((obj mchar))
-  (+ (x obj) (toplvl-scale (bbox-left (glyph-bbox (get-glyph (name obj) (font obj))))
-			   ;; (getf (bcr obj) :left)
-			   ;; (bcr-left (bcr obj))
-			   )))
+  (+ (x obj)
+     (toplvl-scale (bbox-left (glyph-bbox (get-glyph (name obj) (font obj))))
+		   ;; (getf (bcr obj) :left)
+		   ;; (bcr-left (bcr obj))
+		   )))
 
 (defmethod calc-right ((obj mchar))
-  (+ (x obj) (toplvl-scale (bbox-right (glyph-bbox (get-glyph (name obj) (font obj))))
-	      ;; (getf (bcr obj) :right)
-	      ;; (bcr-right (bcr obj))
-	      )))
+  (+ (x obj)
+     (toplvl-scale (bbox-right (glyph-bbox (get-glyph (name obj) (font obj))))
+		   ;; (getf (bcr obj) :right)
+		   ;; (bcr-right (bcr obj))
+		   )))
 
 
 (defmethod width ((obj mchar))
@@ -109,22 +111,22 @@ Composing Sticks."))
    ))
 
 (defmethod refresh-top ((obj mchar))
-  (+ (y obj) (toplvl-scale (bbox-top (glyph-bbox (get-glyph (name obj) (font obj))))
-	      ;; (getf (bcr obj) :top)
-	      ;; (bcr-top (bcr obj))
-	      )))
+  (+ (y obj)
+     (toplvl-scale (bbox-top (glyph-bbox (get-glyph (name obj) (font obj))))
+		   ;; (getf (bcr obj) :top)
+		   ;; (bcr-top (bcr obj))
+		   )))
 
 (defmethod refresh-height ((obj mchar))
-  (toplvl-scale (bbox-height (glyph-bbox (get-glyph (name obj) (font obj))))
-   ;; (getf (bcr obj) :height)
-   ;; (bcr-height (bcr obj))
-   ))
+  (toplvl-scale
+   (bbox-height (glyph-bbox (print (get-glyph (name obj) (font obj)))))))
 
 (defmethod refresh-bottom ((obj mchar))
-  (+ (y obj) (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph (name obj) (font obj))))
-	      ;; (getf (bcr obj) :bottom)
-	      ;; (bcr-bottom (bcr obj))
-	      )))
+  (+ (y obj)
+     (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph (name obj) (font obj))))
+		   ;; (getf (bcr obj) :bottom)
+		   ;; (bcr-bottom (bcr obj))
+		   )))
 
 
 ;;; Will be written to SVG

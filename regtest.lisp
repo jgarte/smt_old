@@ -53,11 +53,13 @@
 ;;; I know from INSPECTING that eg xs of notehead & it's parent
 ;;; sform are the same.
 ;;; x, l, r, w
+(ngn::get-glyph 'noteheads.s0 ngn:*font*)
+ngn:*fonts-hashtable*
 (def-test notehead-in-sform
     (:suite horizontal)
-  (let* ((n (make-notehead "s0"
-			   :origin-visible-p t
-			   :id 'n))
+  (let* ((n (make-mchar 'noteheads.s0
+			:origin-visible-p t
+			:id 'n))
 	 (s (sform :content (list n)
 		   :origin-visible-p t
 		   :toplevelp t
@@ -78,85 +80,85 @@
 	 (~ sw nw))
     ;; Changing x of notehead must:
     (for-all ((d (gen-integer :min -10000 :max 10000)))
-	     (incf (x n) d)
-	     ;; 1. not touch
-	     (is (= sx (x s)))
-	     (cond ((or (plusp d) (zerop d))
-		    (are (= (right n) (right s))
-			 (> (right s) sx)
-			 (~ (right n) (+ (x n) (width n)))
-			 (~ sl (left s))
-			 (= (x n) (left n))
-			 (~ (width s) (+ (width n) (- (left n) (left s))))))
-		   ((< (abs d) (width n))
-		    (are (= (right n) (right s))
-			 (~ (width n) (width s))
-			 (> (right s) sx)
-			 (~ (right n) (+ (x n) (width n)))
-			 (= (left n) (left s))))
-		   (t (are (= (width s) (- (x s) (left n)))
-			   (= (right s) (x s))
-			   (>= (x s) (right n)) 
-			   (= (left n) (left s))
-			   (~ (width s) (+ (width n)
-					   (- (right s) (right n)))))))
-	     ;; Reset to initials after each iteration
-	     ;; to avoid incremental changing!
-	     ;; This setfing involves incfing (floating arithmetic),
-	     ;; Thus (x n/s) is never gonna be exact N/SX again (unless I don't incf when setfing)
-	     (setf (x s) sx 
-		   ;; LR are incfed by setf x, W should be done manually
-		   (width s) sw
-		   (x n) nx
-		   )
-	     )
+      (incf (x n) d)
+      ;; 1. not touch
+      (is (= sx (x s)))
+      (cond ((or (plusp d) (zerop d))
+	     (are (= (right n) (right s))
+		  (> (right s) sx)
+		  (~ (right n) (+ (x n) (width n)))
+		  (~ sl (left s))
+		  (= (x n) (left n))
+		  (~ (width s) (+ (width n) (- (left n) (left s))))))
+	    ((< (abs d) (width n))
+	     (are (= (right n) (right s))
+		  (~ (width n) (width s))
+		  (> (right s) sx)
+		  (~ (right n) (+ (x n) (width n)))
+		  (= (left n) (left s))))
+	    (t (are (= (width s) (- (x s) (left n)))
+		    (= (right s) (x s))
+		    (>= (x s) (right n)) 
+		    (= (left n) (left s))
+		    (~ (width s) (+ (width n)
+				    (- (right s) (right n)))))))
+      ;; Reset to initials after each iteration
+      ;; to avoid incremental changing!
+      ;; This setfing involves incfing (floating arithmetic),
+      ;; Thus (x n/s) is never gonna be exact N/SX again (unless I don't incf when setfing)
+      (setf (x s) sx 
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw
+	    (x n) nx
+	    )
+      )
     ;; Direct Inheritance of coords by child
     (for-all ((d (gen-integer :min -10000 :max 10000)))
-	     (incf (x s) d)
-	     (are (~ (x s) (x n))
-    		  (~ (left s) (left n))
-    		  (~ (right s) (right n))
-		  (~ (width n) (width s))
-    		  )
-	     (setf (x s) sx 
-		   ;; LR are incfed by setf x, W should be done manually
-		   (width s) sw
-		   (x n) nx
-		   )
-	     ;; We do this Although for now it's like incf x ;;;;;;;;;;;;;;;
-	     (incf (right s) d)
-	     (are (~ (x s) (x n))
-    		  (~ (left s) (left n))
-    		  (~ (right s) (right n))
-		  (~ (width n) (width s))
-    		  )
-	     (setf (x s) sx 
-		   ;; LR are incfed by setf x, W should be done manually
-		   (width s) sw
-		   (x n) nx
-		   )
-	     (incf (left s) d)
-	     (are (~ (x s) (x n))
-    		  (~ (left s) (left n))
-    		  (~ (right s) (right n))
-		  (~ (width n) (width s))
-    		  )
-	     (setf (x s) sx 
-		   ;; LR are incfed by setf x, W should be done manually
-		   (width s) sw
-		   (x n) nx
-		   )
-	     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	     (incf (width s) d)
-	     (are (~ sl (left s))
-		  (~ nx (x n))
-		  (~ nr (right n)) (~ nl (left n)))
-	     (setf (x s) sx 
-		   ;; LR are incfed by setf x, W should be done manually
-		   (width s) sw
-		   (x n) nx
-		   )
-	     )
+      (incf (x s) d)
+      (are (~ (x s) (x n))
+    	   (~ (left s) (left n))
+    	   (~ (right s) (right n))
+	   (~ (width n) (width s))
+    	   )
+      (setf (x s) sx 
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw
+	    (x n) nx
+	    )
+      ;; We do this Although for now it's like incf x ;;;;;;;;;;;;;;;
+      (incf (right s) d)
+      (are (~ (x s) (x n))
+    	   (~ (left s) (left n))
+    	   (~ (right s) (right n))
+	   (~ (width n) (width s))
+    	   )
+      (setf (x s) sx 
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw
+	    (x n) nx
+	    )
+      (incf (left s) d)
+      (are (~ (x s) (x n))
+    	   (~ (left s) (left n))
+    	   (~ (right s) (right n))
+	   (~ (width n) (width s))
+    	   )
+      (setf (x s) sx 
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw
+	    (x n) nx
+	    )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (incf (width s) d)
+      (are (~ sl (left s))
+	   (~ nx (x n))
+	   (~ nr (right n)) (~ nl (left n)))
+      (setf (x s) sx 
+	    ;; LR are incfed by setf x, W should be done manually
+	    (width s) sw
+	    (x n) nx
+	    )
+      )
     )
   )
 (defmacro with-horizontal-reset-check (places resetvals &body b)
@@ -181,8 +183,8 @@
 
 (def-test 2notes-in-2sforms-in-hform (:suite horizontal)
   (let* (
-	 (nh1 (make-notehead "s0"))	 
-	 (nh2 (make-notehead "s0"))
+	 (nh1 (make-mchar 'noteheads.s0))	 
+	 (nh2 (make-mchar 'noteheads.s0))
 	 (n1 (make-note nil :head nh1))
 	 (n2 (make-note nil :head nh2))
 	 ;; (nh1 (head n1)) (nh2 (head n2))

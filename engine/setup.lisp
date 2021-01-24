@@ -18,8 +18,8 @@
 ;; (defparameter *xml-indentation-depth* 3)
 
 ;;; Default font
-(defparameter *fonts-hash-table* (make-hash-table))
-(define-symbol-macro .installed-fonts. (alexandria:hash-table-keys *fonts-hash-table*))
+(defparameter *fonts-hashtable* (make-hash-table))
+(define-symbol-macro .installed-fonts. (alexandria:hash-table-keys *fonts-hashtable*))
 (defparameter *font* 'haydn-11)
 
 

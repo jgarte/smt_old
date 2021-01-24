@@ -753,11 +753,11 @@
 ;;;;;;;;;;;;;;;;;;;;;test
 (let* ((n (make-note '(c . 4)
 		     :id 'n
-		     :head (make-notehead :name 'clefs.c :id 'nh)
+		     :head (make-mchar  'clefs.c :id 'nh)
 		     :canvas-vis-p t))
        (n2 (make-note '(f . 4) :id 'n2
        			       ;; :x-offset 20
-       			       :head (make-notehead :name 'clefs.g :id 'nh2)
+       			       :head (make-mchar  'clefs.g :id 'nh2)
        			       :canvas-vis-p t))
        (s (sform :content (list n )
 		 :id 's
@@ -774,11 +774,10 @@
 
 (glyph-bbox 'clefs.f)
 
-(render (list (make-notehead :name 'noteheads.s1 :id 'nh :toplevelp t
-			     ;; :absx 0 :absy 0
-			     :canvas-vis-p t
-			     :origin-visible-p nil
-			     :mchar-opac .4)
+(render (list (make-mchar 'noteheads.s1 :id 'nh :toplevelp t
+					:canvas-vis-p t
+					:origin-visible-p nil
+					:mchar-opac .4)
 	      ))
 
 (glyph-bbox (get-glyph 'noteheads.s1))
@@ -789,12 +788,13 @@
 
 
 
-(install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
+
 .installed-fonts. *font*
 
 (dolist (f .fonts.) (uninstall-font f))
 (glyph-present-p 'clefs.c)
-
+(origin-visible-p (make-mchar 'clefs.c))
+(get-glyph 'clefs.c)
 (let* ((absx 30)
        (w 184)
        (absy 40)
@@ -809,29 +809,29 @@
 	   :origin-visible-p nil
 	   :absx absx
 	   :toplevelp t
-	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+	   :content (list (sform :content (list (make-note '(b . 4) :dur 1/2 :head (make-mchar 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-mchar 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-mchar 'noteheads.s1))))
 			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'rests.2) :id 'r)))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-mchar 'rests.2) :id 'r)))
 			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-mchar 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+			  (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-mchar 'noteheads.s1))))
+			  (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar 'noteheads.s2))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar 'noteheads.s2))))
 			  (sform :content (list (make-instance 'barline)))
-			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+			  (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-mchar 'noteheads.s1))))
+			  (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-mchar 'noteheads.s1))))
 			  (sform :content (list (make-instance 'barline)))
 			  )
 	   :preproc (preproc x
@@ -870,35 +870,35 @@
 	    :absx absx
 	    :toplevelp t
 	    :content (list
-		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
-		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
-		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'scripts.upmordent))))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.u2tiwalker))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2lawalker))))
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
+		      (sform :content (list (make-note '(g . 4) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.g_change clefs.g))) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.f_change clefs.f))) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  (nth (random 2) '(clefs.c_change clefs.c))) :id 'r)))
+		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-mchar  'scripts.upmordent))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  'noteheads.u2tiwalker))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar  'noteheads.s2lawalker))))
 		      (sform :content (list (make-instance 'barline)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s0blackmensural))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s0blackmensural))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-mchar  'noteheads.s0blackmensural))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-mchar  'noteheads.s0blackmensural))))
 		      (sform :content (list (make-instance 'barline)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(a . 4) :dur 1/4 :head (make-mchar  'noteheads.s2))))
 		      (sform :content (list (make-instance 'barline)))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-notehead :name 'rests.2) :id 'r)))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/4 :head-color "red" :head (make-mchar  'rests.2) :id 'r)))
 		      (sform :content (list (make-instance 'barline)))
-		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-notehead :name 'noteheads.s2))))
+		      (sform :content (list (make-note '(a . 4) :dur 1/2 :head (make-mchar  'noteheads.s1))))
+		      (sform :content (list (make-note '(b . 4) :dur 1/4 :head (make-mchar  'noteheads.s2))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/4 :head (make-mchar  'noteheads.s2))))
 		      (sform :content (list (make-instance 'barline)))
-		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
-		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-notehead :name 'noteheads.s1))))
+		      (sform :content (list (make-note '(d . 5) :dur 1/2 :head (make-mchar  'noteheads.s1))))
+		      (sform :content (list (make-note '(c . 5) :dur 1/2 :head (make-mchar  'noteheads.s1))))
 		      (sform :content (list (make-instance 'barline)))
 		      )
 	    :preproc (preproc x

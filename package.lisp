@@ -23,6 +23,8 @@
 (defpackage #:smt-engine
   (:use #:cl) (:nicknames "NGN")
   (:export
+   ;; Mchars
+   #:make-mchar
    ;; Forms
    #:sformp
    #:sform #:hform #:defrule #:packsvg
@@ -41,13 +43,15 @@
    ;;
    #:mm-to-px
    ;; Fonts
-   #:install-font #:uninstall-font #:*font* #:.installed-fonts. #:*fonts-hash-table*
-   #:glyph-bbox
-   ))
+   #:install-font #:uninstall-font #:*font* #:.installed-fonts.
+   #:*fonts-hashtable* #:glyph #:glyph-bbox
+   #:GUTENBERG1939-11))
 
 (defpackage #:smt
   (:use #:cl #:ngn)
-  )
+  (:export
+   ;; Fonts
+   #:*font* #:.installed-fonts. #:glyph))
 
 (defpackage #:smt-test
   (:nicknames "TST")

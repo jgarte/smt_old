@@ -59,7 +59,7 @@ SVG, N results. Preserves N through the svg-calculations!"
    (font :initarg :font
 	 :initform *font*
 	 :accessor font
-	 :documentation "Wenn man den Font vom
+	 :documentation "Wenn man den Font vom Inhalt des
 Ganzen Stick z.B. auf einmal ändern möchte.")
    (toplevelp :initarg :toplevelp
 	      :initform nil

@@ -7,19 +7,17 @@
 	     :accessor dur)))
 
 ;;; Notehead is not pitched!!!
-(defclass notehead (mchar)
-  ((spn :accessor spn
-	:initarg :spn
-	:documentation "Hidden SPN!"
-	:initform nil)
-   ))
+;; (defclass notehead (mchar)
+;;   ((spn :accessor spn
+;; 	:initarg :spn
+;; 	:documentation "Hidden SPN!
+;; Head is placed vertically on staff based on some SPN,
+;; "
+;; 	:initform nil)
+;;    ))
 
-(defun make-notehead (&rest initargs &key &allow-other-keys)
-  (let ((font (getf initargs :font *font*)))
-    (apply #'make-instance 'notehead
-	   :font font
-	   ;; :code (mchar-label->mchar-code label "noteheads" font)
-	   initargs)))
+;; (defun make-notehead (&rest initargs &key &allow-other-keys)
+;;   (apply #'make-instance 'notehead initargs))
 
 
 ;;;;;;;;;;;;;;;;;; note
@@ -28,7 +26,7 @@
 (defclass note (stacked-form temporal)
   ((domain :initform nil
 	   :documentation "We don't know what domain we want for note yet, 
-thus this can't be STACKED!")
+thus this can't be set to STACKED!")
    (head :accessor head
 	 :initarg :head
 	 ;; Can be empty too!
@@ -59,7 +57,6 @@ thus this can't be STACKED!")
 	 )
     ;; (when head-color (setf (glyph-color head) head-color))
     ;; head inherits spn from note (need spn for rules referring to spn)
-    (unless (spn head) (setf (spn head) spn))    
     (apply #'make-instance
 	   'note
 	   :dur dur
