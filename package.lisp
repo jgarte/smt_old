@@ -56,5 +56,5 @@
 ;; (export (smt::font-glyphs smt:*font*) :smt)
 
 (defpackage #:smt-test
-  (:use #:cl #:smt #:it.bese.fiveam)
+  (:use #:cl #:smt-engine #:it.bese.fiveam)
   )

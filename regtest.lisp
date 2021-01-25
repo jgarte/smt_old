@@ -54,14 +54,9 @@
 ;;; sform are the same.
 ;;; x, l, r, w
 
-;;; Ye fekri bara in bokon!
-;; (export '(ngn::noteheads.s0) :ngn)
-
-(find-symbol "NOTEHEADS.S0" *package*)
-
 (def-test notehead-in-sform
     (:suite horizontal)
-  (let* ((n (make-mchar 'noteheads.s0
+  (let* ((n (make-mchar 'smt-engine::noteheads.s0
 			:origin-visible-p t
 			:id 'n))
 	 (s (sform :content (list n)
@@ -187,8 +182,8 @@
 
 (def-test 2notes-in-2sforms-in-hform (:suite horizontal)
   (let* (
-	 (nh1 (make-mchar 'noteheads.s0))	 
-	 (nh2 (make-mchar 'noteheads.s0))
+	 (nh1 (make-mchar 'smt-engine::noteheads.s0))
+	 (nh2 (make-mchar 'smt-engine::noteheads.s0))
 	 (n1 (make-note nil :head nh1))
 	 (n2 (make-note nil :head nh2))
 	 ;; (nh1 (head n1)) (nh2 (head n2))

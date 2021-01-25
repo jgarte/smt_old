@@ -34,9 +34,6 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 				     (get-glyph *vertical-space-reference-glyph*)))
 				   )))
 
-
-
-
 ;;; Toplevel scale
 (defun toplvl-scale (r) (* r .scale.))
 ;;; Inverse toplevel scale
