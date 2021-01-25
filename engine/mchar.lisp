@@ -33,6 +33,11 @@ of a canvas filled with one glyph.
 Mtypes should be printable both as standalone and as part of
 Composing Sticks."))
 
+;;; Two types of mchar: TMPMCHAR = characters with valuations
+;;; AUSMCHAR=others (e.g. accidentals etc)
+(defclass tmpmchar (mchar)
+  ((dur :initarg :dur :accessor dur)))
+(defclass auxmchar (mchar) ())
 
 
 (defun mcharp (obj) (typep obj 'mchar))
