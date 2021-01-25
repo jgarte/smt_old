@@ -1,6 +1,6 @@
 ;;; Common Western Music Notation
 
-(in-package :ngn)
+(in-package :smt-engine)
 
 
 (defun only-type-p (lst type)
@@ -62,24 +62,6 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
        )
      (hlineup hf))
   )
-(defrule spn (notehead) (:treble)
-    ("Assigns correct vertical positions to note-heads,
- based on their pitch-name and their octave." 1)
-  ((cons symbol unsigned-byte)
-   (me parent)
-   (let ((pitch-name (car (spn me)))
-	 (octave (cdr (spn me))))
-     (setf (y me)
-           (+ (- (fixed-bottom parent)
-		 (case pitch-name
-		   (c (- *staff-space*))
-		   (d (- (* .5 *staff-space*)))
-		   (e 0)
-		   (f (* .5 *staff-space*))
-		   (g *staff-space*)
-		   (a (* 1.5 *staff-space*))
-		   (b (* 2 *staff-space*))))
-	      (* (- 4 octave) 7/8 (fixed-height parent)))))))
 
 (defrule spn (note) (:treble)
     ("Assigns correct vertical positions to note' heads,

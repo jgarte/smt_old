@@ -2,7 +2,7 @@
 
 
 
-(in-package :ngn)
+(in-package :smt-engine)
 
 ;; (setq n 
       
@@ -792,9 +792,10 @@
 .installed-fonts. *font*
 
 (dolist (f .fonts.) (uninstall-font f))
-(glyph-present-p 'clefs.c)
+
 (origin-visible-p (make-mchar 'clefs.c))
 (get-glyph 'clefs.c)
+
 (let* ((absx 30)
        (w 184)
        (absy 40)
@@ -835,7 +836,7 @@
 			  (sform :content (list (make-instance 'barline)))
 			  )
 	   :preproc (preproc x
-	  	      ((typep x 'notehead)
+	  	      ((typep x 'mchar)
 		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
 	  	       (setf (ruler x) 'spn
 	  		     (domain x) :treble
@@ -902,7 +903,7 @@
 		      (sform :content (list (make-instance 'barline)))
 		      )
 	    :preproc (preproc x
-	  	       ((typep x 'notehead)
+	  	       ((typep x 'mchar)
 			;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
 	  		(setf (ruler x) 'spn
 	  		      (domain x) :treble

@@ -40,12 +40,11 @@
    #:note #:notehead
    ;; Lines
    #:barline
-   ;;
+   ;;Metrics
    #:mm-to-px
    ;; Fonts
    #:install-font #:uninstall-font #:*font* #:.installed-fonts.
-   #:*fonts-hashtable* #:glyph #:glyph-bbox
-   #:GUTENBERG1939-11))
+   #:*fonts-hashtable* #:glyph #:glyph-bbox #:font-glyphs))
 
 (defpackage #:smt
   (:use #:cl #:ngn)
@@ -53,8 +52,9 @@
    ;; Fonts
    #:*font* #:.installed-fonts. #:glyph))
 
+;;; Export glyph names
+;; (export (smt::font-glyphs smt:*font*) :smt)
+
 (defpackage #:smt-test
-  (:nicknames "TST")
-  (:use #:cl "NGN" #:it.bese.fiveam)
-  
+  (:use #:cl #:smt #:it.bese.fiveam)
   )

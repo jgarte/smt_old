@@ -4,11 +4,17 @@
 (in-package #:smt-engine)
 
 
+(defconstant +px-per-mm+ 3.7795275591 "Pixels per mm")
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  ;; Need this for the margins constants later in the file
+  ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
+  (defun mm-to-px (mm) (* mm +px-per-mm+)))
 
-;; (defgeneric svgize (obj)
-;;   (:documentation "Returns a list of svg elements to be written to the document.
-;; Svgizing happens in the RENDER function after all (possible) rules have been applied
-;; to the obj (and possibly it's descendants)."))
+;;; Page margines: Measured from Schubert Sonate, Henle
+(defconstant +right-margin+ (mm-to-px 25))
+(defconstant +left-margin+ (mm-to-px 36))
+(defconstant +top-margin+ (mm-to-px 56))
+
 
 
 (defgeneric pack-svglst (obj)
@@ -50,10 +56,6 @@
   "Returns the direct parent of obj."
   (alexandria:lastcar (ancestors obj)))
 
-;;; Toplevel scale
-(defun toplvl-scale (r) (* r .scale.))
-;;; Inverse toplevel scale
-(defun inv-toplvl-scale (r) (/ r .scale.))
 
 
 (defun register-object (obj)
@@ -225,46 +227,7 @@
 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
 	    (xml-base::elmattrs xml-elem)))))
 
-;; (mapcan #'(lambda (x)
-;; 	    (if (formp x)
-;; 		(cons x (descendants x))
-;; 		(list x)))
-;; 	(list (sform) (vform) (notehead "s0") (note 3)))
 
-
-
-(defun render (lst &key (apprulp t) (drawp t) (page-format *page-format*))
-  ;; Vorbereitungen
-  (dolist (obj lst)
-    (when (formp obj)
-      ;; perform pre-processings
-      (preprocess obj)
-      ;; Line-ups
-      (hlineup obj)
-      ))
-  (when apprulp
-    (apply-rules (mapcan #'(lambda (x)
-			     (if (formp x)
-				 (cons x (descendants x))
-				 (list x)))
-			 lst)))
-  ;; This part must ONLY do the drawing stuff!!!
-  (when drawp
-    ;;  Pack svg lists
-    (dolist (obj lst)      
-      (pack-svglst obj)
-      (dolist (elem (svglst obj))
-	(inverse-toplvl-scale-posidims! elem)
-	(replace-with-transform! elem)))
-    (svg:write-svg (svg:g
-		    ;; Setting the toplevel scaling of the score
-		    :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
-		    :content (append (list (mapcar #'svglst lst)
-					   (svg:rect 0 0 50 50
-						     :fill "red"
-						     :fill-opacity .7))))
-		   :width (getf (page-size page-format) :w)
-		   :height (getf (page-size page-format) :h))))
 
 (defun packsvg (object &rest svg-elements)
   ""

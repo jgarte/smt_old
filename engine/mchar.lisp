@@ -119,7 +119,7 @@ Composing Sticks."))
 
 (defmethod refresh-height ((obj mchar))
   (toplvl-scale
-   (bbox-height (glyph-bbox (print (get-glyph (name obj) (font obj)))))))
+   (bbox-height (glyph-bbox (get-glyph (name obj) (font obj))))))
 
 (defmethod refresh-bottom ((obj mchar))
   (+ (y obj)

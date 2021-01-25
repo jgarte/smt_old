@@ -22,8 +22,8 @@
 		:serial t
 		:components ((:file "setup")
 			     (:file "utils")
-			     ;; install-font in glyph.lisp pushes font-name
-			     ;; to *font-list* in setup
+			     ;; Installing font before using
+			     ;; Glyphs in CANVAS for .SCALE.
 			     (:file "font")
 			     (:file "rules")     
 			     (:file "canvas")

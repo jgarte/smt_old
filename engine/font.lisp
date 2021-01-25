@@ -66,9 +66,14 @@
 (defun font-hashtable (&optional (font *font*))
   (gethash font *fonts-hashtable*))
 (defun font-glyphs (&optional (font *font*))
+  "Returns the list of glyph names of FONT."
   (alexandria:hash-table-keys (font-hashtable font)))
 (defun get-glyph (glyph-name &optional (font *font*))
   "Returns the from Fontforge exported data of the glyph (a structure)."
   (gethash glyph-name (font-hashtable font)))
 
+
+;;; 
 (install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
+
+

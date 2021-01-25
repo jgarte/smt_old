@@ -2,9 +2,9 @@
 
 ;;; Preinstalled Fonts
 
-;; (make-mchar 'clefs.c)
-;; (ngn::get-glyph 'clefs.c *font*)
-;; (ngn::font-glyphs)
+;; (make-mchar 'clefs.c :font :amiri)
+;; ;; (ngn::get-glyph 'clefs.c *font*)
+;; (font-glyphs)
 
 
 

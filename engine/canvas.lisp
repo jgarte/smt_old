@@ -2,52 +2,73 @@
 ;; (asdf:load-system "smt")
 (in-package :smt-engine)
 
-;;; Keeps track of UPDATES for an object
-;; (defstruct ud
-;;   left)
+(defun chlapik-staff-space (rastral-no)
+  "Rastral Größen wie bei Chlapik S. 32 beschrieben."
+  (ecase rastral-no
+    (2 (mm-to-px 1.88))
+    (3 (mm-to-px 1.755))
+    (4 (mm-to-px 1.6))
+    (5 (mm-to-px 1.532))
+    (6 (mm-to-px 1.4))
+    (7 (mm-to-px 1.19))
+    (8 (mm-to-px 1.02))))
+(defparameter *staff-space* (chlapik-staff-space 2))
+;;; This is the user-interface,
+(defparameter *scale* 1
+  "Global scaling factor for X and Y coordinates.")
+(defparameter *vertical-space-reference-glyph* 'clefs.c
+  "The relation between 4 staff spaces and the vertical dimension 
+of this glyph is used to find the global internal factor, by which all
+glyphs are scaled to ... By convention the vertical space of 
+stave is equal to the height of the alto clef, hence the default glyph.")
 
-;; (defun bcr-height (bblst)
-;;   (getf bblst 'height))
-;; (defun bcr-bottom (bbclst)
-;;   (getf bblst 'bottom))
-
-(defun cascaded-x-scaler (canvobj self-scaling-p cutoff-pred upwardp)
-  (apply #'*
-	 ;; This is the internal global calc-x scaling
-	 .scale.
-	 (if self-scaling-p (x-scaler canvobj) 1)
-	 (mapcar #'x-scaler (delimit-ancestors (ancestors canvobj) cutoff-pred upwardp))))
-
-(defun cascaded-y-scaler (canvobj self-scaling-p cutoff-pred upwardp)
-  (apply #'*
-	 ;; This is the internal global calc-y scaling
-	 .scale.
-	 (if self-scaling-p (y-scaler canvobj) 1)
-	 (mapcar #'y-scaler (delimit-ancestors (ancestors canvobj) cutoff-pred upwardp))))
-
-(defun %x-scale (n canvobj)
-  (* n .scale. (x-scaler canvobj)))
-(defun %inverse-x-scale (n canvobj)
-  (/ n .scale. (x-scaler canvobj)))
-(defun y-scale (n canvobj)
-  (* n .scale. (y-scaler canvobj)))
-;;; Cascaded X scaled
-(defun embedding-x-scale (n canvobj &key cutoff-pred self-scaling-p (upwardp t))
-  (* n (cascaded-x-scaler canvobj self-scaling-p cutoff-pred upwardp)))
-;;; Cascaded X scalings reversed
-(defun embedding-inverse-x-scale (n canvobj &key cutoff-pred self-scaling-p (upwardp t))
-  "Transforms N (as inputed by user) in such a way that after the system-computations
-SVG, N results. Preserves N through the svg-calculations!"
-  (/ n (cascaded-x-scaler canvobj self-scaling-p cutoff-pred upwardp)))
-
-(defun embedding-y-scale (n canvobj &key cutoff-pred self-scaling-p (upwardp t))
-  (* n (cascaded-y-scaler canvobj self-scaling-p cutoff-pred upwardp)))
-(defun embedding-inverse-y-scale (n canvobj &key cutoff-pred self-scaling-p (upwardp t))
-  "Transforms N (as inputed by user) in such a way that after the system-computations
-SVG, N results. Preserves N through the svg-calculations!"
-  (/ n (cascaded-y-scaler canvobj self-scaling-p cutoff-pred upwardp)))
+;;; and the actual internal factor
+(define-symbol-macro .scale. (* *scale*
+				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
+				(/ (* 4 *staff-space*)
+				   (bbox-height
+				    (glyph-bbox
+				     (get-glyph *vertical-space-reference-glyph*)))
+				   )))
 
 
+(defun render (lst &key (apprulp t) (drawp t) (page-format *page-format*))
+  ;; Vorbereitungen
+  (dolist (obj lst)
+    (when (formp obj)
+      ;; perform pre-processings
+      (preprocess obj)
+      ;; Line-ups
+      (hlineup obj)
+      ))
+  (when apprulp
+    (apply-rules (mapcan #'(lambda (x)
+			     (if (formp x)
+				 (cons x (descendants x))
+				 (list x)))
+			 lst)))
+  ;; This part must ONLY do the drawing stuff!!!
+  (when drawp
+    ;;  Pack svg lists
+    (dolist (obj lst)      
+      (pack-svglst obj)
+      (dolist (elem (svglst obj))
+	(inverse-toplvl-scale-posidims! elem)
+	(replace-with-transform! elem)))
+    (svg:write-svg (svg:g
+		    ;; Setting the toplevel scaling of the score
+		    :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
+		    :content (append (list (mapcar #'svglst lst)
+					   (svg:rect 0 0 50 50
+						     :fill "red"
+						     :fill-opacity .7))))
+		   :width (getf (page-size page-format) :w)
+		   :height (getf (page-size page-format) :h))))
+
+;;; Toplevel scale
+(defun toplvl-scale (r) (* r .scale.))
+;;; Inverse toplevel scale
+(defun inv-toplvl-scale (r) (/ r .scale.))
 
 ;;; Chase ist der Rahmen, also das Canvas einfach.
 (defclass canvas (smtobj)
@@ -174,30 +195,6 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 	 ;; These all have had ABSX = NIL (empty list if OBJ itslef has ABSX).
 	 (tailcdr (cdr absx-tail)))
     (apply #'+ (absx tailcar) (x-offset tailcar) (mapcar #'x-offset tailcdr))))
-;;; Avoid recursion here, it will have double setfing effects
-
-
-
-
-
-;; (defmethod reprx ((obj canvas))
-;;   "Expresses x in terms of the (X) function"
-;;   (let* ((absx-tail (delimit-ancestors (ancestors obj) #'absx t))
-;; 	 ;; This is the one with absx
-;; 	 (tailcar (car absx-tail))
-;; 	 ;; These all have had absx = NIL
-;; 	 (tailcdr (cdr absx-tail)))
-;;     (embedding-inverse-x-scale (if (absx obj)
-;; 				   (- (rx obj) ;;=> (+ (absx obj) (x-offset obj))
-;; 				      (if absx-tail
-;; 					  (apply #'+ (absx tailcar) (x-offset tailcar) (mapcar #'x-offset tailcdr))
-;; 					  0))
-;; 				   ;; Drucke x-offset aus, in terms of (X)
-;; 				   (- (rx obj)
-;; 				      (apply #'+ (absx tailcar) (x-offset tailcar) (mapcar #'x-offset tailcdr)))
-;; )
-;; 			       obj :cutoff-pred #'identity :upwardp nil))
-;;   )
 
 (defmethod calc-y ((obj canvas))
   (let* ((absy-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absy t))
@@ -206,77 +203,4 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 	 ;; These all have had ABSY = NIL (empty list if OBJ itslef has ABSY).
 	 (tailcdr (cdr absy-tail)))
     (apply #'+ (absy tailcar) (y-offset tailcar) (mapcar #'y-offset tailcdr))))
-
-
-;; (defmethod repry ((obj canvas))
-;;   "Expresses x in terms of the (X) function"
-;;   (let* ((absy-tail (delimit-ancestors (ancestors obj) #'absy t))
-;; 	 ;; This is the one with absx
-;; 	 (tailcar (car absy-tail))
-;; 	 ;; These all have had absx = NIL
-;; 	 (tailcdr (cdr absy-tail)))
-;;     (embedding-inverse-y-scale (if (absy obj)
-;; 				   (- (y obj) ;;=> (+ (absx obj) (x-offset obj))
-;; 				      (if absy-tail
-;; 					  (apply #'+ (absy tailcar) (y-offset tailcar) (mapcar #'y-offset tailcdr))
-;; 					  0))
-;; 				   ;; Drucke x-offset aus, in terms of (X)
-;; 				   (- (y obj) (apply #'+ (absy tailcar) (y-offset tailcar) (mapcar #'y-offset tailcdr))))
-;; 			       obj :cutoff-pred #'identity :upwardp nil))
-;;   )
-
-;; (defmethod ry ((obj canvas))
-;;   (if (absy obj)
-;;       ;; When abs exists, all xs before should be invalidated
-;;       (let* ((absy-tail (delimit-ancestors (ancestors obj) #'absy t))
-;; 	     ;; This is the one with absy
-;; 	     (tailcar (car absy-tail))
-;; 	     ;; These all have had absy = NIL
-;; 	     (tailcdr (cdr absy-tail)))
-;; 	(embedding-inverse-y-scale (- (+ (absy obj) (y-offset obj))
-;; 				      (if absy-tail
-;; 					  (apply #'+
-;; 						 (absy tailcar) (y-offset tailcar)
-;; 						 (mapcar #'y-offset tailcdr))
-;; 					  0))
-;; 				   obj :cutoff-pred #'identity :upwardp nil))
-;;       ;; Just retain the correct amount of x-offset      
-;;       (embedding-inverse-y-scale (y-offset obj) obj :cutoff-pred #'identity :upwardp nil)
-;;       ))
-
-
-(defun observe-hedge (val obj)
-  "Computes the representational value of n from the standpoint of obj."
-  ;; Find the nearest parent with an absx
-  (let* ((absx-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absx t))
-	 ;; This is the one with absx
-	 (tailcar (car absx-tail))
-	 ;; These all have had absx = NIL
-	 (tailcdr (cdr absx-tail)))
-    (embedding-inverse-x-scale (- val (apply #'+ (absx tailcar) (x-offset tailcar)
-					     (mapcar #'x-offset tailcdr)))
-			       obj
-			       :cutoff-pred #'identity
-			       :upwardp nil
-			       :self-scaling-p t)))
-(defun observe-vedge (val obj)
-  "Computes the representational value of n from the standpoint of obj."
-  ;; Find the nearest parent with an absx
-  (let* ((absy-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absy t))
-	 ;; This is the one with absy
-	 (tailcar (car absy-tail))
-	 ;; These all have had absy = NIL
-	 (tailcdr (cdr absy-tail)))
-    (embedding-inverse-y-scale (- val (apply #'+ (absy tailcar) (y-offset tailcar)
-					     (mapcar #'y-offset tailcdr)))
-			       obj
-			       :cutoff-pred #'identity
-			       :upwardp nil
-			       :self-scaling-p t)))
-
-
-
-
-
-
 

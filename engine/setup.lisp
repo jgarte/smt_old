@@ -23,53 +23,20 @@
 (defparameter *font* 'haydn-11)
 
 
-;;; Converting mm to pixel and vv.
-;;; https://www.unitconverters.net/typography/millimeter-to-pixel-x.htm
-
-(defconstant +px-per-mm+ 3.7795275591 "Pixels per mm")
-
-(eval-when (:compile-toplevel :load-toplevel)
-  ;; Need this for the margins constants later in the file
-  ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
-  (defun mm-to-px (mm) (* mm +px-per-mm+)))
 
 
-(defun chlapik-staff-space (rastral-no)
-  "Rastral Größen wie bei Chlapik S. 32 beschrieben."
-  (ecase rastral-no
-    (2 (mm-to-px 1.88))
-    (3 (mm-to-px 1.755))
-    (4 (mm-to-px 1.6))
-    (5 (mm-to-px 1.532))
-    (6 (mm-to-px 1.4))
-    (7 (mm-to-px 1.19))
-    (8 (mm-to-px 1.02))))
-
-(defparameter *staff-space* (chlapik-staff-space 2))
 
 
-;;; This is the user-interface,
-(defparameter *scale* 1
-  "Global scaling factor for X and Y coordinates.")
 
-(defparameter *vertical-space-reference-glyph* 'clefs.c
-  "The relation between 4 staff spaces and the vertical dimension 
-of this glyph is used to find the global internal factor, by which all
-glyphs are scaled to ... By convention the vertical space of 
-stave is equal to the height of the alto clef, hence the default glyph.")
 
-;;; and the actual internal factor
-(define-symbol-macro .scale. (* *scale*
-				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
-				(/ (* 4 *staff-space*)
-				   (bbox-height
-				    (glyph-bbox
-				     (get-glyph *vertical-space-reference-glyph*)))
-				   ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :height)
-				   ;; (bcr-height (get-glyph-bbox "uniE05C")
-				   ;; 	       ;; (get-bcr "clefs.C" .font.)
-				   ;; 	       )
-				   )))
+
+
+
+
+
+
+
+
 
 ;;; Line thickness for both cross and circle's contour
 (defparameter *origin-line-thickness* 10)
@@ -98,15 +65,6 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (define-symbol-macro %hform-canvas-color% *hform-origin-cross-color*)
 (define-symbol-macro %vform-canvas-color% *vform-origin-cross-color*)
 
-;;; Just name the origin-point of the sticks (no magical numbers),
-;;; XY origins are always 0!
-(defconstant +stick-x-origin+ 0)
-(defconstant +stick-y-origin+ 0)
-
-;;; Page margines: Measured from Schubert Sonate, Henle
-(defconstant +right-margin+ (mm-to-px 25))
-(defconstant +left-margin+ (mm-to-px 36))
-(defconstant +top-margin+ (mm-to-px 56))
 
 
 

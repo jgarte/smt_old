@@ -1,7 +1,7 @@
 
 ;;; Regression testing for SMT and it's components
 
-(in-package #:tst)
+(in-package #:smt-test)
 
 (defparameter *tolerance* .1)
 
@@ -53,8 +53,12 @@
 ;;; I know from INSPECTING that eg xs of notehead & it's parent
 ;;; sform are the same.
 ;;; x, l, r, w
-(ngn::get-glyph 'noteheads.s0 ngn:*font*)
-ngn:*fonts-hashtable*
+
+;;; Ye fekri bara in bokon!
+;; (export '(ngn::noteheads.s0) :ngn)
+
+(find-symbol "NOTEHEADS.S0" *package*)
+
 (def-test notehead-in-sform
     (:suite horizontal)
   (let* ((n (make-mchar 'noteheads.s0
