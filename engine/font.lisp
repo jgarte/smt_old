@@ -1,5 +1,8 @@
 (in-package :smt-engine)
 
+(defparameter *fonts-hashtable* (make-hash-table))
+(define-symbol-macro .installed-fonts. (alexandria:hash-table-keys *fonts-hashtable*))
+(defparameter *font* 'haydn-11)
 
 ;;; https://common-lisp.net/project/cxml/quickstart.html
 (defun resolver (pubid sysid)

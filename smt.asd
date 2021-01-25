@@ -20,11 +20,12 @@
   :components (
 	       (:module "engine"
 		:serial t
-		:components ((:file "setup")
-			     (:file "utils")
+		:components (
 			     ;; Installing font before using
 			     ;; Glyphs in CANVAS for .SCALE.
 			     (:file "font")
+			     
+			     (:file "utils")
 			     (:file "rules")     
 			     (:file "canvas")
 			     (:file "form")
