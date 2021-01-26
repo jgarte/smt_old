@@ -5,7 +5,7 @@
 (defun make-mchar (name &rest initargs &key &allow-other-keys)
   (apply #'make-instance 'mchar
 	 :name name
-	 initargs))
+	 (alexandria:delete-from-plist initargs :name)))
 
 
 ;;; Music Character
@@ -32,13 +32,6 @@ representing a single musical symbol. It's content consists
 of a canvas filled with one glyph.
 Mtypes should be printable both as standalone and as part of
 Composing Sticks."))
-
-;;; Two types of mchar: TMPMCHAR = characters with valuations
-;;; AUSMCHAR=others (e.g. accidentals etc)
-(defclass tmpmchar (mchar)
-  ((dur :initarg :dur :accessor dur)))
-(defclass auxmchar (mchar) ())
-
 
 (defun mcharp (obj) (typep obj 'mchar))
 
@@ -149,11 +142,12 @@ Composing Sticks."))
   (when (origin-visible-p obj)    
     ;; Since svgize-origin consists of more than one svg-element,
     ;; push each one seperately into SVGLST
-    (dolist (elem (svgize-origin obj)) (push elem (svglst obj)))
+    (dolist (elem (svgize-origin obj))
+      (push elem (svglst obj)))
     (push (xml-base::comment (format nil "Character ~A, Origin Point" (id obj))) (svglst obj)))  
   (push (svg:path ;; (mchar-path-d (code obj) (family obj))
 	 ;; (get-glyph-d (name obj))
-	 (glyph-pathd (get-glyph (name obj) (font obj)))
+	 (print (glyph-pathd (get-glyph (name obj) (font obj))))
 	 :fill (mchar-color obj) 
 	 :fill-opacity (mchar-opac obj)
 	 :id (symbol-name (id obj))

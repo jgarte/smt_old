@@ -116,10 +116,6 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
   ;; Allow these slot-readers to be used as rulers for this object
   
   )
-
-
-
-
 (defmethod calc-x ((obj canvas))
   ;; UPWARDP T = start from obj itself
   (let* ((absx-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absx t))

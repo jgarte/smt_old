@@ -142,3 +142,22 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 			   :stroke-linecap "square"
 			   :stroke "black")))
   )
+
+
+
+;; (defrule identity (note) (:treble)
+;;     ("Deduces the notehead symbol from note's duration." -1)
+;;   (note
+;;    (noteobj)
+;;    (let ((hd (make-mchar 'clefs.c)))
+;;      ;; (setf (slot-value hd 'xslot) 50
+;;      ;; 	   (slot-value hd 'yslot) 50
+;;      ;; 	   (slot-value hd 'wslot) 50
+;;      ;; 	   (slot-value hd 'hslot) 50
+;;      ;; 	   (slot-value hd 'tslot) 50
+;;      ;; 	   (slot-value hd 'lslot) 50
+;;      ;; 	   )
+     
+;;      (push hd (content noteobj))
+;;      (pushnew noteobj (ancestors hd))
+;;      )))

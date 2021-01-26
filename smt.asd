@@ -39,7 +39,7 @@
 		)
 	       (:module "rules"
 		:serial t
-		:components ((:file "types")
+		:components (
 			     (:file "cwmn")))
 	       )
   )

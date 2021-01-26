@@ -774,11 +774,7 @@
 
 (glyph-bbox 'clefs.f)
 
-(render (list (make-mchar 'noteheads.s1 :id 'nh :toplevelp t
-					:canvas-vis-p t
-					:origin-visible-p nil
-					:mchar-opac .4)
-	      ))
+
 
 (glyph-bbox (get-glyph 'noteheads.s1))
 
@@ -930,3 +926,72 @@
   (render (list h h1))
   )
 
+;;; ;;;;;;;;;;;;;;;;
+(let* (
+       (h (hform
+	   ;; :absy absy
+	   ;; :ruler 'content
+	   ;; :width (mm-to-px w)
+	   ;; :canvas-vis-p nil
+	   ;; :canvas-color "pink"
+	   ;; :canvas-opac 1
+	   ;; :origin-visible-p nil
+	   ;; :absx absx
+	   :toplevelp t
+	   :content
+	   (list (sform :content (list (make-note '(b . 4) 1 :domain :treble)))
+		 (sform :content (list (make-note  '(b . 4) 1 :domain :treble)))
+		 (sform :content (list (make-note  '(c . 5) 1 :domain :treble)))
+		 ;; (sform :content (list (make-instance 'barline)))
+		 (sform :content (list (make-note  '(d . 5) 1 :domain :treble)))
+		 (sform :content (list (make-note  '(c . 5) 1 :domain :treble)))
+		 ;; (sform :content (list (make-instance 'barline)))
+		 )
+	   ;; :preproc (preproc x
+	   ;; 	      ((typep x 'note)
+	   ;; 	       (setf
+	   ;; 		;; Doubling the width temporarily to ease reading
+	   ;; 		;; (ruler x) '(:spn)
+	   ;; 		(domain x) :treble
+	   ;; 		(canvas-vis-p x) nil
+	   ;; 		(origin-visible-p x) nil
+	   ;; 		;; (origin-visible-p (car (content x))) nil
+	   ;; 		))
+	   ;; 	      ;; ((or (eq (class-name (class-of x)) 'stacked-form)
+	   ;; 	      ;; 	   (typep x 'barline))
+	   ;; 	      ;;  (let ((colors '("green" "red" "gray" "orange" "pink" "blue")))
+	   ;; 	      ;; 	 (setf
+	   ;; 	      ;; 	  (canvas-vis-p x) t
+	   ;; 	      ;; 	  (canvas-color x) (nth (random (length colors)) colors)
+	   ;; 	      ;; 	  (origin-visible-p x) nil
+	   ;; 	      ;; 	  )))
+	   ;; 	      )
+	   ))
+       )
+  ;; (incf (left (car (content h))) 10)
+  (render (list h))
+  
+  )
+
+(render (list (hform
+	       :toplevelp t
+	       :content
+	       (loop for x-offset to 10
+		     collect
+		     (sform :content
+			    (list (make-note '(b . 4) 1 :domain :treble))
+			    :x-offset (* x-offset 20)))
+	       
+	       ;; (sform
+		 
+	       ;; 	:content
+	       ;; 	(list (make-note nil 1
+	       ;; 			 ;; :canvas-vis-p nil
+	       ;; 			 ;; :origin-visible-p nil
+	       ;; 			 :content
+	       ;; 			 (list (make-mchar 'rests.3 :id 'nh 
+	       ;; 						    :canvas-vis-p nil
+	       ;; 						    :origin-visible-p nil
+	       ;; 					   )))))
+	       )
+	      ))

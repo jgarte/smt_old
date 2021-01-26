@@ -6,6 +6,8 @@
 (defparameter *ruledocs* (make-hash-table))
 (defparameter *ruletable* (make-hash-table))
 
+
+
 (defun ruledocs ()
   (sort (alexandria:hash-table-alist *ruledocs*) #'<
 	:key #'car))
@@ -24,6 +26,10 @@
 	    "Malformed rule clause lambda-list: ~A" (cadr clause))))
 
 (defmacro defrule (ruler targets domains (&optional doc (idx (incf *ruleidx*))) &body clauses)
+  "RULER is a function designator which is applied to an object. The type of the 
+returned value of this funcall is then checked against the type-specifications of the
+provided clauses in order to find the applicable rule-body.
+"
   (examine-clauses clauses)
   (let ((rlrval (make-symbol "RLRVAL")))
     `(prog1 ',ruler

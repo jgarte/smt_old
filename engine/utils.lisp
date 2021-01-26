@@ -203,6 +203,7 @@ writing the svg doc.")
 		 :fill-opacity *origin-circle-opac*
 		 :stroke circle-stroke
 		 :stroke-width *origin-line-thickness*)
+     
      ;; cross
      (svg:line (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
 	       :stroke cross-stroke
@@ -212,7 +213,8 @@ writing the svg doc.")
 	       :stroke cross-stroke
 	       :fill "none"
 	       :stroke-width *origin-line-thickness*)
-     (xml-base::comment comment-str))))
+     (xml-base::comment comment-str))
+    ))
 
 
 (defun inverse-toplvl-scale-posidims! (xmlelem)
@@ -244,17 +246,20 @@ writing the svg doc.")
       ;; Line-ups
       (hlineup obj)
       ))
+
   (when apprulp
     (apply-rules (mapcan #'(lambda (x)
 			     (if (formp x)
 				 (cons x (descendants x))
 				 (list x)))
 			 lst)))
+
   ;; This part must ONLY do the drawing stuff!!!
   (when drawp
     ;;  Pack svg lists
-    (dolist (obj lst)      
+    (dolist (obj lst)
       (pack-svglst obj)
+      (print '_________)
       (dolist (elem (svglst obj))
 	(inverse-toplvl-scale-posidims! elem)
 	(replace-with-transform! elem)))
