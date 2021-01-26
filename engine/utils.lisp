@@ -131,6 +131,9 @@ writing the svg doc.")
 	   :documentation "Ruletable domain"
 	   :accessor domain)
    (ancestors :accessor ancestors
+	      :documentation "The nearest of the parents to the object
+in this list is the LAST one, so if u want to start from the nearest
+use the reversed of this list."
 	      :initform ())   
    (origin-visible-p :initarg :origin-visible-p
 		     :initform t
@@ -196,6 +199,7 @@ writing the svg doc.")
 		       (stacked-form (format nil "Sform ~A Origin Point" (id obj)))
 		       (horizontal-form (format nil "Hform ~A Origin Point" (id obj)))
 		       (vertical-form (format nil "Vform ~A Origin Point" (id obj))))))
+    (print (list 'in 'origin (id obj) (x obj)))
     (list
      ;; circle
      (svg:circle (x obj) (y obj) *origin-circle-r*
@@ -246,32 +250,31 @@ writing the svg doc.")
       ;; Line-ups
       (hlineup obj)
       ))
-
+  (print '===================)
   (when apprulp
     (apply-rules (mapcan #'(lambda (x)
 			     (if (formp x)
 				 (cons x (descendants x))
 				 (list x)))
 			 lst)))
-
   ;; This part must ONLY do the drawing stuff!!!
   (when drawp
     ;;  Pack svg lists
     (dolist (obj lst)
       (pack-svglst obj)
-      (print '_________)
       (dolist (elem (svglst obj))
 	(inverse-toplvl-scale-posidims! elem)
 	(replace-with-transform! elem)))
-    (svg:write-svg (svg:g
-		    ;; Setting the toplevel scaling of the score
-		    :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
-		    :content (append (list (mapcar #'svglst lst)
-					   (svg:rect 0 0 50 50
-						     :fill "red"
-						     :fill-opacity .7))))
-		   :width (getf (page-size page-format) :w)
-		   :height (getf (page-size page-format) :h))))
+    (svg:write-svg
+     (svg:g
+      ;; Setting the toplevel scaling of the score
+      :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
+      :content (append (list (mapcar #'svglst lst)
+			     (svg:rect 0 0 50 50
+				       :fill "red"
+				       :fill-opacity .7))))
+     :width (getf (page-size page-format) :w)
+     :height (getf (page-size page-format) :h))))
 
 (defun packsvg (object &rest svg-elements)
   ""

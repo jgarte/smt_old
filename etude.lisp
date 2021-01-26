@@ -973,27 +973,21 @@
   
   )
 
-(render (list (hform
-	       :toplevelp t
-	       :content
-	       (loop for x-offset to 10
-		     collect
-		     (sform :content
-			    (list (make-note '(b . 4) 1 :domain :treble))
-			    :x-offset (* x-offset 20)))
-	       
-	       ;; (sform
-		 
-	       ;; 	:content
-	       ;; 	(list (make-note nil 1
-	       ;; 			 ;; :canvas-vis-p nil
-	       ;; 			 ;; :origin-visible-p nil
-	       ;; 			 :content
-	       ;; 			 (list (make-mchar 'rests.3 :id 'nh 
-	       ;; 						    :canvas-vis-p nil
-	       ;; 						    :origin-visible-p nil
-	       ;; 					   )))))
-	       )
-	      ))
+(let ((h (hform
+	  :toplevelp t
+	  :id 'h
+	  :content
+	  (list (sform :id 's
+		 :content
+		 (list (make-note '(b . 4) 1
+				  :id 'n
+				  :domain :treble))
+		 ))
+	  )
+	 ))
+  (render (list h))
+  )
 
 ;;; Setf content
+(dotimes (i (length (ruledocs)))
+  (remrule i))

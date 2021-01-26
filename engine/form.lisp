@@ -113,6 +113,33 @@ be the value of WIDTH if non-nil."
 	(refresh-bcr! f :x t :y t :l t :r t :t t :b t :w t :h t))
       (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t))))
 
+;;; Nehmen na nur wurde gepushed->Anfang der liste
+(defmethod (setf content) (newcnt (obj form))
+  (print 'setf-content)
+  (setf (slot-value obj 'content) newcnt)
+  (let ((k (car (content obj))))
+    (pushnew obj (ancestors k))
+    (dolist (a (reverse (ancestors obj)))
+      (pushnew a (ancestors k)))
+)
+  (let ((desc (reverse (descendants obj))))
+    ;; (dolist (d desc)
+    ;;   ;; is pushnew safe for this???
+    ;;   (pushnew obj (ancestors d)))
+    ;; At this time every obj has it's full ancestors list
+    (dolist (g (remove-if-not #'mcharp desc))      
+      (refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
+    (dolist (f (remove-if-not #'formp desc))
+      (refresh-bcr! f :x t :y t :l t :r t :t t :b t :w t :h t))
+    (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t))
+  (dolist (anc (reverse (ancestors obj)))
+    ;; It is always safe to set the right edge of a form to the rightmost
+    ;; of it's children.
+    ;; Use SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
+    (refresh-bcr! anc :x t :y t :l t :r t :t t :b t :w t :h t)
+    )
+  newcnt
+  )
 
 (defmethod (setf x) (newx (obj form))
   (let ((dx (- newx (x obj))))
