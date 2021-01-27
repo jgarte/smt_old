@@ -184,9 +184,9 @@
   (let* (
 	 (nh1 (make-mchar 'smt-engine::noteheads.s0))
 	 (nh2 (make-mchar 'smt-engine::noteheads.s0))
-	 (n1 (make-note nil :head nh1))
-	 (n2 (make-note nil :head nh2))
-	 ;; (nh1 (head n1)) (nh2 (head n2))
+	 ;; Replaced 2 NOTES with SFORMs
+	 (n1 (sform :content (list nh1)))
+	 (n2 (sform :content (list nh2)))
 	 (s1 (sform :content (list n1)))
 	 (s2 (sform :content (list n2)))
 	 (h (hform :content (list s1 s2) :toplevelp t))

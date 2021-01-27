@@ -824,34 +824,11 @@
   (render (list h))
   )
 
-(glyph-bbox 'clefs.f)
-
-
-
-(glyph-bbox (get-glyph 'noteheads.s1))
-
-
-(setq q 'unie0a4 h 'unie0a3 w 'unie0a2)
-
-
-
-
-
-.installed-fonts. *font*
-
-(dolist (f .fonts.) (uninstall-font f))
-
-(origin-visible-p (make-mchar 'clefs.c))
-(get-glyph 'clefs.c)
-
 (let* ((absx 30)
-       (w 30)
-       (absy 40)       
        (h (hform
 	   :id 'h
-	   :absy (incf absy 70)
 	   :ruler 'content
-	   :width (mm-to-px 30)
+	   :width (mm-to-px 50)		;188.97638
 	   :canvas-vis-p nil
 	   :canvas-color "pink"
 	   :canvas-opac 1
@@ -860,9 +837,9 @@
 	   :toplevelp t
 	   :content (append
 		     (list (sform :content (list (make-instance 'barline))))
-		     (loop repeat 4
+		     (loop repeat 20
 			   for i = (nth (random 3) '(1/2 1/4 1))
-			   collect (sform :content (list (make-note '(g . 4) i))))
+			   collect (sform :content (list (make-note '(g . 5) i))))
 		     (list (sform :content (list (make-instance 'barline))))
 		     )
 	   :preproc (preproc x
@@ -879,19 +856,19 @@
 	  		;; (ruler x) '(:spn)
 	  		(domain x) :treble
 	  		(canvas-vis-p x) nil
+			;; (canvas-opac x) 1
 	  		(origin-visible-p x) nil
 	  		))
 	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
 			   (typep x 'barline))
 	  	       (setf
 	  		(canvas-vis-p x) nil
-			(canvas-color x) "green"
+			(canvas-color x) (nth (random 6) '("red" "green" "orange" "pink" "blue" "gray"))
+			(canvas-opac x) 1
 	  		(origin-visible-p x) nil
 	  		)))))
        )
-  ;; (incf (left (car (content h))) 10)
   (render (list h))
-  (descendants h)
   )
 
 ;;; ;;;;;;;;;;;;;;;;
@@ -946,7 +923,7 @@
        )
   ;; (incf (left (car (content h))) 10)
   (render (list h))
-  (width h)
+  (print (children h))
   )
 
 (let ((h (hform
@@ -961,8 +938,14 @@
 		 ))
 	  )
 	 ))
+
   (render (list h))
+    (enumerate-generations h 0)
+  (mapcan #'cdr (children h ))
+
+
   )
+
 
 ;;; Setf content
 (dotimes (i (length (ruledocs)))

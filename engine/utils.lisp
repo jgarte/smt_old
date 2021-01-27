@@ -4,6 +4,36 @@
 (in-package #:smt-engine)
 
 
+(defun enumerate-generations (x n)
+  ""
+  (if (or (mcharp x) (null (content x)))
+      ()
+      ;; X is a form with children
+      (mapcan #'(lambda (k) (cons (cons n k) (enumerate-generations k (1+ n))))
+	      ;; Content beinhaltet immer nur die erste Generation der Kinder,
+	      ;; (die Oberfläche des Nachwuchses)
+	      (content x))
+      ))
+
+(defun children (x &optional (lastgen-first t))
+  "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
+with 0, 1, ... being the number of generation. LASTGEN-FIRST= T sorts
+the farthest & youngest children to appear first in the list,
+LASTGEN-FIRST=NIL the eldest and next one."
+  (let* ((enum (enumerate-generations x 0))
+	 (max-gen (apply #'max (mapcar #'car enum)))
+	 generations)
+    (dotimes (i (1+ max-gen) (sort generations
+				   (if lastgen-first #'> #'<)
+				   :key #'car))
+      (push (cons i (mapcar #'cdr
+			    (remove-if-not
+			     #'(lambda (gen) (= (car gen) i))
+			     enum)))
+	    generations))))
+
+
+
 ;;; Staff Space & Scaling
 (defun chlapik-staff-space (rastral-no)
   "Rastral Größen wie bei Chlapik S. 32 beschrieben."
@@ -51,7 +81,7 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (defconstant +top-margin+ (mm-to-px 56))
 
 ;;; Line thickness for both cross and circle's contour
-(defparameter *origin-line-thickness* 10)
+(defparameter *origin-line-thickness* 3)
 ;;; Marker's Cross
 (defparameter *mchar-origin-cross-color* "deeppink")
 (defparameter *sform-origin-cross-color* "tomato")
@@ -111,6 +141,12 @@ writing the svg doc.")
 
 (defgeneric pack-svglst (obj)
   (:documentation "Pushes all SVG elements to the SVGLST of obj."))
+
+(defun smteq (obj1 obj2)
+  ""
+  (and (typep obj1 (type-of obj2))
+       ;; If not same type, they may have same ID???
+       (eq (id obj1) (id obj2))))
 
 (defclass smtobj ()
   ((id :initarg :id

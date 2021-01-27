@@ -39,6 +39,7 @@ be the value of WIDTH if non-nil."
       (mapcan #'(lambda (a) (cons a (f a))) (content x))
       ))
 
+
 ;;; Children
 (defun descendants (form)
   "Returns form's descendants."
@@ -103,9 +104,6 @@ be the value of WIDTH if non-nil."
       (pushnew obj (ancestors d)))
     ;; At this time every obj has it's full ancestors list
     (when (toplevelp obj)
-      ;; (dolist (d (append (remove-if-not #'mcharp (unfold-contents obj))
-      ;; 		       (remove-if-not #'formp (unfold-contents obj))))   
-      ;;   (refresh-bcr! d :x t :y t :l t :r t :t t :b t :w t :h t))
       ;; Mtype init get-bcr first, da diese unabhängig von Allem sind
       (dolist (g (remove-if-not #'mcharp desc))      
 	(refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
@@ -114,44 +112,52 @@ be the value of WIDTH if non-nil."
       (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t))))
 
 ;;; Nehmen na nur wurde gepushed->Anfang der liste
-(defmethod (setf content) (newcnt (obj form))
-   
-  ;; Now is CONTENT = NEWCNT
-  ;; (let ((k (car (content obj))))
-  ;;   (pushnew obj (ancestors k))
-  ;;   (dolist (a (reverse (ancestors obj)))
-  ;;     (pushnew a (ancestors k))))
-  (let ((added-objs (set-difference newcnt (content obj))))
-    ;; Introduce obj as parent to all children of the new content-list
-    ;; (Is this safe with pushnew? Use KEY #'id?)
-    (dolist (child added-objs)
-      (pushnew obj (ancestors child))
-      (when (formp child)
-	(dolist (grandchild (descendants child))
-	  (pushnew obj (ancestors grandchild)))))
-    ;; Introduce all parents of obj to all children of the new content
-    (dolist (parent (reverse (ancestors obj)))
-      (dolist (child added-objs)
-	(pushnew parent (ancestors child))
-	(when (formp child)
-	  (dolist (grandchild (descendants child))
-	    (pushnew parent (ancestors grandchild))))))
-    )
-  (setf (slot-value obj 'content) newcnt)
-  (let ((desc (reverse (descendants obj))))
-    ;; At this time every obj has it's full ancestors list
-    (dolist (g (remove-if-not #'mcharp desc))      
-      (refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
-    (dolist (f (remove-if-not #'formp desc))
-      (refresh-bcr! f :x t :y t :l t :r t :t t :b t :w t :h t))
-    (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t))
+(defmethod (setf content) (new-content (obj form))
+  "Establishes new parental relations to possibly newly added
+new objects"
+  (if new-content
+      ;; The old content is modified and/or new stuff is added.
+      ;; Add parent-child relations only to NEWLY added items
+      (dolist (direct-new-child (set-difference new-content (content obj) :test #'smteq))
+	;; OBJ is the first & nearest parent, so PUSH first
+	(pushnew obj (ancestors direct-new-child))
+	(when (formp direct-new-child)
+	  (dolist (new-grandchild (mapcan #'cdr (children direct-new-child)))
+	    (pushnew obj (ancestors new-grandchild))
+	    ;; I suppose that parent-child dependency btwn. new
+	    ;; items is already stablished by them themselves, and
+	    ;; hence don't go into stablishing parental relations
+	    ;; between them.
+	    ))
+	;; Now add all parents (starting from the next up to top, hence REVERSE)
+	;; to parent lists of new items (old ones have these already!)
+	(dolist (parent (reverse (ancestors obj)))
+	  (pushnew parent (ancestors direct-new-child))
+	  (when (formp direct-new-child)
+	    (dolist (new-grandchild (mapcan #'cdr (children direct-new-child)))
+	      (pushnew parent (ancestors new-grandchild)))))
+	)      
+      ;; Content has been removed all in all,
+      ;; withdraw parent-child relations?
+      nil
+      )
+  ;; ;;; this part should run also when content has been emptied; ie.
+  ;; dimensions must be recomputed.
+  ;; First set obj's new content, to have
+  ;; valid updated ANCESTOR lists below.
+  (setf (slot-value obj 'content) new-content)
+  (dolist (child (mapcan #'cdr (children obj)))
+    ;; Actually need only do this on new items??
+    (refresh-bcr! child :x t :y t :l t :r t :t t :b t :w t :h t))
+  (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t)
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a form to the rightmost
     ;; of it's children.
     ;; Use SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
     (refresh-bcr! anc :x t :y t :l t :r t :t t :b t :w t :h t)
     )
-  newcnt)
+  ;; Just keeping to the semantics of SETF; return NEW-CONTENT
+  new-content)
 
 (defmethod (setf x) (newx (obj form))
   (let ((dx (- newx (x obj))))
