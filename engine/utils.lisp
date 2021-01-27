@@ -150,6 +150,9 @@ use the reversed of this list."
 (defun parent (obj)
   "Returns the direct parent of obj."
   (alexandria:lastcar (ancestors obj)))
+(defun grandparent (obj)
+  "Returns the eldest of the parents"
+  (car (ancestors obj)))
 
 ;;; A substitute for MEMBER-IF
 (defun delimit-ancestors (ancestors-list cutoff-pred upwardp)
@@ -199,7 +202,6 @@ use the reversed of this list."
 		       (stacked-form (format nil "Sform ~A Origin Point" (id obj)))
 		       (horizontal-form (format nil "Hform ~A Origin Point" (id obj)))
 		       (vertical-form (format nil "Vform ~A Origin Point" (id obj))))))
-    (print (list 'in 'origin (id obj) (x obj)))
     (list
      ;; circle
      (svg:circle (x obj) (y obj) *origin-circle-r*
@@ -250,7 +252,6 @@ use the reversed of this list."
       ;; Line-ups
       (hlineup obj)
       ))
-  (print '===================)
   (when apprulp
     (apply-rules (mapcan #'(lambda (x)
 			     (if (formp x)

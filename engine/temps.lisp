@@ -14,10 +14,7 @@
 thus this can't be set to STACKED!")
    (head :accessor head
 	 :initarg :head
-	 ;; Can be empty too!
-	 :initform nil)
-   (head-color :accessor head-color
-	      :initarg :head-color)
+	 )
    (spn :accessor spn
 	:initarg :spn)))
 

@@ -115,17 +115,30 @@ be the value of WIDTH if non-nil."
 
 ;;; Nehmen na nur wurde gepushed->Anfang der liste
 (defmethod (setf content) (newcnt (obj form))
-  (print 'setf-content)
+   
+  ;; Now is CONTENT = NEWCNT
+  ;; (let ((k (car (content obj))))
+  ;;   (pushnew obj (ancestors k))
+  ;;   (dolist (a (reverse (ancestors obj)))
+  ;;     (pushnew a (ancestors k))))
+  (let ((added-objs (set-difference newcnt (content obj))))
+    ;; Introduce obj as parent to all children of the new content-list
+    ;; (Is this safe with pushnew? Use KEY #'id?)
+    (dolist (child added-objs)
+      (pushnew obj (ancestors child))
+      (when (formp child)
+	(dolist (grandchild (descendants child))
+	  (pushnew obj (ancestors grandchild)))))
+    ;; Introduce all parents of obj to all children of the new content
+    (dolist (parent (reverse (ancestors obj)))
+      (dolist (child added-objs)
+	(pushnew parent (ancestors child))
+	(when (formp child)
+	  (dolist (grandchild (descendants child))
+	    (pushnew parent (ancestors grandchild))))))
+    )
   (setf (slot-value obj 'content) newcnt)
-  (let ((k (car (content obj))))
-    (pushnew obj (ancestors k))
-    (dolist (a (reverse (ancestors obj)))
-      (pushnew a (ancestors k)))
-)
   (let ((desc (reverse (descendants obj))))
-    ;; (dolist (d desc)
-    ;;   ;; is pushnew safe for this???
-    ;;   (pushnew obj (ancestors d)))
     ;; At this time every obj has it's full ancestors list
     (dolist (g (remove-if-not #'mcharp desc))      
       (refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
@@ -138,8 +151,7 @@ be the value of WIDTH if non-nil."
     ;; Use SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
     (refresh-bcr! anc :x t :y t :l t :r t :t t :b t :w t :h t)
     )
-  newcnt
-  )
+  newcnt)
 
 (defmethod (setf x) (newx (obj form))
   (let ((dx (- newx (x obj))))
