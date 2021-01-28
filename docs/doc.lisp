@@ -15,7 +15,7 @@
             width: 100%; 
             /* Height of the Footer*/  
             height: 40px; 
-            background: #b0002d; 
+            background: #acadac; 
         }")
        )
       (:body ,@body))))
