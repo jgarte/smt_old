@@ -1,13 +1,22 @@
 (in-package #:smt-docs)
 
- (defmacro with-page ((&key title) &body body)
-   `(spinneret:with-html-string
-      (:doctype)
-      (:html
-        (:head
-         (:title ,title)
-	 (:link :href #p"/home/amir/Work/Lisp/smt/docs/doc.css" :rel :stylesheet :type "text/css"))
-        (:body ,@body))))
+(defmacro with-page ((&key title) &body body)
+  `(spinneret:with-html-string
+     (:doctype)
+     (:html
+      (:head
+       (:title ,title)
+       (:style "#footer { 
+            position: fixed; 
+            padding: 10px 10px 0px 10px; 
+            bottom: 0; 
+            width: 100%; 
+            /* Height of the footer*/  
+            height: 40px; 
+            background: grey; 
+        }")
+       )
+      (:body ,@body))))
 
 (sb-impl::defconstant-eqx +day-names+ 
     '("Monday" "Tuesday" "Wednesday"
