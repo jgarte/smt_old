@@ -71,6 +71,6 @@
 	       )
   )
 (asdf:defsystem "smt/docs"
-  :depends-on ("smt" "spinneret")
+  :depends-on ("smt" "cl-markup")
   :components ((:module "docs"
 		:components ((:file "doc")))))
