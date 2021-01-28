@@ -15,13 +15,13 @@
 			    (:head (:meta :charset "UTF-8")	     
 				   (:title "SMT")
 				   (:style :type "text/css"
-					   "html,body { background-color:#3df3;
+					   "html { background-color:#3df3;
           padding: 0; margin: 0; } footer { position: fixed; padding:
-          10px 10px 0px 10px; bottom: 0; width: 100%; height: 40px;
+          10px 10px 0px 10px; bottom: 0; width: 100%; height: 20px;
           background: #acadac; }"))
 			    (:body
 			     (:header (:h1 "Symbolic Music Typesetting"))
-			     (:section (documentation 'smt-engine::children 'function))
+			     (:section (:p (documentation 'smt-engine::children 'function)))
 			     (:footer (format nil "Last modified: ~A" (multiple-value-bind (second minute hour date month year day-of-week dst-p tz)
 									  (get-decoded-time)
 									(format nil "~2,'0d:~2,'0d:~2,'0d of ~a, ~d/~2,'0d/~d (GMT~@d)"
