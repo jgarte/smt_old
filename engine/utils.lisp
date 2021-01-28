@@ -17,7 +17,7 @@
 
 (defun children (x &optional (lastgen-first t))
   "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
-with 0, 1, ... being the number of generation. LASTGEN-FIRST= T sorts
+with 0, 1, ... being the number of generation. LASTGEN-FIRST= <a href=\"http://www.lispworks.com/documentation/HyperSpec/Body/a_t.htm#t\">T</a> sorts
 the farthest & youngest children to appear first in the list,
 LASTGEN-FIRST=NIL the eldest and next one."
   (let* ((enum (enumerate-generations x 0))
