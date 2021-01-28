@@ -6,14 +6,18 @@
      (:html
       (:head
        (:title ,title)
-       (:style "#footer { 
+       ;; (:link :href #p"/home/amir/Work/Lisp/smt/docs/doc.css"
+       ;; 	      :type "text/css"
+       ;; 	      :rel :stylesheet)
+       (:style :type "text/css"
+	       " footer{ 
             position: fixed; 
             padding: 10px 10px 0px 10px; 
             bottom: 0; 
             width: 100%; 
             /* Height of the footer*/  
             height: 40px; 
-            background: grey; 
+            background: #333; 
         }")
        )
       (:body ,@body))))
@@ -41,8 +45,6 @@
 					 date
 					 year
 					 (- tz)))))))
-
-
 (with-open-file (s "/home/amir/Work/Lisp/smt/docs/index.html"
 		   :direction :output :if-does-not-exist :create
 		   :if-exists :supersede)
