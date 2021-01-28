@@ -58,3 +58,6 @@
 (defpackage #:smt-test
   (:use #:cl #:smt-engine #:it.bese.fiveam)
   )
+
+(defpackage #:smt-docs
+  (:use #:cl))

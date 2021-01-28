@@ -70,3 +70,7 @@
 	       #:horizontal
 	       )
   )
+(asdf:defsystem "smt/docs"
+  :depends-on ("smt" "spinneret")
+  :components ((:module "docs"
+		:components ((:file "doc")))))
