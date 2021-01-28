@@ -5,7 +5,8 @@
       (:doctype)
       (:html
         (:head
-         (:title ,title))
+         (:title ,title)
+	 (:link #p"doc.css" :rel :stylesheet :type "text/css"))
         (:body ,@body))))
 
 (sb-impl::defconstant-eqx +day-names+ 
