@@ -6,7 +6,7 @@
       (:html
         (:head
          (:title ,title)
-	 (:link #p"doc.css" :rel :stylesheet :type "text/css"))
+	 (:link :href #p"/home/amir/Work/Lisp/smt/docs/doc.css" :rel :stylesheet :type "text/css"))
         (:body ,@body))))
 
 (sb-impl::defconstant-eqx +day-names+ 
