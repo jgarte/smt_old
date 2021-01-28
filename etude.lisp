@@ -828,7 +828,7 @@
        (h (hform
 	   :id 'h
 	   :ruler 'content
-	   :width (mm-to-px 50)		;188.97638
+	   :width (mm-to-px 100)		;377.95276
 	   :canvas-vis-p nil
 	   :canvas-color "pink"
 	   :canvas-opac 1
@@ -941,12 +941,5 @@
 
   (render (list h))
     (enumerate-generations h 0)
-  (mapcan #'cdr (children h ))
-
-
-  )
-
-
-;;; Setf content
-(dotimes (i (length (ruledocs)))
-  (remrule i))
+  (mapcan #'cdr (children h )))
+(ql:quickload :declt)

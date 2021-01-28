@@ -155,7 +155,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
    (let* ((dur (dur noteobj))
 	  (hd (make-mchar (ecase dur
 			    (1 'noteheads.s0)
-     			    (1/2 'noteheads.s1)
+     			    ((h 1/2) 'noteheads.s1)
      			    (1/4 'noteheads.s2))
      			  :origin-visible-p nil
      			  :canvas-vis-p nil)))
