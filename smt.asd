@@ -37,10 +37,6 @@
 			     (:file "lines")
 			     )
 		)
-	       (:module "rules"
-		:serial t
-		:components (
-			     (:file "cwmn")))
 	       )
   )
 

@@ -6,7 +6,7 @@
 (defparameter *ruledocs* (make-hash-table))
 (defparameter *ruletable* (make-hash-table))
 
-
+(defparameter *rulepaths* ())
 
 (defun ruledocs ()
   (sort (alexandria:hash-table-alist *ruledocs*) #'<
@@ -25,10 +25,14 @@
     (assert (listp (cadr clause)) (clause)
 	    "Malformed rule clause lambda-list: ~A" (cadr clause))))
 
-(defmacro defrule (ruler targets domains (&optional doc (idx (incf *ruleidx*))) &body clauses)
+(defmacro defrule (ruler targets domains (&optional (idx (incf *ruleidx*)) doc) &body clauses)
   "RULER is a function designator which is applied to an object. The type of the 
 returned value of this funcall is then checked against the type-specifications of the
 provided clauses in order to find the applicable rule-body.
+TARGETS is a list of types. It narrows down the range of objects which would be addressable
+by the rule to the specified types. A type T in this list makes the rule applicable 
+to all objects, irrespective of their types.
+DOMAINS
 "
   (examine-clauses clauses)
   (let ((rlrval (make-symbol "RLRVAL")))

@@ -16,10 +16,22 @@
 
 (deftype pure-temp-sform-seq () '(satisfies pure-temp-sform-seq-p))
 
+(defrule id (horizontal-form) (t)
+    (0 "Punctuation seq of sforms with a mchar/note/rest")
+  (seq (h) (let* ((tmps (remove-if-not #'(lambda (x) (typep x 'tmp))
+				       ;; somethingsinside of content
+				       (mapcar #'(lambdar (x) (car (content x)))
+					       (content h))))
+		  (aux (remove-if #'(lambda (x) (typep x 'tmp))
+				  ;; somethingsinside of content
+				  (mapcar #'(lambdar (x) (car (content x)))
+					  (content h)))))
+	     (print (list tmps aux)))))
+
 (defrule content (horizontal-form) (t)
-    ("Compute widths so dass jede Note bzw.  Pause die dafür geltenden
+    (0 "Compute widths so dass jede Note bzw.  Pause die dafür geltenden
 Bereich oder Platz oder Raum in Anspruch nimmt. Dies wird dann
-hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
+hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll.")
   ;; (pure-temp-sform-seq (hf)
   ;; 		       (let* ((u (mm-to-px (/ 160 15.72)))
   ;; 			      (uh (* u (/ 5 3.5)))
@@ -67,8 +79,8 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
   )
 
 (defrule spn (note) (:treble)
-    ("Assigns correct vertical positions to note' heads,
- based on their pitch-name and their octave." 1)
+    (1 "Assigns correct vertical positions to note' heads,
+ based on their pitch-name and their octave.")
   ((cons symbol unsigned-byte)
    (me parent)
    (let ((pitch-name (car (spn me)))
@@ -93,7 +105,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
     (or (>= octave 5)
 	(and (eq pitch-name 'b) (= octave 4)))))
 (defrule null (note) (:treble)
-    ("Draws stem lines on the <correct> side of the note N. aber nicht für rests" 2)
+    (2 "Draws stem lines on the <correct> side of the note N. aber nicht für rests" )
   (null (n)
 	;; Give the note object N a stem only when it's dur < whole-note
 	(when (and (< (dur n) 1) (not (eq (id n) 'r)))
@@ -125,7 +137,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 (defparameter *staff-line-thickness* 30)
 
 ;;; Stave
-(defrule null (stacked-form) (stacked) ("Drawing staff lines" 3)
+(defrule null (stacked-form) (stacked) (3 "Drawing staff lines")
   (null (me)
 	(loop
 	  :for line-idx :from -2 :to 2
@@ -136,7 +148,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 				    :stroke "black")))))
 
 (defrule null (barline) (t)
-    ("Barline" 4)
+    (4 "Barline")
   (null (me parent)
 	(packsvg parent
 		 (svg:line (left parent) (top parent)
@@ -149,7 +161,7 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
 
 
 (defrule identity (note) (:treble)
-    ("Deduces the notehead symbol from note's duration." -1)
+    (-1 "Deduces the notehead symbol from note's duration.")
   (note
    (noteobj)
    (let* ((dur (dur noteobj))
@@ -158,7 +170,10 @@ hilfreich sein, wenn Horizontale Form das Zeug verarbeiten soll."  0)
      			    ((h 1/2) 'noteheads.s1)
      			    (1/4 'noteheads.s2))
      			  :origin-visible-p nil
-     			  :canvas-vis-p nil)))
+     			  :canvas-vis-p nil
+			  :font (case dur
+     				  (1 (second .installed-fonts.))
+				  (otherwise *font*)))))
      (push hd (content noteobj))
      (setf (head noteobj) hd)
      

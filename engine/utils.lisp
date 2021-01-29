@@ -75,7 +75,9 @@ stave is equal to the height of the alto clef, hence the default glyph.")
   ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
   (defun mm-to-px (mm) (* mm +px-per-mm+)))
 
+
 ;;; Page margines: Measured from Schubert Sonate, Henle
+
 (defconstant +right-margin+ (mm-to-px 25))
 (defconstant +left-margin+ (mm-to-px 36))
 (defconstant +top-margin+ (mm-to-px 56))
