@@ -2,8 +2,8 @@
 
 
 
-(in-package :smt-engine)
-
+(in-package :smt)
+(ruledocs)
 ;; (setq n 
       
 ;;       )
@@ -800,6 +800,10 @@
   ;; (incf (left (car (content h))) 10)
   (render (list h h2 h3 h4 h5 h6 h7 h8 h9 h10 h11))
   )
+(setf l '(1 2 3 4 5 6)
+      r (remove-if #'oddp l))
+(dolist (x r)
+  (incf x))
 
 
 ;;;;;;;;;;;;;;;;;;;;;test
@@ -824,52 +828,108 @@
   (render (list h))
   )
 
-(let* ((absx 30)
-       (h (hform
-	   :id 'h
-	   :ruler 'content
-	   :width (mm-to-px 100)		;377.95276
-	   :canvas-vis-p nil
-	   :canvas-color "pink"
-	   :canvas-opac 1
-	   :origin-visible-p nil
-	   :absx absx
-	   :toplevelp t
-	   :content (append
-		     (list (sform :content (list (make-instance 'barline))))
-		     (loop repeat 20
-			   for i = (nth (random 3) '(1/2 1/4 1))
-			   collect (sform :content (list (make-note '(g . 5) i))))
-		     (list (sform :content (list (make-instance 'barline))))
-		     )
-	   :preproc (preproc x
-	  	      ((typep x 'mchar)
-		       ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
-	  	       (setf 
-	  		(domain x) :treble
-	  		(canvas-vis-p x) nil
-	  		(origin-visible-p x) t
-	  		))
-	  	      ((eq (class-name (class-of x)) 'note)
-	  	       (setf
-	  		;; Doubling the width temporarily to ease reading
-	  		;; (ruler x) '(:spn)
-	  		(domain x) :treble
-	  		(canvas-vis-p x) nil
-			;; (canvas-opac x) 1
-	  		(origin-visible-p x) nil
-	  		))
-	  	      ((or (eq (class-name (class-of x)) 'stacked-form)
-			   (typep x 'barline))
-	  	       (setf
-	  		(canvas-vis-p x) nil
-			(canvas-color x) (nth (random 6) '("red" "green" "orange" "pink" "blue" "gray"))
-			(canvas-opac x) 1
-	  		(origin-visible-p x) nil
-	  		)))))
-       )
-  (render (list h))
-  )
+(flet ((rndacc ()
+	 (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))))
+  (let* ((absx 30)
+	 (dur 1)
+	 (h (hform
+	     :id 'seq
+	     :ruler 'content
+	     :width (mm-to-px 100)	;377.95276
+	     ;; :canvas-vis-p nil
+	     :canvas-color "black"
+	     :canvas-opac 1
+	     ;; :origin-visible-p nil
+	     :absx absx
+	     :toplevelp t
+	     :content
+	     (list (sform :content (list (make-note (cons 'b 4) dur)))
+	     
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+		   (sform :content (list (make-acc 'accidentals.flat)))
+		   (sform :content (list (make-acc 'accidentals.sharp)))
+		   (sform :content (list (make-acc (rndacc))))
+		   (sform :content (list (make-acc (rndacc))))
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     	   (sform :content (list (make-note (cons 'b 4) dur)))
+		   (sform :content (list (make-acc (rndacc))))
+		   (sform :content (list (make-acc (rndacc))))
+	     	   (sform :content (list (make-note (cons 'b 4) dur))))
+	     
+	     ;; (list (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.flat)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.natural)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.flat)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.natural)))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.flat)))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.sharp)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.sharp)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1))))))
+	     
+	     ;; (append
+	     ;;  ;; (list (sform :content (list (make-instance 'barline))))
+	     ;;  (loop repeat 20
+	     ;; 	  for i = (nth (random 3) '(1/2 1/4 1))
+	     ;; 	  for p = (nth (random 3) '(d f g))
+	     ;; 	  for o = (nth (random 2) '(4 5))
+	     ;; 	  collect (sform :content (list (make-note (cons 'b 4) i)))
+	     ;; 	  collect (sform :content (list (make-acc 'accidentals.sharp)))
+	     ;; 	  )
+	     ;;  ;; (list (sform :content (list (make-instance 'barline))))
+	     ;;  )
+	     :preproc (preproc x
+	  		((typep x 'mchar)
+			 ;; (format t "~&Notehead W: ~D U ~D~%" (width x) u)
+	  		 (setf 
+	  		  (domain x) :treble
+	  		  ;; (canvas-vis-p x) nil
+	  		  ;; (origin-visible-p x) nil
+	  		  ))
+	  		((eq (class-name (class-of x)) 'note)
+	  		 (setf
+	  		  ;; Doubling the width temporarily to ease reading
+	  		  ;; (ruler x) '(:spn)
+	  		  (domain x) :treble
+	  		  ;; (canvas-vis-p x) nil
+			  ;; (canvas-opac x) 1
+	  		  ;; (origin-visible-p x) nil
+	  		  ))
+	  		((or (eq (class-name (class-of x)) 'stacked-form)
+			     (typep x 'barline))
+	  		 (setf
+			  (domain x) 's
+	  		  ;; (canvas-vis-p x) nil
+			  (canvas-color x)
+			  (nth (random 13) '("lightgreen" "yellow" "springgreen" "lightblue" "deeppink" "red" "green" "orange" "pink" "blue" "gray" "cyan"
+					     "darkkhaki"))
+			  (canvas-opac x) .8
+	  		  ;; (origin-visible-p x) nil
+	  		  )))))
+	 )
+    (render (list h))
+    ))
 
 ;;; ;;;;;;;;;;;;;;;;
 (let* (
@@ -923,7 +983,6 @@
        )
   ;; (incf (left (car (content h))) 10)
   (render (list h))
-  (print (children h))
   )
 
 (let ((h (hform

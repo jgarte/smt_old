@@ -30,11 +30,11 @@
 			     (:file "canvas")
 			     (:file "form")
 			     (:file "mchar")
-			     (:file "accidentals")
-			     (:file "temps")
-			     (:file "clefs")
+			     ;; (:file "accidentals")
+			     ;; (:file "clocks")
+			     ;; (:file "clefs")
 			     ;;
-			     (:file "lines")
+			     ;; (:file "lines")
 			     )
 		)
 	       )
@@ -48,9 +48,12 @@
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
-  :components ((:file "package")	       
-	       (:file "smt")
-	       ))
+  :components ((:file "package")
+	       (:module "lang"
+		:serial t
+		:components ((:file "score")
+			     (:file "cwmn")
+			     (:file "lang")))))
 
 (asdf:defsystem "smt/test"
   :serial t

@@ -3,9 +3,17 @@
 (in-package :smt-engine)
 
 
+
+;;; unit of space= width char+guard+floating space
+(defun unit-of-space (x)
+  (+ (width x) (guard x) (fspace x)))
+
+
 ;;; Chase ist der Rahmen, also das Canvas einfach.
 (defclass canvas (smtobj)
-  ((rotate-degrees :initarg :rotate-degrees
+  (
+   
+   (rotate-degrees :initarg :rotate-degrees
 		   :initform 0
 		   :accessor chase-rotate-degrees)
    

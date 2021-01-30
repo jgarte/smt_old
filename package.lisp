@@ -23,8 +23,10 @@
 (defpackage #:smt-engine
   (:use #:cl) (:nicknames "NGN")
   (:export
+   ;; smtobj
+   #:id
    ;; Mchars
-   #:make-mchar
+   #:make-mchar #:mchar
    ;; Forms
    #:sformp
    #:sform #:hform #:defrule #:packsvg
@@ -33,23 +35,19 @@
    #:spn #:top #:right #:stacked-form #:horizontal-form
    #:vertical-form #:ruledocs #:remrule #:content #:dur
    #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
-   #:head #:canvas-color #:mchar-color #:render
+   #:head #:canvas-color #:mchar-color #:render #:canvas-opac
    #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
-   #:make-note #:make-notehead #:inspect-br
-   ;; Notes
-   #:note #:notehead
-   ;; Lines
-   #:barline
-   ;;Metrics
-   #:mm-to-px
+   #:inspect-br #:mm-to-px
    ;; Fonts
    #:install-font #:uninstall-font #:*font* #:.installed-fonts.
    #:*fonts-hashtable* #:glyph #:glyph-bbox #:font-glyphs))
 
 (defpackage #:smt
-  (:use #:cl #:ngn)
+  (:use #:cl #:smt-engine)
   (:export
-   ;; Fonts
+   #:barline
+   #:note #:notehead #:clocked
+   #:make-note #:make-notehead
    #:*font* #:.installed-fonts. #:glyph))
 
 ;;; Export glyph names

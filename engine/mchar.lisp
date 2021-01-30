@@ -8,9 +8,11 @@
 	 (alexandria:delete-from-plist initargs :name)))
 
 
+
 ;;; Music Character
 (defclass mchar (canvas)
-  ((bcr :accessor bcr)   
+  (
+   (bcr :accessor bcr)   
    (canvas-color :initform %mchar-canvas-color%
 		 :documentation "Background color")
    (code :initarg :code
@@ -103,10 +105,7 @@ Composing Sticks."))
 (defmethod width ((obj mchar))
   (slot-value obj 'wslot))
 (defmethod compwidth ((obj mchar))
-  (toplvl-scale (bbox-width (glyph-bbox (get-glyph (name obj) (font obj))))
-   ;; (getf (bcr obj) :width)
-   ;; (bcr-width (bcr obj))
-   ))
+  (toplvl-scale (bbox-width (glyph-bbox (get-glyph (name obj) (font obj))))))
 
 (defmethod refresh-top ((obj mchar))
   (+ (y obj)
