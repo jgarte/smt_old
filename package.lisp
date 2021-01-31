@@ -32,7 +32,7 @@
    #:sform #:hform #:defrule #:packsvg
    #:*staff-line-thickness*
    #:left #:width #:y #:x #:height
-   #:spn #:top #:right #:stacked-form #:horizontal-form
+   #:top #:right #:stacked-form #:horizontal-form
    #:vertical-form #:ruledocs #:remrule #:content #:dur
    #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
    #:head #:canvas-color #:mchar-color #:render #:canvas-opac

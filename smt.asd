@@ -49,11 +49,11 @@
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
   :components ((:file "package")
-	       (:module "lang"
+	       (:file "smt")		;For rules useful Things might be defined here
+	       (:module "rules"
 		:serial t
-		:components ((:file "score")
-			     (:file "cwmn")
-			     (:file "lang")))))
+		:components ((:file "cwmn")))
+	       ))
 
 (asdf:defsystem "smt/test"
   :serial t

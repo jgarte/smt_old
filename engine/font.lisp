@@ -79,5 +79,3 @@
 ;;; 
 (install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
 (install-font "/home/amir/haydn/svg/haydn-11.svg")
-
-

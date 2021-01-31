@@ -5,7 +5,6 @@
 
 
 
-
 (defun only-type-p (lst type)
   (and (= (list-length lst) 1)
        (typep (car lst) type)))
@@ -94,11 +93,11 @@
 							  (* (car x) (ufactor u (cdr x))))
 						      count-durs))))
 			(remain 0))
-		   (format t "~&[Width ~d] [AuxWidthSum ~d] [UsefulWidth ~d] [Durs ~a] ~%[Unit ~d] [UnitDur ~d]"
-			   (width h)
-			   aux-width-sum
-			   useful-width
-			   count-durs u (assoc u *duration-unit-space-reference* :test #'=))
+		   ;; (format t "~&[Width ~d] [AuxWidthSum ~d] [UsefulWidth ~d] [Durs ~a] ~%[Unit ~d] [UnitDur ~d]"
+		   ;; 	   (width h)
+		   ;; 	   aux-width-sum
+		   ;; 	   useful-width
+		   ;; 	   count-durs u (assoc u *duration-unit-space-reference* :test #'=))
 
 		   ;; X is 1 group
 		   (dolist (x (group-in-clock-heads
@@ -106,9 +105,9 @@
 			       #'(lambda (s) (typep (car (content s)) 'clocked))))     
 		     ;; Vorgweschlagenes Width for this clock
 		     (let ((ideal-width (* uwidth
-						     (ufactor u
-							      (dur (car (content (car x))))
-							      ))))
+					   (ufactor u
+						    (dur (car (content (car x))))
+						    ))))
 		       (if (> (length x) 1)
 			   ;; group of clock etc.
 			   (let* ((etcw (mapcar #'punctuation-width (mapcar
@@ -143,7 +142,7 @@
 		   ;; (dolist (c (content h))
 		   ;;   (incf (width c) (/ remain (length (content h)))))
 		   
-		   (format t "~&~D Remains" remain )
+		   ;; (format t "~&~D Remains" remain )
 		   
 		   (when (not (zerop remain))
 		     (let* ((clks (remove-if-not #'(lambda (x) (typep x 'clocked))
@@ -157,7 +156,7 @@
 		       ;; 		 (+ (width x) (print (/ remain (length clks)))))
 		       ;; 	   ;; (format t "~&~a ~d~%__________" x (width x))
 		       ;; 	   ))
-		       			 (terpri)
+		       
 		       (dolist (x (remove-if-not #'(lambda (s) (typep (car (content s)) 'clocked))
 		   				 (content h)
 						 ))

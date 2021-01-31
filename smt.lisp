@@ -1,5 +1,14 @@
 (in-package #:smt)
 
+
+;; (push "/home/amir/Work/Lisp/smt/lang/cwmn.lisp" smt-engine::*rulepaths*)
+;; (dolist (path smt-engine::*rulepaths*)
+;;   (load path))
+;;;;;;;;;;;;;;;;;;;;;;;;;
+(export .installed-fonts. :smt-engine)
+(export (font-glyphs) :smt-engine)
+
+
 ;;;;;;;;;;;;;;;;;; clocks
 (defclass clocked ()
   ((dur :initarg :dur :accessor dur)))
@@ -33,10 +42,4 @@ thus this can't be set to STACKED!")
 	 :accessor ends)))
 
 (defclass barline (line) ())
-
-;;;;;;;;;;;;;;;;;;;;;;;;;
-(export .installed-fonts. :smt-engine)
-(export (font-glyphs) :smt-engine)
-
-
 

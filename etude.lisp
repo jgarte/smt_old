@@ -918,6 +918,7 @@
 	  		  ))
 	  		((or (eq (class-name (class-of x)) 'stacked-form)
 			     (typep x 'barline))
+			 (print (width x))
 	  		 (setf
 			  (domain x) 's
 	  		  ;; (canvas-vis-p x) nil
