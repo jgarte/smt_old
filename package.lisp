@@ -26,7 +26,7 @@
    ;; smtobj
    #:id
    ;; Mchars
-   #:make-mchar #:mchar
+   #:make-mchar #:mchar #:compfunc #:children
    ;; Forms
    #:sformp
    #:sform #:hform #:defrule #:packsvg

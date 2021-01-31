@@ -1,11 +1,13 @@
-* TODO Floating Arithmetic Error?
+* DONE Floating Arithmetic Error?
+CLOSED: [2021-01-31 Sun 22:53]
 ** Calibrate the whole, then de-calibrate at the 
 final step when want to write to .svg
 https://en.wikipedia.org/wiki/Calibration
 * TODO feature?
 Operations can be invoked directly, or examined to see what their
 effects would be without performing them.
-* TODO order of rule-application?
+* DONE order of rule-application?
+CLOSED: [2021-01-31 Sun 22:53]
 * TODO add support for defininf eg spn of notehead by rule?
 * TODO Add more general transformation functions 
 e.g. to rotate, flip, transpose etc. for mtypes or whole bunch of mtypes and sticks.
@@ -21,3 +23,4 @@ used as a model from which other objs are cloned.
 * TODO svglst content cant be modifed
 (even at rule-application-time), svglsts are packed after rules have
 been applied, everything then goes for rendering.
+* TODO Writing the doc as seperate single elements, instead of a <g> element

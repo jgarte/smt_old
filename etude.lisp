@@ -828,6 +828,14 @@
   (render (list h))
   )
 
+;;; Kann sowas benutzen als ruler
+(typep (funcall (compfunc #'children #'(lambda (l)
+					 (mapcar #'type-of
+						 (mapcar #'second (sort l #'< :key #'car)))))
+		(hform :toplevelp t
+		       :content (list (sform :content (list (hform))))))
+       '(cons (eql stacked-form) (cons (eql HORIZONTAL-form) null) ))
+
 (flet ((rndacc ()
 	 (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))))
   (let* ((absx 30)

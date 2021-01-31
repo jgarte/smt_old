@@ -3,6 +3,16 @@
 ;;; Every thing which is needed by others in advance!
 (in-package #:smt-engine)
 
+;;; Reversed order of funcs application than defined by RH
+(defun comp-reducer (f1 f2)
+  #'(lambda (&rest args) (funcall f2 (apply f1 args))))
+;;; 
+(defun compfunc (&rest functions)
+  "Takes a set of functions and returns a fn that is the composition
+of those fns.  The returned fn takes a variable number of args,
+applies the leftmost of fns to the args, the next
+fn (left-to-right) to the result, etc. ©Rich Hickey"
+  (when functions (reduce #'comp-reducer functions)))
 
 (defun enumerate-generations (x n)
   ""
