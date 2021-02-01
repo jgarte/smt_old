@@ -836,41 +836,48 @@
 		       :content (list (sform :content (list (hform))))))
        '(cons (eql stacked-form) (cons (eql HORIZONTAL-form) null) ))
 
+(defun foo (n)
+  (loop repeat n
+	for d = (nth (random 3) '(1 1/2 1/4))
+	for a = (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))
+	when (zerop (random 2))
+	collect (sform :content (list (make-acc a)))
+	collect (sform :content (list (make-note (cons 'b 4) d)))
+	))
+
+
 (flet ((rndacc ()
 	 (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))))
   (let* ((absx 30)
-	 (dur 1)
+	 (dur 1/4)
 	 (h (hform
 	     :id 'seq
 	     :ruler 'content
-	     :width (mm-to-px 100)	;377.95276
+	     :width (mm-to-px 184)	;695.4331
 	     ;; :canvas-vis-p nil
 	     :canvas-color "black"
 	     :canvas-opac 1
 	     ;; :origin-visible-p nil
 	     :absx absx
 	     :toplevelp t
-	     :content
-	     (list (sform :content (list (make-note (cons 'b 4) dur)))
-	     
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-		   (sform :content (list (make-acc 'accidentals.flat)))
-		   (sform :content (list (make-acc 'accidentals.sharp)))
-		   (sform :content (list (make-acc (rndacc))))
-		   (sform :content (list (make-acc (rndacc))))
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-	     	   (sform :content (list (make-note (cons 'b 4) dur)))
-		   (sform :content (list (make-acc (rndacc))))
-		   (sform :content (list (make-acc (rndacc))))
-	     	   (sform :content (list (make-note (cons 'b 4) dur))))
+	     :content (let ((f (foo 25)))
+			(print (mapcar #'content f)) f)
+	     ;; (list (sform :content (list (make-note (cons 'b 4) dur)))		   
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.flat)))
+	     ;; 	   (sform :content (list (make-acc 'accidentals.sharp)))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur)))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-acc (rndacc))))
+	     ;; 	   (sform :content (list (make-note (cons 'b 4) dur))))
 	     
 	     ;; (list (sform :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
 	     ;; 	   (sform :content (list (make-acc 'accidentals.flat)))
@@ -926,7 +933,6 @@
 	  		  ))
 	  		((or (eq (class-name (class-of x)) 'stacked-form)
 			     (typep x 'barline))
-			 (print (width x))
 	  		 (setf
 			  (domain x) 's
 	  		  ;; (canvas-vis-p x) nil

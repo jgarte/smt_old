@@ -41,7 +41,7 @@
   (list 'accidental 0 'note (* 1/3 *staff-space*)))
 (defparameter *fspaces*
   (list 'accidental 
-	(* 1/2 *staff-space*)
+	(* 1/4 *staff-space*)
 	))
 
 (defun decide-unit (durs)

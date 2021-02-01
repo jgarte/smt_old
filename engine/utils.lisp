@@ -5,7 +5,7 @@
 
 ;;; Reversed order of funcs application than defined by RH
 (defun comp-reducer (f1 f2)
-  #'(lambda (&rest args) (funcall f2 (apply f1 args))))
+  (lambda (&rest args) (funcall f2 (apply f1 args))))
 ;;; 
 (defun compfunc (&rest functions)
   "Takes a set of functions and returns a fn that is the composition
