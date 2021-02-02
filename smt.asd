@@ -2,22 +2,13 @@
 
 
 
-(defsystem "smt/xml"
-  :serial t
-  :depends-on ("cl-ppcre")
-  :components ((:file "package")
-               (:module "xmlutils"
-		:components ((:file "xml")
-			     (:file "svg")))))
-
-
 
 (defsystem "smt/engine"
   :serial t
-  :depends-on ("smt/xml"
+  :depends-on (
 	       "alexandria" "split-sequence" "cl-ppcre"
 	       "s-xml")
-  :components (
+  :components ((:file "package")
 	       (:module "engine"
 		:serial t
 		:components (
@@ -38,7 +29,8 @@
   :serial t
   :in-order-to ((test-op (test-op "smt/test")))
   :depends-on ("smt/engine" (:version "asdf" "3.1.2"))
-  :components ((:file "package")
+  :components (
+	       ;; (:file "package")
 	       (:file "smt")		;For rules useful Things might be defined here
 	       (:module "rules"
 		:serial t
@@ -50,7 +42,7 @@
   :defsystem-depends-on ("fiveam" "fiveam-asdf")
   :class :fiveam-tester-system
   :depends-on ("smt")
-  :components ((:file "package")
+  :components (;; (:file "package")
 	       (:file "regtest"))
   :test-package :smt-test
   :test-names (

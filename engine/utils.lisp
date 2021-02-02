@@ -3,6 +3,12 @@
 ;;; Every thing which is needed by others in advance!
 (in-package #:smt-engine)
 
+(defconstant +px-per-mm+ 3.7795275591 "Pixels per mm")
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  ;; Need this for the margins constants later in the file
+  ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
+  (defun mm-to-px (mm) (* mm +px-per-mm+)))
+
 (defparameter *svg-count-decimal* 10
   "Specifies the number of decimal points in printed SVG numericals.")
 
@@ -126,11 +132,7 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 ;;; Inverse toplevel scale
 (defun inv-toplvl-scale (r) (/ r .scale.))
 
-(defconstant +px-per-mm+ 3.7795275591 "Pixels per mm")
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  ;; Need this for the margins constants later in the file
-  ;; (DEFCONSTANT wants to know about constant's value at compile-time too)
-  (defun mm-to-px (mm) (* mm +px-per-mm+)))
+
 
 
 ;;; Page margines: Measured from Schubert Sonate, Henle
@@ -311,25 +313,25 @@ use the reversed of this list."
 ;;     ))
 
 
-(defun inverse-toplvl-scale-posidims! (xmlelem)
-  (dolist (attr-val (xml-base::elmattrs xmlelem))
-    (when (member (car attr-val) *posidim-attrs* :test #'string=)
-      (setf (cdr attr-val) (inv-toplvl-scale (cdr attr-val))))))
+;; (defun inverse-toplvl-scale-posidims! (xmlelem)
+;;   (dolist (attr-val (xml-base::elmattrs xmlelem))
+;;     (when (member (car attr-val) *posidim-attrs* :test #'string=)
+;;       (setf (cdr attr-val) (inv-toplvl-scale (cdr attr-val))))))
 
-(defun replace-with-transform! (xml-elem)  
-  (multiple-value-bind (trns indxd) (svg::extract-transformations xml-elem)
-    (when trns
-      (setf (xml-base::elmattrs xml-elem) (set-difference (xml-base::elmattrs xml-elem) trns))
-      (push (cons "transform"
-		  (let ((s ""))
-		    (dolist (l indxd s) ;fängt mit 0 an
-		      (let ((ts (remove-if-not #'(lambda (av) (string= "t" (car av) :end2 1)) (cadr l)))
-			    (ss (remove-if-not #'(lambda (av) (string= "s" (car av) :end2 1)) (cadr l))))
-			(when ts
-			  (setf s (concatenate 'string s (format nil "translate(~D ~D) " (cdr (first ts)) (cdr (second ts))))))
-			(when ss
-			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
-	    (xml-base::elmattrs xml-elem)))))
+;; (defun replace-with-transform! (xml-elem)  
+;;   (multiple-value-bind (trns indxd) (svg::extract-transformations xml-elem)
+;;     (when trns
+;;       (setf (xml-base::elmattrs xml-elem) (set-difference (xml-base::elmattrs xml-elem) trns))
+;;       (push (cons "transform"
+;; 		  (let ((s ""))
+;; 		    (dolist (l indxd s) ;fängt mit 0 an
+;; 		      (let ((ts (remove-if-not #'(lambda (av) (string= "t" (car av) :end2 1)) (cadr l)))
+;; 			    (ss (remove-if-not #'(lambda (av) (string= "s" (car av) :end2 1)) (cadr l))))
+;; 			(when ts
+;; 			  (setf s (concatenate 'string s (format nil "translate(~D ~D) " (cdr (first ts)) (cdr (second ts))))))
+;; 			(when ss
+;; 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
+;; 	    (xml-base::elmattrs xml-elem)))))
 
 (defun render (score &key (apprulp t) (drawp t) (page-format *page-format*))
   ;; Vorbereitungen
@@ -361,9 +363,6 @@ use the reversed of this list."
   		       :direction :output)
       (format s "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>~%")
       (nlayer-svg-list score)
-      ;; (dolist (smtobj score)
-      ;; 	;; Bring deren svg-listen in endgültiger Form
-      ;; 	(nlayer-svg-list smtobj))
       (s-xml:print-xml-dom
        (s-xml:make-xml-element :name "svg"
 			       :attributes `(("xmlns" . "http://www.w3.org/2000/svg")
@@ -374,27 +373,6 @@ use the reversed of this list."
 								  (page-format-height page-format))))
 			       :children (svg-list score))
        :xml-struct s t 0)))
-  
-  ;; ;; This part must ONLY do the drawing stuff!!!
-  ;; (when drawp
-  ;;   ;;  Pack svg lists
-  ;;   (dolist (obj score)
-  ;;     (pack-svgscore obj)
-  ;;     (dolist (elem (svg-list obj))
-  ;; 	(inverse-toplvl-scale-posidims! elem)
-  ;; 	(replace-with-transform! elem)))    
-  ;;   (svg:write-svg
-  ;;    (svg:g
-  ;;     ;; Setting the toplevel scaling of the score
-  ;;     :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
-  ;;     :content (append (list (mapcar #'svg-list score)
-  ;;   			     (svg:rect 0 0 50 50
-  ;;   				       :fill "red"
-  ;;   				       :fill-opacity .7))))
-  ;;    :width (getf (page-size page-format) :w)
-  ;;    :height (getf (page-size page-format) :h))
-    
-  ;;   )
   )
 
 
@@ -419,6 +397,3 @@ use the reversed of this list."
     (format t "~% Left: ~D Right: ~D" (left o) (right o))
     (format t "~% Width: ~D Height: ~D Fixed Height: ~D" (width o) (height o) (when (formp o) (fixed-height o)))
     (format t "~%=========================")))
-
-(eval-when (:compile-toplevel)
-  (print '________==============))
