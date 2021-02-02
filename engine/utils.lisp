@@ -3,6 +3,79 @@
 ;;; Every thing which is needed by others in advance!
 (in-package #:smt-engine)
 
+(defparameter *svg-count-decimal* 10
+  "Specifies the number of decimal points in printed SVG numericals.")
+
+(defmacro define-svg-shape (name &rest attrs-lst)
+  (let ((stringized (gensym)))
+    `(defun ,(intern (format nil "SVG~A" (symbol-name name)))
+	 (,@attrs-lst &rest other-attrs &key &allow-other-keys)
+       (s-xml:make-xml-element :name ,(string-downcase (string name))
+			       :attributes (append
+					    `(,,@(mapcar #'(lambda (att)
+							     `(cons ,(string-downcase (string att))
+								    ;; Convert every attribute value to ASCII
+								    (format nil "~A" ,att)))
+							 attrs-lst))
+					    ;; Convert every attribute value to ASCII
+					    (let (,stringized)
+					      (alexandria:doplist (key val other-attrs ,stringized)
+						(push (cons key (format nil "~A" val)) ,stringized))
+					      ))))))
+
+(define-svg-shape line x1 y1 x2 y2)
+(define-svg-shape rect x y width height)
+(define-svg-shape circle cx cy r)
+(define-svg-shape path d)
+
+
+;; (defun svgline (x1 y1 x2 y2 &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
+;;   (s-xml:make-xml-element :name "line"
+;; 			  :attributes (append
+;; 				       `(("x1" . ,(format nil "~,VF" v x1))
+;; 					 ("y1" . ,(format nil "~,VF" v y1))
+;; 					 ("x2" . ,(format nil "~,VF" v x2))
+;; 					 ("y2" . ,(format nil "~,VF" v y2)))
+;; 				       (let (stringized)
+;; 					 (alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
+;; 					   (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
+;; 					 ))))
+
+;; (defun svgrect (x y width height &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
+;;   (s-xml:make-xml-element :name "rect"
+;; 			  :attributes (append
+;; 				       `(("x" . ,(format nil "~,VF" v x))
+;; 					 ("y" . ,(format nil "~,VF" v y))
+;; 					 ("width" . ,(format nil "~,VF" v width))
+;; 					 ("height" . ,(format nil "~,VF" v height)))
+;; 				       ;; Konvertiere Zahlen in attributes nach strings,
+;; 				       ;; oder s-xml wird sauer sein!
+;; 				       (let (stringized)
+;; 					 (alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
+;; 					   (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
+;; 					 ))))
+
+;; (defun svgpath (d &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
+;;   (s-xml:make-xml-element :name "path"
+;; 			  :attributes (append `(("d" . ,d))
+;; 					      (let (stringized)
+;; 						(alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
+;; 						  (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
+;; 						))))
+
+
+
+
+;; (defun svgcircle (cx cy r &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
+;;   (s-xml:make-xml-element :name "rect"
+;; 			  :attributes (append
+;; 				       `(("cx" . ,(format nil "~,VF" v cx))
+;; 					 ("cy" . ,(format nil "~,VF" v cy))
+;; 					 ("r" . ,(format nil "~,VF" v r)))
+;; 				       (alexandria:plist-alist
+;; 					(alexandria:remove-from-plist other-attrs :v)))))
+
+
 ;;; Reversed order of funcs application than defined by RH
 (defun comp-reducer (f1 f2)
   (lambda (&rest args) (funcall f2 (apply f1 args))))
@@ -14,33 +87,7 @@ applies the leftmost of fns to the args, the next
 fn (left-to-right) to the result, etc. ©Rich Hickey"
   (when functions (reduce #'comp-reducer functions)))
 
-(defun enumerate-generations (x n)
-  ""
-  (if (or (mcharp x) (null (content x)))
-      ()
-      ;; X is a form with children
-      (mapcan #'(lambda (k) (cons (cons n k) (enumerate-generations k (1+ n))))
-	      ;; Content beinhaltet immer nur die erste Generation der Kinder,
-	      ;; (die Oberfläche des Nachwuchses)
-	      (content x))
-      ))
 
-(defun children (x &optional (lastgen-first t))
-  "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
-with 0, 1, ... being the number of generation. LASTGEN-FIRST= <a href=\"http://www.lispworks.com/documentation/HyperSpec/Body/a_t.htm#t\">T</a> sorts
-the farthest & youngest children to appear first in the list,
-LASTGEN-FIRST=NIL the eldest and next one."
-  (let* ((enum (enumerate-generations x 0))
-	 (max-gen (apply #'max (mapcar #'car enum)))
-	 generations)
-    (dotimes (i (1+ max-gen) (sort generations
-				   (if lastgen-first #'> #'<)
-				   :key #'car))
-      (push (cons i (mapcar #'cdr
-			    (remove-if-not
-			     #'(lambda (gen) (= (car gen) i))
-			     enum)))
-	    generations))))
 
 
 
@@ -93,17 +140,17 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (defconstant +top-margin+ (mm-to-px 56))
 
 ;;; Line thickness for both cross and circle's contour
-(defparameter *origin-line-thickness* 3)
-;;; Marker's Cross
+(defparameter *origin-line-thickness* .2)
+;;; Origin's Cross
 (defparameter *mchar-origin-cross-color* "deeppink")
 (defparameter *sform-origin-cross-color* "tomato")
 (defparameter *hform-origin-cross-color* "green")
 (defparameter *vform-origin-cross-color* "blue")
-(defparameter *origin-cross-length* 40 "Line length")
+(defparameter *origin-cross-length* 20 "Line length")
 
+;;; Origin's Circle
 (defparameter *origin-circle-r* 4)
 (defparameter *origin-circle-opac* .3)
-;;; Marker's Circle
 (define-symbol-macro %mchar-origin-circle-color% *mchar-origin-cross-color*)
 (define-symbol-macro %mchar-origin-circle-contour-color% *mchar-origin-cross-color*)
 (define-symbol-macro %sform-origin-circle-color% *sform-origin-cross-color*)
@@ -121,15 +168,17 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 
 
 
+(defstruct page-format width height)
+(defparameter *a4* (make-page-format :width (mm-to-px 210) :height (mm-to-px 297)))
 
 (defun page-size (format)
   "Returns format's page size in pixels. BB p.481"
   (ecase format
     (:a3 (list :h (mm-to-px 420) :w (mm-to-px 297)))
     (:b4 (list :h (mm-to-px 353) :w (mm-to-px 250)))
-    (:a4 (list :h (mm-to-px 297) :w (mm-to-px 210)))))
+    (:a4 (list :h  :w ))))
 
-(defparameter *page-format* :a4)
+(defparameter *page-format* *a4*)
 
 
 (defparameter *posidim-attrs*
@@ -171,8 +220,8 @@ writing the svg doc.")
    ;; 	    :type list
    ;; 	    :documentation "(spn etc."
    ;; 	    :accessor ruleids)
-   (svglst :initform ()
-	   :accessor svglst)
+   (svg-list :initform ()
+	     :accessor svg-list)
    ;; Ruletable domain
    (domain :initarg :domain
 	   :initform nil
@@ -189,18 +238,7 @@ use the reversed of this list."
 
 
 
-(defun root (obj)
-  "Returns the farthest parent (toplevel) of obj"
-  (let ((root (car (ancestors obj))))
-    (assert (toplevelp root))
-    root))
 
-(defun parent (obj)
-  "Returns the direct parent of obj."
-  (alexandria:lastcar (ancestors obj)))
-(defun grandparent (obj)
-  "Returns the eldest of the parents"
-  (car (ancestors obj)))
 
 ;;; A substitute for MEMBER-IF
 (defun delimit-ancestors (ancestors-list cutoff-pred upwardp)
@@ -228,47 +266,49 @@ use the reversed of this list."
 ;;     "none")
 
 
-(defun svgize-origin (obj)
-  (let ((half-line (/ *origin-cross-length* 2))
-	(circle-fill (typecase obj
-		       (mchar %mchar-origin-circle-color%)
-		       (stacked-form %sform-origin-circle-color%)
-		       (horizontal-form %hform-origin-circle-color%)
-		       (vertical-form %vform-origin-circle-color%)))
-	(circle-stroke (typecase obj
-			 (mchar %mchar-origin-circle-contour-color%)
-			 (stacked-form %sform-origin-circle-contour-color%)
-			 (horizontal-form %hform-origin-circle-contour-color%)
-			 (vertical-form %vform-origin-circle-contour-color%)))
-	(cross-stroke (typecase obj
-			(mchar *mchar-origin-cross-color*)
-			(stacked-form *sform-origin-cross-color*)
-			(horizontal-form *hform-origin-cross-color*)
-			(vertical-form *vform-origin-cross-color*)))
-	(comment-str (typecase obj
-		       (mchar (format nil "Character ~A Origin Point" (id obj)))
-		       (stacked-form (format nil "Sform ~A Origin Point" (id obj)))
-		       (horizontal-form (format nil "Hform ~A Origin Point" (id obj)))
-		       (vertical-form (format nil "Vform ~A Origin Point" (id obj))))))
-    (list
-     ;; circle
-     (svg:circle (x obj) (y obj) *origin-circle-r*
-		 :fill circle-fill
-		 :fill-opacity *origin-circle-opac*
-		 :stroke circle-stroke
-		 :stroke-width *origin-line-thickness*)
+
+
+;; (defun svgize-origin (obj)
+;;   (let ((half-line (/ *origin-cross-length* 2))
+;; 	(circle-fill (typecase obj
+;; 		       (mchar %mchar-origin-circle-color%)
+;; 		       (stacked-form %sform-origin-circle-color%)
+;; 		       (horizontal-form %hform-origin-circle-color%)
+;; 		       (vertical-form %vform-origin-circle-color%)))
+;; 	(circle-stroke (typecase obj
+;; 			 (mchar %mchar-origin-circle-contour-color%)
+;; 			 (stacked-form %sform-origin-circle-contour-color%)
+;; 			 (horizontal-form %hform-origin-circle-contour-color%)
+;; 			 (vertical-form %vform-origin-circle-contour-color%)))
+;; 	(cross-stroke (typecase obj
+;; 			(mchar *mchar-origin-cross-color*)
+;; 			(stacked-form *sform-origin-cross-color*)
+;; 			(horizontal-form *hform-origin-cross-color*)
+;; 			(vertical-form *vform-origin-cross-color*)))
+;; 	(comment-str (typecase obj
+;; 		       (mchar (format nil "Character ~A Origin Point" (id obj)))
+;; 		       (stacked-form (format nil "Sform ~A Origin Point" (id obj)))
+;; 		       (horizontal-form (format nil "Hform ~A Origin Point" (id obj)))
+;; 		       (vertical-form (format nil "Vform ~A Origin Point" (id obj))))))
+;;     (list
+;;      ;; circle
+;;      (svg:circle (x obj) (y obj) *origin-circle-r*
+;; 		 :fill circle-fill
+;; 		 :fill-opacity *origin-circle-opac*
+;; 		 :stroke circle-stroke
+;; 		 :stroke-width *origin-line-thickness*)
      
-     ;; cross
-     (svg:line (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
-	       :stroke cross-stroke
-	       :fill "none"
-	       :stroke-width *origin-line-thickness*)
-     (svg:line (x obj) (- (y obj) half-line) (x obj) (+ (y obj) half-line)
-	       :stroke cross-stroke
-	       :fill "none"
-	       :stroke-width *origin-line-thickness*)
-     (xml-base::comment comment-str))
-    ))
+;;      ;; cross
+;;      (svg:line (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
+;; 	       :stroke cross-stroke
+;; 	       :fill "none"
+;; 	       :stroke-width *origin-line-thickness*)
+;;      (svg:line (x obj) (- (y obj) half-line) (x obj) (+ (y obj) half-line)
+;; 	       :stroke cross-stroke
+;; 	       :fill "none"
+;; 	       :stroke-width *origin-line-thickness*)
+;;      (xml-base::comment comment-str))
+;;     ))
 
 
 (defun inverse-toplvl-scale-posidims! (xmlelem)
@@ -291,44 +331,78 @@ use the reversed of this list."
 			  (setf s (concatenate 'string s (format nil "scale(~D ~D)" (cdr (first ss)) (cdr (second ss))))))))))
 	    (xml-base::elmattrs xml-elem)))))
 
-(defun render (lst &key (apprulp t) (drawp t) (page-format *page-format*))
+(defun render (score &key (apprulp t) (drawp t) (page-format *page-format*))
   ;; Vorbereitungen
-  (dolist (obj lst)
-    (when (formp obj)
-      ;; perform pre-processings
-      (preprocess obj)
-      ;; Line-ups
-      (hlineup obj)
-      ))
-  (when apprulp
-    (apply-rules (mapcan #'(lambda (x)
-			     (if (formp x)
-				 (cons x (descendants x))
-				 (list x)))
-			 lst)))
-  ;; This part must ONLY do the drawing stuff!!!
+  (when (formp score)
+    ;; perform pre-processings
+    (preprocess score)
+    ;; Line-ups
+    (hlineup score))
+  ;; (dolist (obj score)
+  ;;   (when (formp obj)
+  ;;     ;; perform pre-processings
+  ;;     (preprocess obj)
+  ;;     ;; Line-ups
+  ;;     (hlineup obj)
+  ;;     ))
+  
+  (when apprulp (apply-rules score))
+  ;; (when apprulp
+  ;;   (apply-rules (mapcan #'(lambda (x)
+  ;; 			     (if (formp x)
+  ;; 				 (cons x (descendants x))
+  ;; 				 (list x)))
+  ;; 			 score)))
+  ;; Using s-xml
   (when drawp
-    ;;  Pack svg lists
-    (dolist (obj lst)
-      (pack-svglst obj)
-      (dolist (elem (svglst obj))
-	(inverse-toplvl-scale-posidims! elem)
-	(replace-with-transform! elem)))
-    (svg:write-svg
-     (svg:g
-      ;; Setting the toplevel scaling of the score
-      :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
-      :content (append (list (mapcar #'svglst lst)
-			     (svg:rect 0 0 50 50
-				       :fill "red"
-				       :fill-opacity .7))))
-     :width (getf (page-size page-format) :w)
-     :height (getf (page-size page-format) :h))))
+    (with-open-file (s "/tmp/smt.svg"
+  		       :if-does-not-exist :create
+  		       :if-exists :supersede
+  		       :direction :output)
+      (format s "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>~%")
+      (nlayer-svg-list score)
+      ;; (dolist (smtobj score)
+      ;; 	;; Bring deren svg-listen in endgültiger Form
+      ;; 	(nlayer-svg-list smtobj))
+      (s-xml:print-xml-dom
+       (s-xml:make-xml-element :name "svg"
+			       :attributes `(("xmlns" . "http://www.w3.org/2000/svg")
+					     ("xmlns:xlink" . "http://www.w3.org/1999/xlink")
+					     ("width" . ,(format nil "~VF" *svg-count-decimal*
+								 (page-format-width page-format)))
+					     ("height" . ,(format nil "~VF" *svg-count-decimal*
+								  (page-format-height page-format))))
+			       :children (svg-list score))
+       :xml-struct s t 0)))
+  
+  ;; ;; This part must ONLY do the drawing stuff!!!
+  ;; (when drawp
+  ;;   ;;  Pack svg lists
+  ;;   (dolist (obj score)
+  ;;     (pack-svgscore obj)
+  ;;     (dolist (elem (svg-list obj))
+  ;; 	(inverse-toplvl-scale-posidims! elem)
+  ;; 	(replace-with-transform! elem)))    
+  ;;   (svg:write-svg
+  ;;    (svg:g
+  ;;     ;; Setting the toplevel scaling of the score
+  ;;     :attributes `(("transform" . ,(svg::transform (svg:scale .scale. .scale.))))
+  ;;     :content (append (list (mapcar #'svg-list score)
+  ;;   			     (svg:rect 0 0 50 50
+  ;;   				       :fill "red"
+  ;;   				       :fill-opacity .7))))
+  ;;    :width (getf (page-size page-format) :w)
+  ;;    :height (getf (page-size page-format) :h))
+    
+  ;;   )
+  )
+
 
 (defun packsvg (object &rest svg-elements)
   ""
-  (dolist (e (reverse svg-elements) (svglst object))
-    (push e (svglst object))))
+  (dolist (e (reverse svg-elements) (svg-list object))
+    (push e (svg-list object))))
+
 
 
 
@@ -345,3 +419,6 @@ use the reversed of this list."
     (format t "~% Left: ~D Right: ~D" (left o) (right o))
     (format t "~% Width: ~D Height: ~D Fixed Height: ~D" (width o) (height o) (when (formp o) (fixed-height o)))
     (format t "~%=========================")))
+
+(eval-when (:compile-toplevel)
+  (print '________==============))

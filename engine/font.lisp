@@ -4,11 +4,7 @@
 (define-symbol-macro .installed-fonts. (alexandria:hash-table-keys *fonts-hashtable*))
 (defparameter *font* 'haydn-11)
 
-;;; https://common-lisp.net/project/cxml/quickstart.html
-(defun resolver (pubid sysid)
-  (declare (ignore pubid sysid))
-  (flexi-streams:make-in-memory-input-stream nil))
-;; (pathname-name "/tmp/")
+
 ;;; uninstall-font
 (defun uninstall-font (font-name)
   (delete font-name .installed-fonts.)
@@ -50,9 +46,14 @@
     		    collect (list (car lst) (mapcar #'read-from-string lst)))
     	      )))
       (loop for (str (name minx miny maxx maxy w h)) in xx
-	    for d = (second (second (second (fourth (fourth (cxml:parse-file (format nil "~A~A.svg" exportpath str)
-		      							     (cxml-xmls:make-xmls-builder)
-									     :entity-resolver #'resolver))))))
+	    for d = (cdr
+		     (car
+		      (s-xml:xml-element-attributes
+		       (car
+			(s-xml:xml-element-children
+			 (car
+			  (s-xml:xml-element-children
+			   (s-xml:parse-xml-file (format nil "~A~A.svg" exportpath str) :output-type :xml-struct))))))))
 	    do (setf (gethash (intern (string-upcase name))
 			      (gethash (intern (string-upcase font-name)) *fonts-hashtable*))
 		     (make-glyph :name name :pathd d
@@ -79,3 +80,4 @@
 ;;; 
 (install-font "/home/amir/gutenberg1939/svg/gutenberg1939-11.svg")
 (install-font "/home/amir/haydn/svg/haydn-11.svg")
+

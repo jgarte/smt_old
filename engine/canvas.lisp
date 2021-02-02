@@ -90,6 +90,19 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
    (hslot :accessor hslot :initform nil)
    ))
 
+(defun root (obj)
+  "Returns the farthest parent (toplevel) of obj"
+  (let ((root (car (ancestors obj))))
+    (assert (toplevelp root))
+    root))
+
+(defun parent (obj)
+  "Returns the direct parent of obj."
+  (alexandria:lastcar (ancestors obj)))
+(defun grandparent (obj)
+  "Returns the eldest of the parents"
+  (car (ancestors obj)))
+
 (defmethod y ((obj canvas)) (slot-value obj 'yslot))
 (defmethod top ((obj canvas)) (slot-value obj 'tslot))
 (defmethod bottom ((obj canvas)) (slot-value obj 'bslot))

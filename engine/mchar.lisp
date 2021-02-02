@@ -120,42 +120,103 @@ Composing Sticks."))
 
 (defmethod refresh-bottom ((obj mchar))
   (+ (y obj)
-     (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph (name obj) (font obj))))
-		   ;; (getf (bcr obj) :bottom)
-		   ;; (bcr-bottom (bcr obj))
-		   )))
+     (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph (name obj) (font obj)))))))
 
 
 ;;; Will be written to SVG
-(defmethod svgize-bcr ((obj mchar))
-  (svg:rect (left obj)			;Is dependent on x
-	    (top obj)
-	    (width obj)
-	    (height obj)
-	    :id (format nil "~A-bcr" (string-downcase (symbol-name (id obj))))
-	    :fill (or (canvas-color obj) "none")
-	    :fill-opacity (canvas-opac obj)))
+;; (defmethod bounding-box-rect ((obj mchar))
+;;   (svg:rect (left obj)			;Is dependent on x
+;; 	    (top obj)
+;; 	    (width obj)
+;; 	    (height obj)
+;; 	    :id (format nil "~A-bcr" (string-downcase (symbol-name (id obj))))
+;; 	    :fill (or (canvas-color obj) "none")
+;; 	    :fill-opacity (canvas-opac obj)))
 
-(defmethod pack-svglst ((obj mchar))  
-  ;; Marker  
-  (when (origin-visible-p obj)    
+(defmethod bounding-box-rect ((obj mchar))
+  ;; left Is dependent on x
+  (svgrect (left obj) (top obj) (width obj) (height obj)
+	   "id" (format nil "MChar~ABbox" (id obj))
+	   "fill" (or (canvas-color obj) "none")
+	   "fill-opacity" (canvas-opac obj)))
+
+(defun origin-cross-elements (obj)
+  (let ((half-line (/ *origin-cross-length* 2))
+	(circle-fill (typecase obj
+		       (mchar %mchar-origin-circle-color%)
+		       (stacked-form %sform-origin-circle-color%)
+		       (horizontal-form %hform-origin-circle-color%)
+		       (vertical-form %vform-origin-circle-color%)))
+	(circle-stroke (typecase obj
+			 (mchar %mchar-origin-circle-contour-color%)
+			 (stacked-form %sform-origin-circle-contour-color%)
+			 (horizontal-form %hform-origin-circle-contour-color%)
+			 (vertical-form %vform-origin-circle-contour-color%)))
+	(cross-stroke (typecase obj
+			(mchar *mchar-origin-cross-color*)
+			(stacked-form *sform-origin-cross-color*)
+			(horizontal-form *hform-origin-cross-color*)
+			(vertical-form *vform-origin-cross-color*))))
+    (list
+     ;; circle
+     (svgcircle (x obj) (y obj) *origin-circle-r*
+		"id" (format nil "~AOriginCircle" (id obj))
+		"fill" circle-fill
+		"fill-opacity" *origin-circle-opac*
+		"stroke" circle-stroke
+		"stroke-width" *origin-line-thickness*)     
+     ;; cross
+     (svgline (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
+	      "id" (format nil "~AOriginHLine" (id obj))
+	      "stroke" cross-stroke
+	      "fill" "none"
+	      "stroke-width" *origin-line-thickness*)
+     (svgline (x obj) (- (y obj) half-line) (x obj) (+ (y obj) half-line)
+	      "id" (format nil "~AOriginVLine" (id obj))
+	      "stroke" cross-stroke
+	      "fill" "none"
+	      "stroke-width" *origin-line-thickness*))))
+
+(defmethod nlayer-svg-list ((obj mchar))
+  (when (origin-visible-p obj)
     ;; Since svgize-origin consists of more than one svg-element,
     ;; push each one seperately into SVGLST
-    (dolist (elem (svgize-origin obj))
-      (push elem (svglst obj)))
-    (push (xml-base::comment (format nil "Character ~A, Origin Point" (id obj))) (svglst obj)))  
-  (push (svg:path ;; (mchar-path-d (code obj) (family obj))
-	 ;; (get-glyph-d (name obj))
-	 (glyph-pathd (get-glyph (name obj) (font obj)))
-	 :fill (mchar-color obj) 
-	 :fill-opacity (mchar-opac obj)
-	 :id (symbol-name (id obj))
-	 ;; Flip the mchar path vertically here (SY)
-	 :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
-	(svglst obj))
-  (push (xml-base::comment (format nil "Character ~A" (id obj))) (svglst obj))
-  ;; BCR Rect
-  (when (canvas-vis-p obj)
-    (push (svgize-bcr obj) (svglst obj))
-    (push (xml-base::comment (format nil "Character ~A, BCR" (id obj))) (svglst obj)))  
+    (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj))))
+  (push (svgpath (glyph-pathd (get-glyph (name obj) (font obj)))
+		 "id" (format nil "MChar~A" (id obj))
+		 ;; First put the thing at the specified coord tx ty
+		 ;; Then flip about th e vertical axis, then write the
+		 ;; desired scaling.
+		 "transform" (format nil "translate(~,VF ~,VF) scale(1 -1) scale(~,VF ~,VF)"
+				     *svg-count-decimal* (x obj)
+				     *svg-count-decimal* (y obj)
+				     *svg-count-decimal* (* (x-scaler obj) .scale.)
+				     *svg-count-decimal* (* (y-scaler obj) .scale.)))
+	(svg-list obj))
+  (when (canvas-vis-p obj) (push (bounding-box-rect obj) (svg-list obj)))
   )
+
+
+;; (defmethod pack-svglst ((obj mchar))  
+;;   ;; Marker  
+;;   (when (origin-visible-p obj)    
+;;     ;; Since svgize-origin consists of more than one svg-element,
+;;     ;; push each one seperately into SVGLST
+;;     (dolist (elem (svgize-origin obj))
+;;       (push elem (svg-list obj)))
+;;     (push (xml-base::comment (format nil "Character ~A, Origin Point" (id obj))) (svg-list obj)))  
+;;   (push (svg:path ;; (mchar-path-d (code obj) (family obj))
+;; 	 ;; (get-glyph-d (name obj))
+;; 	 (glyph-pathd (get-glyph (name obj) (font obj)))
+;; 	 :fill (mchar-color obj) 
+;; 	 :fill-opacity (mchar-opac obj)
+;; 	 :id (symbol-name (id obj))
+;; 	 ;; Flip the mchar path vertically here (SY)
+;; 	 :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
+;; 	(svg-list obj))
+;;   (push (xml-base::comment (format nil "Character ~A" (id obj))) (svg-list obj))
+;;   ;; BCR Rect
+;;   (when (canvas-vis-p obj)
+;;     (push (bounding-box-rect obj) (svg-list obj))
+;;     (push (xml-base::comment (format nil "Character ~A, BCR" (id obj))) (svg-list obj)))  
+;;   )

@@ -48,6 +48,36 @@ be the value of WIDTH if non-nil."
 		      (when (formp x) (descendants x)))
 		  (content form))))
 
+
+(defun enumerate-generations (x n)
+  ""
+  (if (or (mcharp x) (null (content x)))
+      ()
+      ;; X is a form with children
+      (mapcan #'(lambda (k) (cons (cons n k) (enumerate-generations k (1+ n))))
+	      ;; Content beinhaltet immer nur die erste Generation der Kinder,
+	      ;; (die Oberfläche des Nachwuchses)
+	      (content x))
+      ))
+
+(defun children (form &optional (lastgen-first t))
+  "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
+with 0, 1, ... being the number of generation. LASTGEN-FIRST= <a href=\"http://www.lispworks.com/documentation/HyperSpec/Body/a_t.htm#t\">T</a> sorts
+the farthest & youngest children to appear first in the list,
+LASTGEN-FIRST=NIL the eldest and next one. So it is safe to e.g. MAPCAN
+CDRs to get children listed in the desired order specified by lastgEN-first."
+  (let* ((enum (enumerate-generations form 0))
+	 (max-gen (apply #'max (mapcar #'car enum)))
+	 generations)
+    (dotimes (i (1+ max-gen) (sort generations
+				   (if lastgen-first #'> #'<)
+				   :key #'car))
+      (push (cons i (mapcar #'cdr
+			    (remove-if-not
+			     #'(lambda (gen) (= (car gen) i))
+			     enum)))
+	    generations))))
+
 ;; (defun reversed-descendants (form)
 ;;   "Reverses the descendants list."
 ;;   (nreverse (descendants form)))
@@ -303,16 +333,25 @@ computed width."
 (defun vform (&rest initargs &key &allow-other-keys)
   (apply #'make-instance 'vertical-form initargs))
 
-(defmethod svgize-bcr ((obj form))
-  "Evalutaion time: Rendering"
-  (svg:rect (left obj)
-	    (top obj)
-	    (width obj)
-	    (height obj)
-	    :sx (x-scaler obj) :sy (y-scaler obj)
-	    :id (format nil "~A-bcr" (id obj))
-	    :fill (canvas-color obj)
-	    :fill-opacity (canvas-opac obj)))
+;; (defmethod bounding-box-rect ((obj form))
+;;   "Evalutaion time: Rendering"
+;;   (svg:rect (left obj)
+;; 	    (top obj)
+;; 	    (width obj)
+;; 	    (height obj)
+;; 	    :sx (x-scaler obj) :sy (y-scaler obj)
+;; 	    :id (format nil "~A-bcr" (id obj))
+;; 	    :fill (canvas-color obj)
+;; 	    :fill-opacity (canvas-opac obj)))
+
+(defmethod bounding-box-rect ((obj form))
+  (svgrect (left obj) (top obj) (width obj) (height obj)
+	   "id" (format nil "Form~A-Bbox" (id obj))
+	   "fill" (canvas-color obj)
+	   "fill-opacity" (canvas-opac obj)))
+
+
+
 
 ;;; horizontal-form lines up it's direct-children horizontally side by side
 ;;; Takes place BEFORE applying rules (muss man davon ausgehen, wenn man Rules schreibt)!
@@ -329,22 +368,36 @@ computed width."
 	  ;; moves XLR
 	  do (setf (left b) (right a)))))
 
-(defmethod pack-svglst ((obj form))
-  ;; Marker
+
+(defmethod nlayer-svg-list ((obj form))
   (when (origin-visible-p obj)    
-    (dolist (elem (svgize-origin obj)) (push elem (svglst obj)))
-    ;; (push (svgize-origin obj) (svglst obj))
-    (push (xml-base::comment (format nil "Composing Stick ~A, Origin Point" (id obj))) (svglst obj)))
-  ;; (push (xml-base::comment (format nil "Composing Stick ~A" (id obj))) (svglst obj))  
-  (dolist (d (content obj))
-    ;; Children's scales are multiplied by parent's scales
-    (psetf (x-scaler d) (* (x-scaler d) (x-scaler obj))
-	   (y-scaler d) (* (y-scaler d) (y-scaler obj)))
-    (pack-svglst d)
-    (setf (svglst obj) (append (svglst obj) (svglst d)))
-    )
-  ;; BCR Rect
-  (when (canvas-vis-p obj)
-    (push (svgize-bcr obj) (svglst obj))
-    (push (xml-base::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svglst obj)))  
+    (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj))))
+  (dolist (direct-child (content obj))
+    (psetf (x-scaler direct-child) (* (x-scaler direct-child)
+				      (x-scaler obj))
+	   (y-scaler direct-child) (* (y-scaler direct-child)
+				      (y-scaler obj)))
+    (nlayer-svg-list direct-child)
+    (setf (svg-list obj) (append (svg-list obj) (svg-list direct-child))))
+  (when (canvas-vis-p obj) (push (bounding-box-rect obj) (svg-list obj)))
   )
+
+;; (defmethod pack-svglst ((obj form))
+;;   ;; Marker
+;;   (when (origin-visible-p obj)    
+;;     (dolist (elem (svgize-origin obj)) (push elem (svg-list obj)))
+;;     ;; (push (svgize-origin obj) (svg-list obj))
+;;     (push (xml-base::comment (format nil "Composing Stick ~A, Origin Point" (id obj))) (svg-list obj)))
+;;   ;; (push (xml-base::comment (format nil "Composing Stick ~A" (id obj))) (svg-list obj))  
+;;   (dolist (d (content obj))
+;;     ;; Children's scales are multiplied by parent's scales
+;;     (psetf (x-scaler d) (* (x-scaler d) (x-scaler obj))
+;; 	   (y-scaler d) (* (y-scaler d) (y-scaler obj)))
+;;     (pack-svglst d)
+;;     (setf (svg-list obj) (append (svg-list obj) (svg-list d)))
+;;     )
+;;   ;; BCR Rect
+;;   (when (canvas-vis-p obj)
+;;     (push (bounding-box-rect obj) (svg-list obj))
+;;     (push (xml-base::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svg-list obj)))  
+;;   )

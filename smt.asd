@@ -16,29 +16,19 @@
   :serial t
   :depends-on ("smt/xml"
 	       "alexandria" "split-sequence" "cl-ppcre"
-	       "flexi-streams" "cxml")
+	       "s-xml")
   :components (
 	       (:module "engine"
 		:serial t
 		:components (
 			     ;; Installing font before using
 			     ;; Glyphs in CANVAS for .SCALE.
-			     (:file "font")
-			     
+			     (:file "font")			     
 			     (:file "utils")
 			     (:file "rules")     
 			     (:file "canvas")
 			     (:file "form")
-			     (:file "mchar")
-			     ;; (:file "accidentals")
-			     ;; (:file "clocks")
-			     ;; (:file "clefs")
-			     ;;
-			     ;; (:file "lines")
-			     )
-		)
-	       )
-  )
+			     (:file "mchar")))))
 
 
 (defsystem "smt"

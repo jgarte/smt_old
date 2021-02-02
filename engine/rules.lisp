@@ -1,4 +1,4 @@
-;;; (asdf:load-system "smt")
+
 (in-package :smt-engine)
 
 
@@ -9,8 +9,7 @@
 (defparameter *rulepaths* ())
 
 (defun ruledocs ()
-  (sort (alexandria:hash-table-alist *ruledocs*) #'<
-	:key #'car))
+  (sort (alexandria:hash-table-alist *ruledocs*) #'< :key #'car))
 
 (defun remrule (idx)
   (remhash idx *ruletable*)
@@ -76,12 +75,42 @@ DOMAINS
 	      ;; hence the reverse
 	      (reverse (last (ancestors obj) (1- lamlstlen)))))))
 
-(defun apply-rules (flatt-doc-objs)
+
+;; (defun apply-rules (flatt-doc-objs)
+;;   (dolist (idx (sort (alexandria:hash-table-keys *ruletable*) #'<))    
+;;     (let* ((plist (gethash idx *ruletable*)) ;Rule's plist
+;; 	   ;; pick up objs with their types corresponding to trgts
+;; 	   (trgts (getf plist :trgts))
+;; 	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep)) flatt-doc-objs))
+;; 	   ;; pick up trgobjs with their dmns corresponding to dmns
+;; 	   (dmns (getf plist :dmns))
+;; 	   ;; If domains contains T, all objects no matter in which domain, are adressed.
+;; 	   (dmnobjs (if (find t dmns)
+;; 			;; No removings!
+;; 			trgobjs
+;; 			(remove-if-not #'(lambda (x) (typep (domain x) `(member ,@dmns))) trgobjs)))
+;; 	   ;; (dmnobjs (remove-if-not  #'(lambda (x)
+;; 	   ;; 				(typep (domain x)
+;; 	   ;; 				       (if (find t dmns) t `(member ,@dmns))))
+;; 	   ;; 			    trgobjs))
+;; 	   )
+;;       (dolist (obj dmnobjs)
+;; 	(let* ((clause-plist (funcall (getf plist :rlrfn)
+;; 				      (funcall (getf plist :rlr) obj)))
+;; 	       (clause-lamlstlen (list-length (getf clause-plist :clsll)))
+;; 	       (clause-fn (getf clause-plist :clsfn)))
+;; 	  (assert-toplevel-lamlstlen obj clause-lamlstlen)
+;; 	  (pass-args-to-clause-func obj clause-fn clause-lamlstlen))))))
+
+(defun apply-rules (score)
+  ;; Ruledocs
   (dolist (idx (sort (alexandria:hash-table-keys *ruletable*) #'<))    
     (let* ((plist (gethash idx *ruletable*)) ;Rule's plist
 	   ;; pick up objs with their types corresponding to trgts
 	   (trgts (getf plist :trgts))
-	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep)) flatt-doc-objs))
+	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep))
+				   (append (list score)
+					   (mapcan #'cdr (children score nil)))))
 	   ;; pick up trgobjs with their dmns corresponding to dmns
 	   (dmns (getf plist :dmns))
 	   ;; If domains contains T, all objects no matter in which domain, are adressed.

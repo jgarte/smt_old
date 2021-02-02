@@ -26,8 +26,8 @@
 			    (1 'noteheads.s0)
      			    ((h 1/2) 'noteheads.s1)
      			    (1/4 'noteheads.s2))
-     			  :origin-visible-p nil
-     			  :canvas-vis-p nil
+     			  ;; :origin-visible-p nil
+     			  ;; :canvas-vis-p nil
 			  ;; :font (case dur
      			  ;; 	  (1 (second .installed-fonts.))
 			  ;; 	  (otherwise *font*))
@@ -41,7 +41,7 @@
   (list 'accidental 0 'note (* 1/3 *staff-space*)))
 (defparameter *fspaces*
   (list 'accidental 
-	(* 1/4 *staff-space*)
+	(* 1/5 *staff-space*)
 	))
 
 (defun decide-unit (durs)
@@ -76,98 +76,99 @@
 
 (defrule id (horizontal-form) (t)
     (0 "Punctuation; seq of sforms with a single item")
-  ((eql seq) (h) (let* ((items (mapcar #'(lambda (s) (car (content s))) (content h)))
-			(clocks (remove-if-not #'(lambda (x) (typep x 'clocked)) items))		  
-			(aux (remove-if #'(lambda (x) (typep x 'clocked)) items))
-			(aux-width-sum (apply #'+ (mapcar #'(lambda (x) (punctuation-width x))
-							  aux)))
-			(useful-width (- (width h) aux-width-sum))
-			(durs (mapcar #'(lambda (x) (dur x)) clocks))
-			;; clocks are sforms, which contait notes = car s
-			(u (decide-unit durs))
-			(count-durs (mapcar #'(lambda (d) (cons (count d durs :test #'=) d))
-					    (remove-duplicates durs)))
-			(uwidth (/ useful-width
-				   (apply #'+ (mapcar #'(lambda (x)
-							  ;; car x=tedade clockedha, cdr dur
-							  (* (car x) (ufactor u (cdr x))))
-						      count-durs))))
-			(remain 0))
-		   ;; (format t "~&[Width ~d] [AuxWidthSum ~d] [UsefulWidth ~d] [Durs ~a] ~%[Unit ~d] [UnitDur ~d]"
-		   ;; 	   (width h)
-		   ;; 	   aux-width-sum
-		   ;; 	   useful-width
-		   ;; 	   count-durs u (assoc u *duration-unit-space-reference* :test #'=))
+  ((eql seq) (h)
+   (let* ((items (mapcar #'(lambda (s) (car (content s))) (content h)))
+	  (clocks (remove-if-not #'(lambda (x) (typep x 'clocked)) items))		  
+	  (aux (remove-if #'(lambda (x) (typep x 'clocked)) items))
+	  (aux-width-sum (apply #'+ (mapcar #'(lambda (x) (punctuation-width x))
+					    aux)))
+	  (useful-width (- (width h) aux-width-sum))
+	  (durs (mapcar #'(lambda (x) (dur x)) clocks))
+	  ;; clocks are sforms, which contait notes = car s
+	  (u (decide-unit durs))
+	  (count-durs (mapcar #'(lambda (d) (cons (count d durs :test #'=) d))
+			      (remove-duplicates durs)))
+	  (uwidth (/ useful-width
+		     (apply #'+ (mapcar #'(lambda (x)
+					    ;; car x=tedade clockedha, cdr dur
+					    (* (car x) (ufactor u (cdr x))))
+					count-durs))))
+	  (remain 0))
+     ;; (format t "~&[Width ~d] [AuxWidthSum ~d] [UsefulWidth ~d] [Durs ~a] ~%[Unit ~d] [UnitDur ~d]"
+     ;; 	   (width h)
+     ;; 	   aux-width-sum
+     ;; 	   useful-width
+     ;; 	   count-durs u (assoc u *duration-unit-space-reference* :test #'=))
 
-		   ;; X is 1 group
-		   (dolist (x (group-in-clock-heads
-			       (content h)
-			       #'(lambda (s) (typep (car (content s)) 'clocked))))     
-		     ;; Vorgweschlagenes Width for this clock
-		     (let ((ideal-width (* uwidth
-					   (ufactor u
-						    (dur (car (content (car x))))
-						    ))))
-		       (if (> (length x) 1)
-			   ;; group of clock etc.
-			   (let* ((etcw (mapcar #'punctuation-width (mapcar
-								     #'(lambda (s)
-									 (car (content s)))
-								     (cdr x)))))
-			     (if (> (apply #'+ etcw)
-				    ;; hat x width?
-				    (- ideal-width
-				       (width (head (car (content (car x)))))
-				       ;; (width (car x))
-				       (getf *guards* 'note)))
-				 (setf remain (+ remain
-						 (- ideal-width
-						    (width (car x))
-						    (getf *guards* 'note)))
-				       (width (car x))
-				       ;; (- ideal-width
-				       ;; 	  (width (car x))
-				       ;; 	  (getf *guards* 'note))
+     ;; X is 1 group
+     (dolist (x (group-in-clock-heads
+		 (content h)
+		 #'(lambda (s) (typep (car (content s)) 'clocked))))     
+       ;; Vorgweschlagenes Width for this clock
+       (let ((ideal-width (* uwidth
+			     (ufactor u
+				      (dur (car (content (car x))))
+				      ))))
+	 (if (> (length x) 1)
+	     ;; group of clock etc.
+	     (let* ((etcw (mapcar #'punctuation-width (mapcar
+						       #'(lambda (s)
+							   (car (content s)))
+						       (cdr x)))))
+	       (if (> (apply #'+ etcw)
+		      ;; hat x width?
+		      (- ideal-width
+			 (width (head (car (content (car x)))))
+			 ;; (width (car x))
+			 (getf *guards* 'note)))
+		   (setf remain (+ remain
+				   (- ideal-width
+				      (width (car x))
+				      (getf *guards* 'note)))
+			 (width (car x))
+			 ;; (- ideal-width
+			 ;; 	  (width (car x))
+			 ;; 	  (getf *guards* 'note))
 				       
-				       (+ (width (car x))
-				       	  (getf *guards* 'note) 0)
-				       )
-				 (setf remain (+ remain (apply #'+ etcw))
-				       (width (car x))
-				       (- ideal-width (apply #'+ etcw)))))
-			   (setf (width (car x)) ideal-width)))
-		     (dolist (r (rest x))
-		       (setf (width r) (punctuation-width (car (content r))))))
-		   
-		   ;; (dolist (c (content h))
-		   ;;   (incf (width c) (/ remain (length (content h)))))
-		   
-		   ;; (format t "~&~D Remains" remain )
-		   
-		   (when (not (zerop remain))
-		     (let* ((clks (remove-if-not #'(lambda (x) (typep x 'clocked))
-		   				 (mapcar #'(lambda (s)
-		   					     (car (content s)))
-		   					 (content h))))
-			    )
-		       ;; (dolist (x (content h))
-		       ;; 	 (when (typep (car (content x))'clocked)
-		       ;; 	   (setf (width x)
-		       ;; 		 (+ (width x) (print (/ remain (length clks)))))
-		       ;; 	   ;; (format t "~&~a ~d~%__________" x (width x))
-		       ;; 	   ))
-		       
-		       (dolist (x (remove-if-not #'(lambda (s) (typep (car (content s)) 'clocked))
-		   				 (content h)
-						 ))
-		   	 (setf (width x)
-		   	       (+ (width x) (/ remain (length clks)))
-			       )
+			 (+ (width (car x))
+			    (getf *guards* 'note) 0)
 			 )
-		       
-		       ))
+		   (setf remain (+ remain (apply #'+ etcw))
+			 (width (car x))
+			 (- ideal-width (apply #'+ etcw)))))
+	     (setf (width (car x)) ideal-width)))
+       (dolist (r (rest x))
+	 (setf (width r) (punctuation-width (car (content r))))))
 		   
-		   (hlineup h))))
+     ;; (dolist (c (content h))
+     ;;   (incf (width c) (/ remain (length (content h)))))
+		   
+     ;; (format t "~&~D Remains" remain )
+		   
+     (when (not (zerop remain))
+       (let* ((clks (remove-if-not #'(lambda (x) (typep x 'clocked))
+		   		   (mapcar #'(lambda (s)
+		   			       (car (content s)))
+		   			   (content h))))
+	      )
+	 ;; (dolist (x (content h))
+	 ;; 	 (when (typep (car (content x))'clocked)
+	 ;; 	   (setf (width x)
+	 ;; 		 (+ (width x) (print (/ remain (length clks)))))
+	 ;; 	   ;; (format t "~&~a ~d~%__________" x (width x))
+	 ;; 	   ))
+		       
+	 (dolist (x (remove-if-not #'(lambda (s) (typep (car (content s)) 'clocked))
+		   		   (content h)
+				   ))
+	   (setf (width x)
+		 (+ (width x) (/ remain (length clks)))
+		 )
+	   )
+		       
+	 ))
+		   
+     (hlineup h))))
 
 ;;; First item MUST be clock, or doesn'Ät workn
 (defun group-in-clock-heads (items test)
@@ -269,26 +270,26 @@
 		 (head-center (* (height (head n)) .5))
 		 (stem-onset (+ head-top head-center)))
 	    (packsvg n
-		      (svg:line (if (down-stem-p (spn n))
-				    (+ dx (x (head n)))
-				    (- (right (head n)) dx)
-				    )
-				(if (down-stem-p (spn n))
-				    (+ stem-onset dy)
-				    stem-onset
-				    )
-				(if (down-stem-p (spn n))
-				    (+ dx (x (head n)))
-				    (- (right (head n)) dx)
-				    )
-				(if (down-stem-p (spn n))
-				    (+ stem-onset *octave-space*)
-				    (- stem-onset *octave-space*)
-				    ) 
-				:stroke-width (- *staff-line-thickness* 5)
-				:stroke-linecap "round"
-				:stroke "black"))))))
-(defparameter *staff-line-thickness* 30)
+		     (ngn::svgline (if (down-stem-p (spn n))
+				       (+ dx (x (head n)))
+				       (- (right (head n)) dx)
+				       )
+				   (if (down-stem-p (spn n))
+				       (+ stem-onset dy)
+				       stem-onset
+				       )
+				   (if (down-stem-p (spn n))
+				       (+ dx (x (head n)))
+				       (- (right (head n)) dx)
+				       )
+				   (if (down-stem-p (spn n))
+				       (+ stem-onset *octave-space*)
+				       (- stem-onset *octave-space*)
+				       ) 
+				   "stroke-width" (- *staff-line-thickness* .1)
+				   "stroke-linecap" "round"
+				   "stroke" "black"))))))
+(defparameter *staff-line-thickness* 1.)
 
 ;;; Stave
 (defrule null (stacked-form) (s) (3 "Drawing staff lines")
@@ -296,20 +297,20 @@
 	(loop
 	  :for line-idx :from -2 :to 2
 	  :for line-y = (+ (* line-idx *staff-space*) (y me))
-	  :do (packsvg me (svg:line (left me) line-y (+ (left me) (width me)) line-y
-				    :stroke-width *staff-line-thickness*
-				    :stroke-linecap "round"
-				    :stroke "black")))))
+	  :do (packsvg me (ngn::svgline (left me) line-y (+ (left me) (width me)) line-y
+				    "stroke-width" *staff-line-thickness*
+				    "stroke-linecap" "round"
+				    "stroke" "black")))))
 
 (defrule null (barline) (t)
     (4 "Barline")
   (null (me parent)
 	(packsvg parent
-		 (svg:line (left parent) (top parent)
+		 (ngn::svgline (left parent) (top parent)
 			   (left parent) (bottom parent)
-			   :stroke-width (+ *staff-line-thickness* 10)
-			   :stroke-linecap "square"
-			   :stroke "black")))
+			   "stroke-width" (+ *staff-line-thickness* .1)
+			   "stroke-linecap" "square"
+			   "stroke" "black")))
   )
 
 
