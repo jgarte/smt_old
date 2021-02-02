@@ -12,7 +12,7 @@
 (defparameter *svg-count-decimal* 10
   "Specifies the number of decimal points in printed SVG numericals.")
 
-(defmacro define-svg-shape (name &rest attrs-lst)
+(defmacro defsvg (name &rest attrs-lst)
   (let ((stringized (gensym)))
     `(defun ,(intern (format nil "SVG~A" (symbol-name name)))
 	 (,@attrs-lst &rest other-attrs &key &allow-other-keys)
@@ -29,10 +29,13 @@
 						(push (cons key (format nil "~A" val)) ,stringized))
 					      ))))))
 
-(define-svg-shape line x1 y1 x2 y2)
-(define-svg-shape rect x y width height)
-(define-svg-shape circle cx cy r)
-(define-svg-shape path d)
+(defsvg line x1 y1 x2 y2)
+(defsvg rect x y width height)
+(defsvg circle cx cy r)
+(defsvg path d)
+;;; This is a dirty trick for commenting, but it works!
+(defun svgcomment (string)
+  (s-xml:make-xml-element :name "!--" :children (list string)))
 
 
 ;; (defun svgline (x1 y1 x2 y2 &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
@@ -372,7 +375,7 @@ use the reversed of this list."
 					     ("height" . ,(format nil "~VF" *svg-count-decimal*
 								  (page-format-height page-format))))
 			       :children (svg-list score))
-       :xml-struct s t 0)))
+       :xml-struct s t 1)))
   )
 
 

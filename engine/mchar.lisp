@@ -136,7 +136,6 @@ Composing Sticks."))
 (defmethod bounding-box-rect ((obj mchar))
   ;; left Is dependent on x
   (svgrect (left obj) (top obj) (width obj) (height obj)
-	   "id" (format nil "MChar~ABbox" (id obj))
 	   "fill" (or (canvas-color obj) "none")
 	   "fill-opacity" (canvas-opac obj)))
 
@@ -160,19 +159,16 @@ Composing Sticks."))
     (list
      ;; circle
      (svgcircle (x obj) (y obj) *origin-circle-r*
-		"id" (format nil "~AOriginCircle" (id obj))
 		"fill" circle-fill
 		"fill-opacity" *origin-circle-opac*
 		"stroke" circle-stroke
 		"stroke-width" *origin-line-thickness*)     
      ;; cross
      (svgline (- (x obj) half-line) (y obj) (+ (x obj) half-line) (y obj)
-	      "id" (format nil "~AOriginHLine" (id obj))
 	      "stroke" cross-stroke
 	      "fill" "none"
 	      "stroke-width" *origin-line-thickness*)
      (svgline (x obj) (- (y obj) half-line) (x obj) (+ (y obj) half-line)
-	      "id" (format nil "~AOriginVLine" (id obj))
 	      "stroke" cross-stroke
 	      "fill" "none"
 	      "stroke-width" *origin-line-thickness*))))
@@ -181,9 +177,10 @@ Composing Sticks."))
   (when (origin-visible-p obj)
     ;; Since svgize-origin consists of more than one svg-element,
     ;; push each one seperately into SVGLST
-    (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj))))
+    (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj)))
+    (push (svgcomment (format nil "Music Character ~A Origin" (id obj))) (svg-list obj)))
   (push (svgpath (glyph-pathd (get-glyph (name obj) (font obj)))
-		 "id" (format nil "MChar~A" (id obj))
+		 "id" (format nil "~A" (id obj))
 		 ;; First put the thing at the specified coord tx ty
 		 ;; Then flip about th e vertical axis, then write the
 		 ;; desired scaling.
@@ -193,7 +190,10 @@ Composing Sticks."))
 				     *svg-count-decimal* (* (x-scaler obj) .scale.)
 				     *svg-count-decimal* (* (y-scaler obj) .scale.)))
 	(svg-list obj))
-  (when (canvas-vis-p obj) (push (bounding-box-rect obj) (svg-list obj)))
+  (push (svgcomment (format nil "Music Character ~A" (id obj))) (svg-list obj))
+  (when (canvas-vis-p obj)
+    (push (bounding-box-rect obj) (svg-list obj))
+    (push (svgcomment (format nil "Music Character ~A BBox" (id obj))) (svg-list obj)))
   )
 
 

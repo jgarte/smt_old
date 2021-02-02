@@ -852,7 +852,7 @@
 	 (h (hform
 	     :id 'seq
 	     :ruler 'content
-	     :width (mm-to-px 150)	;566.92914
+	     :width (mm-to-px 184)	;695.4331
 	     ;; :canvas-vis-p nil
 	     :canvas-color "black"
 	     :canvas-opac .1

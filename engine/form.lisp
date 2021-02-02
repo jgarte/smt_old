@@ -346,7 +346,6 @@ computed width."
 
 (defmethod bounding-box-rect ((obj form))
   (svgrect (left obj) (top obj) (width obj) (height obj)
-	   "id" (format nil "Form~A-Bbox" (id obj))
 	   "fill" (canvas-color obj)
 	   "fill-opacity" (canvas-opac obj)))
 
@@ -370,16 +369,25 @@ computed width."
 
 
 (defmethod nlayer-svg-list ((obj form))
-  (when (origin-visible-p obj)    
-    (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj))))
-  (dolist (direct-child (content obj))
-    (psetf (x-scaler direct-child) (* (x-scaler direct-child)
-				      (x-scaler obj))
-	   (y-scaler direct-child) (* (y-scaler direct-child)
-				      (y-scaler obj)))
-    (nlayer-svg-list direct-child)
-    (setf (svg-list obj) (append (svg-list obj) (svg-list direct-child))))
-  (when (canvas-vis-p obj) (push (bounding-box-rect obj) (svg-list obj)))
+  (let ((formtype (typecase obj
+		    (stacked-form "Stacked")
+		    (horizontal-form "Horizontal")
+		    (vertical-form "Vertical"))))
+    (when (origin-visible-p obj)    
+      (dolist (elem (origin-cross-elements obj))
+	(push elem (svg-list obj)))
+      (push (svgcomment (format nil "~AForm ~A Origin" formtype (id obj)))
+	    (svg-list obj)))
+    (dolist (direct-child (content obj))
+      (psetf (x-scaler direct-child) (* (x-scaler direct-child)
+					(x-scaler obj))
+	     (y-scaler direct-child) (* (y-scaler direct-child)
+					(y-scaler obj)))
+      (nlayer-svg-list direct-child)
+      (setf (svg-list obj) (append (svg-list obj) (svg-list direct-child))))
+    (when (canvas-vis-p obj)
+      (push (bounding-box-rect obj) (svg-list obj))
+      (push (svgcomment (format nil "~AForm ~A BBox" formtype (id obj))) (svg-list obj))))
   )
 
 ;; (defmethod pack-svglst ((obj form))
