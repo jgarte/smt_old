@@ -16,7 +16,11 @@
 
 ;;; Bruach ich das, kann direkt von canvas erben?
 (defclass form (canvas)
-  ((preproc :initarg :preproc
+  ((lineup :initarg :lineup
+	   :documentation "Wether to do the lineup während rednering oder nicht"
+	   :initform t
+	   :accessor lineup)
+   (preproc :initarg :preproc
      :initform nil
      :accessor form-preproc)   
    (content :initarg :content
@@ -62,8 +66,8 @@ be the value of WIDTH if non-nil."
 
 (defun children (form &optional (lastgen-first t))
   "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
-with 0, 1, ... being the number of generation. LASTGEN-FIRST= <a href=\"http://www.lispworks.com/documentation/HyperSpec/Body/a_t.htm#t\">T</a> sorts
-the farthest & youngest children to appear first in the list,
+with 0, 1, ... being the number of generation. LASTGEN-FIRST=T sorts
+the farthest & youngest of children to appear first in the list,
 LASTGEN-FIRST=NIL the eldest and next one. So it is safe to e.g. MAPCAN
 CDRs to get children listed in the desired order specified by lastgEN-first."
   (let* ((enum (enumerate-generations form 0))
@@ -315,14 +319,14 @@ computed width."
   ((domain :initform 'stacked)
    (canvas-color :initform %sform-canvas-color%)))
 (defun sformp (obj) (typep obj 'stacked-form))
-(defun sform (&rest initargs &key &allow-other-keys)
+(defun make-sform (&rest initargs &key &allow-other-keys)
   (apply #'make-instance 'stacked-form initargs))
 
 (defclass horizontal-form (form)
   ((domain :initform 'horizontal)
    (canvas-color :initform %hform-canvas-color%)))
 (defun hformp (obj) (typep obj 'horizontal-form))
-(defun hform (&rest initargs &key &allow-other-keys)
+(defun make-hform (&rest initargs &key &allow-other-keys)
   (apply #'make-instance 'horizontal-form initargs))
 
 (defclass vertical-form (form)
@@ -330,19 +334,8 @@ computed width."
    (canvas-color :initform %vform-canvas-color%)
   ))
 (defun vformp (obj) (typep obj 'vertical-form))
-(defun vform (&rest initargs &key &allow-other-keys)
+(defun make-vform (&rest initargs &key &allow-other-keys)
   (apply #'make-instance 'vertical-form initargs))
-
-;; (defmethod bounding-box-rect ((obj form))
-;;   "Evalutaion time: Rendering"
-;;   (svg:rect (left obj)
-;; 	    (top obj)
-;; 	    (width obj)
-;; 	    (height obj)
-;; 	    :sx (x-scaler obj) :sy (y-scaler obj)
-;; 	    :id (format nil "~A-bcr" (id obj))
-;; 	    :fill (canvas-color obj)
-;; 	    :fill-opacity (canvas-opac obj)))
 
 (defmethod bounding-box-rect ((obj form))
   (svgrect (left obj) (top obj) (width obj) (height obj)
@@ -351,21 +344,32 @@ computed width."
 
 
 
-
 ;;; horizontal-form lines up it's direct-children horizontally side by side
 ;;; Takes place BEFORE applying rules (muss man davon ausgehen, wenn man Rules schreibt)!
 (defun hlineup (obj)
-  ;; Start off lining up from the innermost child
+
   (when (formp obj)
     (dolist (d (content obj))
       (hlineup d)))
   ;; The line up the outer most
-  (when (hformp obj)
+  (when (and (hformp obj) (lineup obj))
     (loop for a in (butlast (content obj))
 	  for b in (cdr (content obj))
 	  ;; When I setf left, (setf x) is called which
 	  ;; moves XLR
 	  do (setf (left b) (right a)))))
+
+(defmethod nlineup ((obj horizontal-form))
+  ;; Start off lining up from the innermost child
+  (dolist (child (mapcan #'cdr (children obj)))
+    ;; do SETF LEFT only for horiZONTALs, that takes care of lining up their
+    ;; children recursively too.
+    (when (and (hformp obj) (lineup obj))
+      (loop for a in (butlast (content obj))
+	    for b in (cdr (content obj))
+	    ;; When I setf left, (setf x) is called which
+	    ;; moves XLR
+	    do (setf (left b) (right a))))))
 
 
 (defmethod nlayer-svg-list ((obj form))
@@ -389,23 +393,3 @@ computed width."
       (push (bounding-box-rect obj) (svg-list obj))
       (push (svgcomment (format nil "~AForm ~A BBox" formtype (id obj))) (svg-list obj))))
   )
-
-;; (defmethod pack-svglst ((obj form))
-;;   ;; Marker
-;;   (when (origin-visible-p obj)    
-;;     (dolist (elem (svgize-origin obj)) (push elem (svg-list obj)))
-;;     ;; (push (svgize-origin obj) (svg-list obj))
-;;     (push (xml-base::comment (format nil "Composing Stick ~A, Origin Point" (id obj))) (svg-list obj)))
-;;   ;; (push (xml-base::comment (format nil "Composing Stick ~A" (id obj))) (svg-list obj))  
-;;   (dolist (d (content obj))
-;;     ;; Children's scales are multiplied by parent's scales
-;;     (psetf (x-scaler d) (* (x-scaler d) (x-scaler obj))
-;; 	   (y-scaler d) (* (y-scaler d) (y-scaler obj)))
-;;     (pack-svglst d)
-;;     (setf (svg-list obj) (append (svg-list obj) (svg-list d)))
-;;     )
-;;   ;; BCR Rect
-;;   (when (canvas-vis-p obj)
-;;     (push (bounding-box-rect obj) (svg-list obj))
-;;     (push (xml-base::comment (format nil "Composing Stick ~A, BCR" (id obj))) (svg-list obj)))  
-;;   )

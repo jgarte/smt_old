@@ -12,20 +12,21 @@
 (defparameter *svg-count-decimal* 10
   "Specifies the number of decimal points in printed SVG numericals.")
 
-(defmacro defsvg (name &rest attrs-lst)
+(defmacro defsvg (name &rest obattrs)
   (let ((stringized (gensym)))
     `(defun ,(intern (format nil "SVG~A" (symbol-name name)))
-	 (,@attrs-lst &rest other-attrs &key &allow-other-keys)
+	 ;; Obligatory attributes and Optional attributes
+	 (,@obattrs &rest opattrs &key &allow-other-keys)
        (s-xml:make-xml-element :name ,(string-downcase (string name))
 			       :attributes (append
 					    `(,,@(mapcar #'(lambda (att)
-							     `(cons ,(string-downcase (string att))
-								    ;; Convert every attribute value to ASCII
-								    (format nil "~A" ,att)))
-							 attrs-lst))
+							   ;; Attribute names always downcase?
+							   `(cons ,(string-downcase (string att))
+								  (format nil "~A" ,att)))
+						       obattrs))
 					    ;; Convert every attribute value to ASCII
 					    (let (,stringized)
-					      (alexandria:doplist (key val other-attrs ,stringized)
+					      (alexandria:doplist (key val opattrs ,stringized)
 						(push (cons key (format nil "~A" val)) ,stringized))
 					      ))))))
 
@@ -33,85 +34,38 @@
 (defsvg rect x y width height)
 (defsvg circle cx cy r)
 (defsvg path d)
-;;; This is a dirty trick for commenting, but it works!
 (defun svgcomment (string)
   (s-xml:make-xml-element :name "!--" :children (list string)))
 
 
-;; (defun svgline (x1 y1 x2 y2 &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
-;;   (s-xml:make-xml-element :name "line"
-;; 			  :attributes (append
-;; 				       `(("x1" . ,(format nil "~,VF" v x1))
-;; 					 ("y1" . ,(format nil "~,VF" v y1))
-;; 					 ("x2" . ,(format nil "~,VF" v x2))
-;; 					 ("y2" . ,(format nil "~,VF" v y2)))
-;; 				       (let (stringized)
-;; 					 (alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
-;; 					   (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
-;; 					 ))))
-
-;; (defun svgrect (x y width height &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
-;;   (s-xml:make-xml-element :name "rect"
-;; 			  :attributes (append
-;; 				       `(("x" . ,(format nil "~,VF" v x))
-;; 					 ("y" . ,(format nil "~,VF" v y))
-;; 					 ("width" . ,(format nil "~,VF" v width))
-;; 					 ("height" . ,(format nil "~,VF" v height)))
-;; 				       ;; Konvertiere Zahlen in attributes nach strings,
-;; 				       ;; oder s-xml wird sauer sein!
-;; 				       (let (stringized)
-;; 					 (alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
-;; 					   (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
-;; 					 ))))
-
-;; (defun svgpath (d &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
-;;   (s-xml:make-xml-element :name "path"
-;; 			  :attributes (append `(("d" . ,d))
-;; 					      (let (stringized)
-;; 						(alexandria:doplist (key val (alexandria:remove-from-plist other-attrs :v) stringized)
-;; 						  (push (cons key (if (numberp val) (format nil "~,VF" v val) val)) stringized))
-;; 						))))
-
-
-
-
-;; (defun svgcircle (cx cy r &rest other-attrs &key (v *svg-count-decimal*) &allow-other-keys)
-;;   (s-xml:make-xml-element :name "rect"
-;; 			  :attributes (append
-;; 				       `(("cx" . ,(format nil "~,VF" v cx))
-;; 					 ("cy" . ,(format nil "~,VF" v cy))
-;; 					 ("r" . ,(format nil "~,VF" v r)))
-;; 				       (alexandria:plist-alist
-;; 					(alexandria:remove-from-plist other-attrs :v)))))
-
 
 ;;; Reversed order of funcs application than defined by RH
-(defun comp-reducer (f1 f2)
+(defun comp-reduction (f1 f2)
   (lambda (&rest args) (funcall f2 (apply f1 args))))
 ;;; 
-(defun compfunc (&rest functions)
+(defun comp (&rest functions)
   "Takes a set of functions and returns a fn that is the composition
 of those fns.  The returned fn takes a variable number of args,
 applies the leftmost of fns to the args, the next
 fn (left-to-right) to the result, etc. ©Rich Hickey"
-  (when functions (reduce #'comp-reducer functions)))
-
-
-
+  (when functions (reduce #'comp-reduction functions)))
 
 
 ;;; Staff Space & Scaling
-(defun chlapik-staff-space (rastral-no)
+(defun chlapik-staff-space (rastral-nr)
   "Rastral Größen wie bei Chlapik S. 32 beschrieben."
-  (ecase rastral-no
-    (2 (mm-to-px 1.88))
-    (3 (mm-to-px 1.755))
-    (4 (mm-to-px 1.6))
-    (5 (mm-to-px 1.532))
-    (6 (mm-to-px 1.4))
-    (7 (mm-to-px 1.19))
-    (8 (mm-to-px 1.02))))
-(defparameter *staff-space* (chlapik-staff-space 2))
+  (ecase rastral-nr
+    (zwei (mm-to-px 1.88))
+    (drei (mm-to-px 1.755))
+    (vier (mm-to-px 1.6))
+    (fuenf (mm-to-px 1.532))
+    (sechs (mm-to-px 1.4))
+    (sieben (mm-to-px 1.19))
+    (acht (mm-to-px 1.02))))
+
+(defparameter *space* (chlapik-staff-space 'zwei)
+  "Measure of the current staff space in pixels.")
+
 ;;; This is the user-interface,
 (defparameter *scale* 1
   "Global scaling factor for X and Y coordinates.")
@@ -121,10 +75,12 @@ of this glyph is used to find the global internal factor, by which all
 glyphs are scaled to ... By convention the vertical space of 
 stave is equal to the height of the alto clef, hence the default glyph.")
 
-;;; and the actual internal factor
-(define-symbol-macro .scale. (* *scale*
+;;; The actual internal factor, I need this factor to get
+;;; uniformly sized characters, disregarding their design dimensions.
+(define-symbol-macro .scale. (* *scale*	;This internal factor is always affected by the user global factor *SCALE*.
 				;; Chlapik p. 33: The symbol C-clef is 4 staff-spaces height.
-				(/ (* 4 *staff-space*)
+				(/ (* 4 *space*)
+				   ;; Height of the alto clef (in current font)
 				   (bbox-height
 				    (glyph-bbox
 				     (get-glyph *vertical-space-reference-glyph*)))
@@ -144,8 +100,9 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 (defconstant +left-margin+ (mm-to-px 36))
 (defconstant +top-margin+ (mm-to-px 56))
 
+;;; ;;;;;;;;;;;;;;ORIGIN
 ;;; Line thickness for both cross and circle's contour
-(defparameter *origin-line-thickness* .2)
+(defparameter *origin-line-thickness* .06)
 ;;; Origin's Cross
 (defparameter *mchar-origin-cross-color* "deeppink")
 (defparameter *sform-origin-cross-color* "tomato")

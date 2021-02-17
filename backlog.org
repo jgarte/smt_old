@@ -23,4 +23,5 @@ used as a model from which other objs are cloned.
 * TODO svglst content cant be modifed
 (even at rule-application-time), svglsts are packed after rules have
 been applied, everything then goes for rendering.
-* TODO Writing the doc as seperate single elements, instead of a <g> element
+* DONE Writing the doc as seperate single elements, instead of a <g> element
+CLOSED: [2021-02-03 Wed 08:55]

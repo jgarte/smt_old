@@ -10,10 +10,10 @@
 
 
 ;;;;;;;;;;;;;;;;;; clocks
-(defclass clocked ()
-  ((dur :initarg :dur :accessor dur)))
+(defclass clock ()
+  ((dur :initarg :duration :accessor duration)))
 
-(defclass note (stacked-form clocked)
+(defclass note (stacked-form clock)
   ((domain :initform nil
 	   :documentation "We don't know what domain we want for note yet, 
 thus this can't be set to STACKED!")
@@ -24,9 +24,9 @@ thus this can't be set to STACKED!")
 
 (defun notep (obj) (typep obj 'note))
 
-(defun make-note (spn dur &rest initargs &key &allow-other-keys)
-  (apply #'make-instance 'note :dur dur :spn spn
-	 (alexandria:delete-from-plist initargs :dur :spn)))
+(defun make-note (spn duration &rest initargs &key &allow-other-keys)
+  (apply #'make-instance 'note :duration duration :spn spn
+	 (alexandria:delete-from-plist initargs :duration :spn)))
 
 (defclass accidental (mchar)
   ())

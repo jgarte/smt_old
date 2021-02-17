@@ -2,6 +2,14 @@
 ;; (asdf:load-system "smt")
 (in-package :smt-engine)
 
+;;; All new canvases can be checked for collisions
+;;; against other canvas bounding boxes.
+(defparameter *covered-areas*
+  (make-hash-table :test #'equalp)
+  "Areas are bounding boxes on the page in the form
+(:X1 R :X2 R :Y1 R :Y2 R) which are laready covered by
+some canvases.")
+
 
 
 ;;; unit of space= width char+guard+floating space
@@ -134,7 +142,6 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
     (assert (null (ancestors obj)) () "Toplevel canvas can not have ancestors!")
     (unless (absx obj) (setf (absx obj) +left-margin+))
     (unless (absy obj) (setf (absy obj) +top-margin+)))
-  ;; Allow these slot-readers to be used as rulers for this object
   
   )
 (defmethod calc-x ((obj canvas))

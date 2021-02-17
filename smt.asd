@@ -1,6 +1,6 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
-
+(in-package :asdf)
 
 
 (defsystem "smt/engine"
@@ -21,8 +21,7 @@
 			     (:file "form")
 			     (:file "mchar")))))
 
-
-(defsystem "smt"
+(asdf:defsystem "smt"
   :version #.(destructuring-bind (major minor patch)
 		 (car (safe-read-file-form "./version"))
 	       (format nil "~d.~d.~d" major minor patch))
@@ -53,5 +52,22 @@
   )
 (asdf:defsystem "smt/docs"
   :depends-on ("smt" "cl-markup")
-  :components ((:module "docs"
-		:components ((:file "doc")))))
+  :serial t
+  :components (
+	       (:module "docs"
+		:components (
+			     (:file "index")
+			     (:file "prelude")
+			     ;; ;; Intro
+			     ;; (:file "music-engraving")
+			     ;; (:file "engraver-workflow")
+			     ;; ;;;;
+			     (:file "rules")
+			     (:file "bibliography")
+			     (:file "proc")
+			     ))))
+
+
+;; (find-component "version" (component-in-order-to (registered-system "smt")))
+;; (find-system "smt")
+

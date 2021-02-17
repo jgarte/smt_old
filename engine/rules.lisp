@@ -31,7 +31,8 @@ provided clauses in order to find the applicable rule-body.
 TARGETS is a list of types. It narrows down the range of objects which would be addressable
 by the rule to the specified types. A type T in this list makes the rule applicable 
 to all objects, irrespective of their types.
-DOMAINS
+DOMAINS list does a further filtering amongst the targets (specified by TARGETS list) and
+applies a further filtering for gaining engültige liste von Objekten die Futter für rule sein werden.
 "
   (examine-clauses clauses)
   (let ((rlrval (make-symbol "RLRVAL")))

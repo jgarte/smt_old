@@ -181,6 +181,8 @@ Composing Sticks."))
     (push (svgcomment (format nil "Music Character ~A Origin" (id obj))) (svg-list obj)))
   (push (svgpath (glyph-pathd (get-glyph (name obj) (font obj)))
 		 "id" (format nil "~A" (id obj))
+		 ;; When color = NIL write the string "none" for fill attribute
+		 "fill" (or (mchar-color obj) "none")
 		 ;; First put the thing at the specified coord tx ty
 		 ;; Then flip about th e vertical axis, then write the
 		 ;; desired scaling.
@@ -195,28 +197,3 @@ Composing Sticks."))
     (push (bounding-box-rect obj) (svg-list obj))
     (push (svgcomment (format nil "Music Character ~A BBox" (id obj))) (svg-list obj)))
   )
-
-
-;; (defmethod pack-svglst ((obj mchar))  
-;;   ;; Marker  
-;;   (when (origin-visible-p obj)    
-;;     ;; Since svgize-origin consists of more than one svg-element,
-;;     ;; push each one seperately into SVGLST
-;;     (dolist (elem (svgize-origin obj))
-;;       (push elem (svg-list obj)))
-;;     (push (xml-base::comment (format nil "Character ~A, Origin Point" (id obj))) (svg-list obj)))  
-;;   (push (svg:path ;; (mchar-path-d (code obj) (family obj))
-;; 	 ;; (get-glyph-d (name obj))
-;; 	 (glyph-pathd (get-glyph (name obj) (font obj)))
-;; 	 :fill (mchar-color obj) 
-;; 	 :fill-opacity (mchar-opac obj)
-;; 	 :id (symbol-name (id obj))
-;; 	 ;; Flip the mchar path vertically here (SY)
-;; 	 :tx (x obj) :ty (y obj) :sx (x-scaler obj) :sy (- (y-scaler obj)))
-;; 	(svg-list obj))
-;;   (push (xml-base::comment (format nil "Character ~A" (id obj))) (svg-list obj))
-;;   ;; BCR Rect
-;;   (when (canvas-vis-p obj)
-;;     (push (bounding-box-rect obj) (svg-list obj))
-;;     (push (xml-base::comment (format nil "Character ~A, BCR" (id obj))) (svg-list obj)))  
-;;   )

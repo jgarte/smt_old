@@ -3,22 +3,18 @@
 (defpackage #:smt-engine
   (:use #:cl) (:nicknames "NGN")
   (:export
-   ;; smtobj
    #:id
-   ;; Mchars
-   #:make-mchar #:mchar #:compfunc #:children
-   ;; Forms
-   #:sformp
-   #:sform #:hform #:defrule #:packsvg
+   #:make-mchar #:mchar #:comp #:children
+   #:sformp #:make-sform #:make-hform #:make-vform
+   #:defrule #:packsvg
    #:*staff-line-thickness*
    #:left #:width #:y #:x #:height
    #:top #:right #:stacked-form #:horizontal-form
    #:vertical-form #:ruledocs #:remrule #:content #:dur
    #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
    #:head #:canvas-color #:mchar-color #:render #:canvas-opac
-   #:*staff-space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
+   #:*space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top
    #:inspect-br #:mm-to-px
-   ;; Fonts
    #:install-font #:uninstall-font #:*font* #:.installed-fonts.
    #:*fonts-hashtable* #:glyph #:glyph-bbox #:font-glyphs))
 

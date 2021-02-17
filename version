@@ -1,3 +1,1 @@
-((0 0 0) "Tue 15 Dec 2020 01:16:39 PM CETnil")
-
-Note that only the topmost form will be read as  ((major minor patch) . will be ignored)
+((21 0 0) "Version format: (YY [M or MM] [D or DD])")
