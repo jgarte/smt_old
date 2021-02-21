@@ -110,8 +110,7 @@ applies a further filtering for gaining engültige liste von Objekten die Futter
 	   ;; pick up objs with their types corresponding to trgts
 	   (trgts (getf plist :trgts))
 	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep))
-				   (append (list score)
-					   (mapcan #'cdr (children score nil)))))
+				   (append (list score) (children score nil))))
 	   ;; pick up trgobjs with their dmns corresponding to dmns
 	   (dmns (getf plist :dmns))
 	   ;; If domains contains T, all objects no matter in which domain, are adressed.

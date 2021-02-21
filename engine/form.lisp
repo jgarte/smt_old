@@ -16,10 +16,13 @@
 
 ;;; Bruach ich das, kann direkt von canvas erben?
 (defclass form (canvas)
-  ((lineup :initarg :lineup
-	   :documentation "Wether to do the lineup während rednering oder nicht"
-	   :initform t
-	   :accessor lineup)
+  ((right-side-space :accessor right-side-space
+		     :initform 0
+		     :initarg :right-side-space
+		     :documentation "Vereinfacht das Punktieren
+massiv, das ist der freie Platz nach einem Canvasobject. Ich brauchte
+eine extra Einheit damit ich während der Rule-definitionen nicht das
+Width direkt anfassen muss...")
    (preproc :initarg :preproc
      :initform nil
      :accessor form-preproc)   
@@ -53,38 +56,43 @@ be the value of WIDTH if non-nil."
 		  (content form))))
 
 
-(defun enumerate-generations (x n)
+(defun enumerate-generations (obj n)
   ""
-  (if (or (mcharp x) (null (content x)))
+  (if (or (mcharp obj) (null (content obj)))
       ()
-      ;; X is a form with children
+      ;; OBJ is a form with children
       (mapcan #'(lambda (k) (cons (cons n k) (enumerate-generations k (1+ n))))
 	      ;; Content beinhaltet immer nur die erste Generation der Kinder,
 	      ;; (die Oberfläche des Nachwuchses)
-	      (content x))
+	      (content obj))
       ))
 
-(defun children (form &optional (lastgen-first t))
+(defun generation-children-lists (form lastgen-first)
   "Returns a list of (0 CHILD01 CHILD02 ...) (1 CHILD11 CHILD12 ...) 
 with 0, 1, ... being the number of generation. LASTGEN-FIRST=T sorts
 the farthest & youngest of children to appear first in the list,
 LASTGEN-FIRST=NIL the eldest and next one. So it is safe to e.g. MAPCAN
 CDRs to get children listed in the desired order specified by lastgEN-first."
-  (let* ((enum (enumerate-generations form 0))
-	 (max-gen (apply #'max (mapcar #'car enum)))
+  (let* ((enums (enumerate-generations form 0))
 	 generations)
-    (dotimes (i (1+ max-gen) (sort generations
-				   (if lastgen-first #'> #'<)
-				   :key #'car))
-      (push (cons i (mapcar #'cdr
-			    (remove-if-not
-			     #'(lambda (gen) (= (car gen) i))
-			     enum)))
-	    generations))))
+    (when enums	  ;Proceed only if FORM has content & not e.g. a Note object,
+      ;; a problematic case would be this function used in lining-ups (eg in RENDER), where
+      ;; it could be applied on a Note (which is a also form) before rules are applied on the Note,
+      ;; which fill out it's content, where this causes an error (because of the next line APPLY MAX
+      ;; on NIL)!
+      (dotimes (i (1+ (apply #'max (mapcar #'car enums)))
+		  (sort generations (if lastgen-first #'> #'<)
+			:key #'car))
+	(push (cons i (mapcar #'cdr
+			      (remove-if-not
+			       #'(lambda (gen) (= (car gen) i))
+			       enums)))
+	      generations)))))
 
-;; (defun reversed-descendants (form)
-;;   "Reverses the descendants list."
-;;   (nreverse (descendants form)))
+(defun children (form &optional (lastgen-first t))
+  "Returns the list of children ordered based on LASTGEN-FIRST 
+,see GENERATION-CHILDREN-LISTS)"
+  (mapcan #'cdr (generation-children-lists form lastgen-first)))
 
 (defun preprocess (form)
   (when (form-preproc form)
@@ -100,8 +108,8 @@ CDRs to get children listed in the desired order specified by lastgEN-first."
 (defmethod fixed-top ((obj form))
   (+ (y obj) (toplvl-scale
 	      ;; Which Font?????
-	      (bbox-top (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
-	      ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :top)
+	      (bbox-top (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))
+	      ;; (getf (get-glyph-bbox *staff-height-reference-glyph*) :top)
 	      ;; (bcr-top
 	      ;; 		    (get-glyph-bbox "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
@@ -112,8 +120,8 @@ CDRs to get children listed in the desired order specified by lastgEN-first."
   ;; "uniE05C" is bravura alto, should find a solution to
   ;; find out the alto clef of a font!!!
   (+ (y obj) (toplvl-scale
-	      (bbox-bottom (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
-	      ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :bottom)
+	      (bbox-bottom (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))
+	      ;; (getf (get-glyph-bbox *staff-height-reference-glyph*) :bottom)
 	      ;; (bcr-bottom (get-glyph-bbox "uniE05C")
 	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
 	      ;; 		    )
@@ -122,8 +130,8 @@ CDRs to get children listed in the desired order specified by lastgEN-first."
 (defmethod fixed-height ((obj form))
   ;; This is bravura alto clef
   (toplvl-scale
-   (bbox-height (glyph-bbox (get-glyph *vertical-space-reference-glyph* (font obj))))
-   ;; (getf (get-glyph-bbox *vertical-space-reference-glyph*) :height)
+   (bbox-height (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))
+   ;; (getf (get-glyph-bbox *staff-height-reference-glyph*) :height)
    ;; (bcr-height (get-glyph-bbox "uniE05C")
 		;; 	    ;; (get-bcr "clefs.C" (family obj))
 		;; 	    )
@@ -156,7 +164,7 @@ new objects"
 	;; OBJ is the first & nearest parent, so PUSH first
 	(pushnew obj (ancestors direct-new-child))
 	(when (formp direct-new-child)
-	  (dolist (new-grandchild (mapcan #'cdr (children direct-new-child)))
+	  (dolist (new-grandchild (children direct-new-child))
 	    (pushnew obj (ancestors new-grandchild))
 	    ;; I suppose that parent-child dependency btwn. new
 	    ;; items is already stablished by them themselves, and
@@ -168,7 +176,7 @@ new objects"
 	(dolist (parent (reverse (ancestors obj)))
 	  (pushnew parent (ancestors direct-new-child))
 	  (when (formp direct-new-child)
-	    (dolist (new-grandchild (mapcan #'cdr (children direct-new-child)))
+	    (dolist (new-grandchild (children direct-new-child))
 	      (pushnew parent (ancestors new-grandchild)))))
 	)      
       ;; Content has been removed all in all,
@@ -180,7 +188,7 @@ new objects"
   ;; First set obj's new content, to have
   ;; valid updated ANCESTOR lists below.
   (setf (slot-value obj 'content) new-content)
-  (dolist (child (mapcan #'cdr (children obj)))
+  (dolist (child (children obj))
     ;; Actually need only do this on new items??
     (refresh-bcr! child :x t :y t :l t :r t :t t :b t :w t :h t))
   (refresh-bcr! obj :x t :y t :l t :r t :t t :b t :w t :h t)
@@ -206,8 +214,8 @@ new objects"
   (dolist (anc (reverse (ancestors obj)))
     ;; It is always safe to set the right edge of a form to the rightmost
     ;; of it's children.
-    ;; Use SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
-    (setf (slot-value anc 'rslot) (calc-right anc)
+    ;; Use sequential-SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
+    (setf (slot-value anc 'rslot) (compute-right anc)
 	  (slot-value anc 'lslot) (calc-left anc)
 	  (slot-value anc 'wslot) (compwidth anc)
 	  )
@@ -233,16 +241,18 @@ new objects"
 (defmethod calc-left ((obj form))
   ;; Don't need reversing here!!!
   (apply #'min
-	 (x obj)
+	 (x obj)			;OBJ's own x is the leftmost?
+	 ;; Then since OBJ only functions as a container for other stuff it
+	 ;; takes on the leftmost side of it's content.
 	 (mapcar #'left (reverse (descendants obj)))))
 
-;;; Beware! Changing left doesn't impact right
+
 (defmethod (setf left) (newl (obj form))
   ;; (SETF X) also takes care of re-computing LR
   (incf (x obj) (- newl (slot-value obj 'lslot)))
   newl)
 
-(defmethod calc-right ((obj form))
+(defmethod compute-right ((obj form))
   (apply #'max
 	 (x obj)
 	 ;; (mapcar #'right (reverse (descendants obj)))
@@ -258,8 +268,8 @@ new objects"
   "only This is in the public interface for getting width,
 it takes care of chooising btwn userinputed width or system 
 computed width."
-  (or (user-width obj)
-      (slot-value obj 'wslot)))
+  (or (user-width obj) (slot-value obj 'wslot)))
+
 (defmethod compwidth ((obj form))
   ;; This subtraction will cause Floating Nightmare! :-S
   ;; #'right #'left are slot-value readers.
@@ -352,43 +362,59 @@ computed width."
     (dolist (d (content obj))
       (hlineup d)))
   ;; The line up the outer most
-  (when (and (hformp obj) (lineup obj))
+  (when (and (hformp obj) )
     (loop for a in (butlast (content obj))
 	  for b in (cdr (content obj))
 	  ;; When I setf left, (setf x) is called which
 	  ;; moves XLR
 	  do (setf (left b) (right a)))))
 
-(defmethod nlineup ((obj horizontal-form))
-  ;; Start off lining up from the innermost child
-  (dolist (child (mapcan #'cdr (children obj)))
-    ;; do SETF LEFT only for horiZONTALs, that takes care of lining up their
-    ;; children recursively too.
-    (when (and (hformp obj) (lineup obj))
-      (loop for a in (butlast (content obj))
-	    for b in (cdr (content obj))
-	    ;; When I setf left, (setf x) is called which
-	    ;; moves XLR
-	    do (setf (left b) (right a))))))
+;;; Call this once on the toplevel form to recursively line-up it's content
+(defun nlineup (form)
+  "Lines up all form's children horizontally or vertically. This
+applies also to the Stacked Forms, they might also have
+horizontal/vertical children which should be lined up.  Without this
+all the content would get the same starting horizontal/vertical
+coordinates as the FORM itself."
+  ;; Start lining up from within!
+  (dolist (child (remove-if-not #'formp (children form)))
+    (nlineup child))
+  (typecase form
+    (horizontal-form
+     (let ((starting-left (left form)))
+       ;; The first direct child takes on the left-coord of the parent form and it's own
+       ;; right coord, so we start lining up from the second direct child.
+       (dotimes (i (list-length (cdr (content form))))
+	 ;; For the rest of direct children we compute their difference from
+	 ;; the starting left coordinate, then add that diff to the right-coord
+	 ;; of the last sibling.
+	 ;; (print (content (nth i (cdr (content form)))))
+	 (setf (left (nth i (cdr (content form))))
+	       (+ (- (left (nth i (cdr (content form)))) starting-left)
+		  (right (nth i (content form))))))))))
 
 
-(defmethod nlayer-svg-list ((obj form))
+
+(defmethod n-layer-svg-list ((obj form))
   (let ((formtype (typecase obj
 		    (stacked-form "Stacked")
 		    (horizontal-form "Horizontal")
 		    (vertical-form "Vertical"))))
+    ;; Origin
     (when (origin-visible-p obj)    
       (dolist (elem (origin-cross-elements obj))
 	(push elem (svg-list obj)))
       (push (svgcomment (format nil "~AForm ~A Origin" formtype (id obj)))
 	    (svg-list obj)))
+    ;; Content
     (dolist (direct-child (content obj))
       (psetf (x-scaler direct-child) (* (x-scaler direct-child)
 					(x-scaler obj))
 	     (y-scaler direct-child) (* (y-scaler direct-child)
 					(y-scaler obj)))
-      (nlayer-svg-list direct-child)
+      (n-layer-svg-list direct-child)
       (setf (svg-list obj) (append (svg-list obj) (svg-list direct-child))))
+    ;; Canvas
     (when (canvas-vis-p obj)
       (push (bounding-box-rect obj) (svg-list obj))
       (push (svgcomment (format nil "~AForm ~A BBox" formtype (id obj))) (svg-list obj))))

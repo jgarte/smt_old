@@ -10,7 +10,8 @@
    #:*staff-line-thickness*
    #:left #:width #:y #:x #:height
    #:top #:right #:stacked-form #:horizontal-form
-   #:vertical-form #:ruledocs #:remrule #:content #:dur
+   #:vertical-form #:ruledocs #:remrule #:content
+   #:right-side-space #:nlineup
    #:hlineup #:preproc #:domain #:ruler #:canvas-vis-p #:origin-visible-p
    #:head #:canvas-color #:mchar-color #:render #:canvas-opac
    #:*space* #:fixed-bottom #:bottom #:fixed-height #:fixed-top

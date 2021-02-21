@@ -62,7 +62,7 @@ Composing Sticks."))
     (incf (slot-value obj 'rslot) dx))
   ;; Direction of setfing: from innermost to outermost
   (dolist (anc (reverse (ancestors obj)))
-    (setf (slot-value anc 'rslot) (calc-right anc)
+    (setf (slot-value anc 'rslot) (compute-right anc)
 	  (slot-value anc 'lslot) (calc-left anc)
 	  (slot-value anc 'wslot) (compwidth anc)))
   newx)
@@ -94,7 +94,7 @@ Composing Sticks."))
 		   ;; (bcr-left (bcr obj))
 		   )))
 
-(defmethod calc-right ((obj mchar))
+(defmethod compute-right ((obj mchar))
   (+ (x obj)
      (toplvl-scale (bbox-right (glyph-bbox (get-glyph (name obj) (font obj))))
 		   ;; (getf (bcr obj) :right)
@@ -173,12 +173,14 @@ Composing Sticks."))
 	      "fill" "none"
 	      "stroke-width" *origin-line-thickness*))))
 
-(defmethod nlayer-svg-list ((obj mchar))
+(defmethod n-layer-svg-list ((obj mchar))
+  ;; Origin
   (when (origin-visible-p obj)
     ;; Since svgize-origin consists of more than one svg-element,
     ;; push each one seperately into SVGLST
     (dolist (elem (origin-cross-elements obj)) (push elem (svg-list obj)))
     (push (svgcomment (format nil "Music Character ~A Origin" (id obj))) (svg-list obj)))
+  ;; Music Character
   (push (svgpath (glyph-pathd (get-glyph (name obj) (font obj)))
 		 "id" (format nil "~A" (id obj))
 		 ;; When color = NIL write the string "none" for fill attribute
@@ -193,6 +195,7 @@ Composing Sticks."))
 				     *svg-count-decimal* (* (y-scaler obj) .scale.)))
 	(svg-list obj))
   (push (svgcomment (format nil "Music Character ~A" (id obj))) (svg-list obj))
+  ;; Canvas
   (when (canvas-vis-p obj)
     (push (bounding-box-rect obj) (svg-list obj))
     (push (svgcomment (format nil "Music Character ~A BBox" (id obj))) (svg-list obj)))

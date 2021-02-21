@@ -137,3 +137,39 @@ Common Misconceptions:
 1. Beam's slopes should reflect the overall pitch contour of a group of notes:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; amir
+Fri 19 Feb 2021 11:43:45 AM CET
+
+Punktieren:
+
+1. Zuerst werden perfekte Spacings für nur Clocks berechnet. In diesem
+Schritt werden alle Non-Clocks ignoriert
+
+2. Jetzt müssen die Non-clocks an ihre Plätze reingesteckt werden
+(deren Bereiten sind schon festgelegt: Charakterbereite +
+case-spezifisches-Fspace)
+
+2.1. Wenn das Nonclock zwischen zwei Clocks schon reinpasst (die summe
+von Charakterbereiten und der leeren Räume danach) = OK! (die nötigen
+Operationen damit die Nonclocks schön rechts stehen)
+
+2.2. Wenn nicht mach Platz: der Mindest-Nachspace für ein Clock
+beachten, das Nonclock Zeug mit deren Nachplätze dazu addieren. Es
+muss wieder ein perfektes Spacing entstehen. (mit dem Nebeneffekt dass
+alles länger wird als ursprüngliche definierte Bereite)
+
+3. Wenn 2.2. der Fall gewesen ist benötigen wir natürlich weitere
+Schritte zum regulieren der verlängerte Bereite:
+
+3.1. Ausfiltern von allen Dingen die genug Platz haben (die über
+irgendeinem Minimum liegen).
+Ist die Summe von deren Freiplätze mehr als der Überschuss?
+
+3.1.1 (Ja) mach ein neues Punktieren mit denen und fertig!  In
+Proportionen abnehmen; i.e. ein Achtel mit mehr Platz soll mehr
+verlieren als ein Achtel mit weniger Platz, am Ende wird so
+Gleichmäßigkeit erreicht.
+
+3.1.2. (Nein) Betrachte alle...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

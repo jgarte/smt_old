@@ -11,27 +11,41 @@
 
 ;;;;;;;;;;;;;;;;;; clocks
 (defclass clock ()
-  ((dur :initarg :duration :accessor duration)))
+  ((dur :initarg :dur :accessor dur)))
+(defun clockp (obj) (typep obj 'clock))
+(defclass pitch ()
+  ((spn :accessor spn :initarg :spn
+	:documentation "Scientific Pitch Notation")))
 
-(defclass note (stacked-form clock)
+;;;
+
+(defclass note (stacked-form clock pitch)
   ((domain :initform nil
 	   :documentation "We don't know what domain we want for note yet, 
 thus this can't be set to STACKED!")
+   ;; Following slots are containers for objects
    (head :accessor head
-	 :initarg :head)
-   (spn :accessor spn
-	:initarg :spn)))
+	 :documentation "Mchar obj"
+	 :initarg :head
+	 :initform nil)
+   (flag :accessor flag :initarg :flag
+	 :initform nil)
+   (stem :accessor stem
+	 :initform nil :initarg :stem)))
 
 (defun notep (obj) (typep obj 'note))
+;;; make-sform to contain all note stuff
+(defun make-note (&rest initargs &key &allow-other-keys)
+  (apply #'make-instance 'note initargs))
 
-(defun make-note (spn duration &rest initargs &key &allow-other-keys)
-  (apply #'make-instance 'note :duration duration :spn spn
-	 (alexandria:delete-from-plist initargs :duration :spn)))
-
-(defclass accidental (mchar)
-  ())
-(defun make-acc (name)
-  (make-instance 'accidental :name name))
+(defclass accidental (stacked-form pitch)
+  ;; set domain to NIL or it will be inherited from stacked-form
+  ((domain :initform nil)
+   (mchar :initarg :mchar
+	  :accessor mchar)))
+(defparameter *accidental-right-side-space* (mm-to-px .5))
+(defun make-accidental (&rest initargs &key &allow-other-keys)
+  (apply #'make-instance 'accidental initargs))
 
 (defclass line (stacked-form)
   ((starts :initarg :starts

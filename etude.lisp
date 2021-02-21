@@ -52,14 +52,7 @@
   )
 
 ;;; Kann sowas benutzen als ruler
-(typep (funcall (comp #'children #'(lambda (l)
-					 (mapcar #'type-of
-						 (mapcar #'second (sort l #'< :key #'car)))))
-		(hform :toplevelp t
-		       :content (list (make-form :s :content (list (hform))))))
-       '(cons (eql stacked-form) (cons (eql HORIZONTAL-form) null) ))
-
-
+(remrule 0.1) (ruledocs)
 (flet ((rndacc ()
 	 (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp)))
        (foo (n)
@@ -68,107 +61,60 @@
 	       for p = (nth (random 5) '(a b e f g))
 	       for a = (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))
 	       for c = (nth (random 3) '(clefs.c clefs.g clefs.f ))
-	       collect (make-sform :content (list (make-note (cons 'b 4) d)))
-	       ;; when (and (zerop (random 2)) (/= i 0) (/= i (1- n)))
-	       ;; collect (make-sform :content (list (make-acc 'accidentals.sharp)))
-	       ;; when (and (zerop (random 4)) (/= i 0) (/= i (1- n)))
-	       ;; 	 collect(make-form :s :content (list (make-mchar c)))
+	       	       when (and (zerop (random 2)) (/= i 0) (/= i (1- n))) ;
+		 collect (make-accidental :mchar "#" :spn (cons p 4)
+					  :domain :treble
+					  :right-side-space
+					  *accidental-right-side-space*)
 
+	       collect (make-note :spn (cons p 4) :dur d :domain :treble)
+	       
+	       
 	       )))
   (let* ((absx 30)
 	 (h (make-hform
 	     :id 'normseq
 	     :domain 'julian
 	     ;; :ruler 'content
-	     :width (mm-to-px 104)	;393.07086 695.4331
+	     :width (mm-to-px 184)	;695.4331
 	     ;; :canvas-vis-p nil
 	     :canvas-color "black"
-	     :canvas-opac 1
+	     :canvas-opac .21
 	     ;; :origin-visible-p nil
 	     :absx absx
 	     :toplevelp t
 	     :content (foo 20)
-	     ;; (list (make-form :s :content (list (make-note (cons 'b 4) dur)))		   
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.flat)))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.sharp)))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur)))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) dur))))
-	     
-	     ;; (list (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.flat)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.natural)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.flat)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.natural)))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.flat)))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-acc (rndacc))))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.sharp)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1)))))
-	     ;; 	   (make-form :s :content (list (make-acc 'accidentals.sharp)))
-	     ;; 	   (make-form :s :content (list (make-note (cons 'b 4) (nth (random 3) '(1/2 1/4 1))))))
-	     
-	     ;; (append
-	     ;;  ;; (list (make-form :s :content (list (make-instance 'barline))))
-	     ;;  (loop repeat 20
-	     ;; 	  for i = (nth (random 3) '(1/2 1/4 1))
-	     ;; 	  for p = (nth (random 3) '(d f g))
-	     ;; 	  for o = (nth (random 2) '(4 5))
-	     ;; 	  collect (make-form :s :content (list (make-note (cons 'b 4) i)))
-	     ;; 	  collect (make-form :s :content (list (make-acc 'accidentals.sharp)))
-	     ;; 	  )
-	     ;;  ;; (list (make-form :s :content (list (make-instance 'barline))))
-	     ;;  )
 	     :preproc (preproc x
 	  		((typep x 'mchar)
 	  		 (setf 
 	  		  (domain x) :treble
-	  		  ;; (canvas-vis-p x) nil
+	  		  (canvas-vis-p x) nil
 	  		  (origin-visible-p x) nil
 	  		  ))
-	  		((eq (class-name (class-of x)) 'note)
+	  		;; ((eq (class-name (class-of x)) 'note)
+	  		;;  (setf
+	  		;;   ;; Doubling the width temporarily to ease reading
+	  		;;   ;; (ruler x) '(:spn)
+	  		;;   (domain x) :treble
+	  		;;   ;; (canvas-vis-p x) nil
+			;;   ;; (canvas-opac x) 1
+	  		;;   ;; (origin-visible-p x) nil
+	  		;;   ))
+	  		((or (typep x 'stacked-form) (typep x 'barline))
 	  		 (setf
-	  		  ;; Doubling the width temporarily to ease reading
-	  		  ;; (ruler x) '(:spn)
-	  		  (domain x) :treble
-	  		  ;; (canvas-vis-p x) nil
-			  ;; (canvas-opac x) 1
-	  		  (origin-visible-p x) nil
-	  		  ))
-	  		((or (eq (class-name (class-of x)) 'stacked-form)
-			     (typep x 'barline))
-	  		 (setf
-			  (domain x) 's
-	  		  ;; (canvas-vis-p x) nil
+			  ;; (domain x) 's
+	  		  (canvas-vis-p x) nil
 			  (canvas-color x)
-			  (nth (random 13) '("lightgreen" "yellow" "springgreen" "lightblue" "deeppink" "red" "green" "orange" "pink" "blue" "gray" "cyan"
-					     "darkkhaki"))
+			  (nth (random 13)
+			       '("lightgreen" "yellow" "springgreen" "lightblue" "deeppink"
+				 "red" "green" "orange" "pink" "blue" "gray" "cyan"
+				 "darkkhaki"))
 			  (canvas-opac x) .8
 	  		  (origin-visible-p x) nil
 	  		  )))))
 	 )
     (render h)
+
     ))
 
 ;;; ;;;;;;;;;;;;;;;;
@@ -228,48 +174,5 @@
 (render (hform :toplevelp t) :apprulp nil)
 
 
-(let ((h (hform
-	  :toplevelp t
-	  :id 'seq
-	  ;; :domain nil
-	  :origin-visible-p nil
-	  :canvas-vis-p nil
-	  :canvas-color "green"
-	  :content
-	  (list (make-form :s :id 's
-	  	 :content
-	  	 (list (make-mchar 'clefs.c))
-	  	 ))
-	  )
-	 ))
 
-  (render h :apprulp nil))
-
-(let ((h (hform :toplevelp t
-		:lineup nil
-		:content (loop for i to 20
-			       collect (let ((s (make-form :s :x-offset (* 60 (cos i))
-						       :y-offset (* 60 (sin i))
-						       :content (list (make-mchar 'scripts.stopped
-										  )))))
-					 (smt-engine::x-offset s)
-					 s)))))
-  (render h)
-)
-
-
-(render
- (let* ((s (make-form :s :s
-		     :x-offset 10
-		     :content (list (make-mchar 'clefs.g
-						))))
-       
-       (h (make-form :s :h :toplevelp t
-		     ;; :domain nil
-		     ;; :canvas-vis-p nil
-			:content (list s))))
-   (clock-heads (content h))
-   )
- :drawp nil
- :apprulp nil)
 

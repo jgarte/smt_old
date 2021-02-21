@@ -15,7 +15,7 @@
 (defstruct glyph name bbox pathd)
 
 (defun install-font (srcpath &optional (vsrg 'clefs.c) (update-current-font t))
-  (setf *vertical-space-reference-glyph* vsrg)
+  (setf *staff-height-reference-glyph* vsrg)
   ;; Prepare data
   (let* ((font-name (pathname-name srcpath))
 	 (font-sym (intern (string-upcase font-name)))

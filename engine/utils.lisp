@@ -69,7 +69,7 @@ fn (left-to-right) to the result, etc. ©Rich Hickey"
 ;;; This is the user-interface,
 (defparameter *scale* 1
   "Global scaling factor for X and Y coordinates.")
-(defparameter *vertical-space-reference-glyph* 'clefs.c
+(defparameter *staff-height-reference-glyph* 'clefs.c
   "The relation between 4 staff spaces and the vertical dimension 
 of this glyph is used to find the global internal factor, by which all
 glyphs are scaled to ... By convention the vertical space of 
@@ -83,7 +83,7 @@ stave is equal to the height of the alto clef, hence the default glyph.")
 				   ;; Height of the alto clef (in current font)
 				   (bbox-height
 				    (glyph-bbox
-				     (get-glyph *vertical-space-reference-glyph*)))
+				     (get-glyph *staff-height-reference-glyph*)))
 				   )))
 
 ;;; Toplevel scale
@@ -295,34 +295,17 @@ use the reversed of this list."
 
 (defun render (score &key (apprulp t) (drawp t) (page-format *page-format*))
   ;; Vorbereitungen
-  (when (formp score)
-    ;; perform pre-processings
-    (preprocess score)
-    ;; Line-ups
-    (hlineup score))
-  ;; (dolist (obj score)
-  ;;   (when (formp obj)
-  ;;     ;; perform pre-processings
-  ;;     (preprocess obj)
-  ;;     ;; Line-ups
-  ;;     (hlineup obj)
-  ;;     ))
-  
+  (preprocess score)
+  (nlineup score)
+  ;; Teil von Rules ist setzen der Noten Content (head ...)
   (when apprulp (apply-rules score))
-  ;; (when apprulp
-  ;;   (apply-rules (mapcan #'(lambda (x)
-  ;; 			     (if (formp x)
-  ;; 				 (cons x (descendants x))
-  ;; 				 (list x)))
-  ;; 			 score)))
-  ;; Using s-xml
   (when drawp
     (with-open-file (s "/tmp/smt.svg"
   		       :if-does-not-exist :create
   		       :if-exists :supersede
   		       :direction :output)
       (format s "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>~%")
-      (nlayer-svg-list score)
+      (n-layer-svg-list score)
       (s-xml:print-xml-dom
        (s-xml:make-xml-element :name "svg"
 			       :attributes `(("xmlns" . "http://www.w3.org/2000/svg")

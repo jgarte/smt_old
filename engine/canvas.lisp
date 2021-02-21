@@ -2,6 +2,8 @@
 ;; (asdf:load-system "smt")
 (in-package :smt-engine)
 
+
+
 ;;; All new canvases can be checked for collisions
 ;;; against other canvas bounding boxes.
 (defparameter *covered-areas*
@@ -19,8 +21,10 @@ some canvases.")
 
 ;;; Chase ist der Rahmen, also das Canvas einfach.
 (defclass canvas (smtobj)
-  (
-   
+  (;; (fspace :documentation "Floating space which appears after an object,
+;; used e.g. in CWMN punctuation rules."
+;; 	   :accessor fspace
+;; 	   :initform 0)
    (rotate-degrees :initarg :rotate-degrees
 		   :initform 0
 		   :accessor chase-rotate-degrees)
@@ -98,12 +102,6 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
    (hslot :accessor hslot :initform nil)
    ))
 
-(defun root (obj)
-  "Returns the farthest parent (toplevel) of obj"
-  (let ((root (car (ancestors obj))))
-    (assert (toplevelp root))
-    root))
-
 (defun parent (obj)
   "Returns the direct parent of obj."
   (alexandria:lastcar (ancestors obj)))
@@ -129,7 +127,7 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
   (when y (setf (slot-value obj 'yslot) (calc-y obj)))  
   ;; LR and then W
   (when l (setf (slot-value obj 'lslot) (calc-left obj)))
-  (when r (setf (slot-value obj 'rslot) (calc-right obj)))  
+  (when r (setf (slot-value obj 'rslot) (compute-right obj)))  
   (when w (setf (slot-value obj 'wslot) (compwidth obj)))
   ;; TB and then H
   (when top (setf (slot-value obj 'tslot) (refresh-top obj)))
