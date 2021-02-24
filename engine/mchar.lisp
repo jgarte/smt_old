@@ -45,7 +45,7 @@ Composing Sticks."))
 	;; Height and Width can be computed for Mtypes right away, since not
 	;; dependant on x or y!
 	(slot-value obj 'hslot) (refresh-height obj)
-	(slot-value obj 'wslot) (compwidth obj))
+	(slot-value obj 'wslot) (compute-width obj))
   ;; Allow a mchar obj to be rendered as standalone when it's toplevel.
   ;; No need for :h :w, since already computed above!
 
@@ -63,8 +63,8 @@ Composing Sticks."))
   ;; Direction of setfing: from innermost to outermost
   (dolist (anc (reverse (ancestors obj)))
     (setf (slot-value anc 'rslot) (compute-right anc)
-	  (slot-value anc 'lslot) (calc-left anc)
-	  (slot-value anc 'wslot) (compwidth anc)))
+	  (slot-value anc 'lslot) (compute-left anc)
+	  (slot-value anc 'wslot) (compute-width anc)))
   newx)
 
 (defmethod (setf y) (newy (obj mchar))  
@@ -87,12 +87,9 @@ Composing Sticks."))
 
 
 ;;; Faghat baraye CS!!!!
-(defmethod calc-left ((obj mchar))
+(defmethod compute-left ((obj mchar))
   (+ (x obj)
-     (toplvl-scale (bbox-left (glyph-bbox (get-glyph (name obj) (font obj))))
-		   ;; (getf (bcr obj) :left)
-		   ;; (bcr-left (bcr obj))
-		   )))
+     (toplvl-scale (bbox-left (glyph-bbox (get-glyph (name obj) (font obj)))))))
 
 (defmethod compute-right ((obj mchar))
   (+ (x obj)
@@ -104,7 +101,7 @@ Composing Sticks."))
 
 (defmethod width ((obj mchar))
   (slot-value obj 'wslot))
-(defmethod compwidth ((obj mchar))
+(defmethod compute-width ((obj mchar))
   (toplvl-scale (bbox-width (glyph-bbox (get-glyph (name obj) (font obj))))))
 
 (defmethod refresh-top ((obj mchar))
@@ -185,6 +182,7 @@ Composing Sticks."))
 		 "id" (format nil "~A" (id obj))
 		 ;; When color = NIL write the string "none" for fill attribute
 		 "fill" (or (mchar-color obj) "none")
+		 "fill-opacity" (mchar-opac obj)
 		 ;; First put the thing at the specified coord tx ty
 		 ;; Then flip about th e vertical axis, then write the
 		 ;; desired scaling.

@@ -53,21 +53,24 @@
 
 ;;; Kann sowas benutzen als ruler
 (remrule 0.1) (ruledocs)
+
 (flet ((rndacc ()
 	 (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp)))
        (foo (n)
-	 (loop for i below n
+	 (loop with x = 1
+	       for i below n
 	       for d = (nth (random 3) '(1 1/2 1/4))
 	       for p = (nth (random 5) '(a b e f g))
 	       for a = (nth (random 3) '(accidentals.flat accidentals.natural accidentals.sharp))
-	       for c = (nth (random 3) '(clefs.c clefs.g clefs.f ))
-	       	       when (and (zerop (random 2)) (/= i 0) (/= i (1- n))) ;
-		 collect (make-accidental :mchar "#" :spn (cons p 4)
+	       for c = (nth (random 2) '(clefs.c clefs.g clefs.f ))
+	       
+	       when (and (zerop (+ 0 (random 5))) (/= i 0) (/= i (1- n)))
+		 collect (make-accidental :mchar 'bemol :spn (cons 'b 4)
 					  :domain :treble
 					  :right-side-space
 					  *accidental-right-side-space*)
 
-	       collect (make-note :spn (cons p 4) :dur d :domain :treble)
+	       collect (make-note :spn (cons 'b 4) :dur d :domain :treble)
 	       
 	       
 	       )))
@@ -83,7 +86,7 @@
 	     ;; :origin-visible-p nil
 	     :absx absx
 	     :toplevelp t
-	     :content (foo 20)
+	     :content (foo 6)
 	     :preproc (preproc x
 	  		((typep x 'mchar)
 	  		 (setf 
@@ -118,56 +121,7 @@
     ))
 
 ;;; ;;;;;;;;;;;;;;;;
-(render (hform
-	 :id 'seq
-	   ;; :ruler 'content
-	 :width (mm-to-px 40)		;151.1811
-	 :canvas-vis-p nil
-	 ;; :canvas-color "pink"
-	 ;; :canvas-opac 1
-	 :origin-visible-p nil
-	 :absx 30
-	 :toplevelp t
-	 :content
 
-	 ;; (loop for x to 10
-	 ;; 	 for d = (nth (random 3) '(1 1/2 1/4))
-	 ;; 	 collect (make-form :s :content (list (make-note '(b . 4) d
-	 ;; 						  :domain :treble
-	 ;; 						  :canvas-vis-p t
-	 ;; 						  :origin-visible-p nil))
-	 ;; 			:canvas-vis-p nil
-	 ;; 			:origin-visible-p nil))
-	 
-	 (list (make-form :s :content (list (make-note '(b . 4) 1 :domain :treble)))
-	       (make-form :s :content (list (make-note  '(b . 4) 1 :domain :treble)))
-	       (make-form :s :content (list (make-note  '(c . 5) 1 :domain :treble)))
-	       ;; (make-form :s :content (list (make-instance 'barline)))
-	       (make-form :s :content (list (make-note  '(d . 5) 1 :domain :treble)))
-	       (make-form :s :content (list (make-note  '(c . 5) 1 :domain :treble)))
-	       ;; (make-form :s :content (list (make-instance 'barline)))
-	       )
-	 :preproc (preproc x
-	   	    ((typep x 'note)
-	   	     (setf
-	   	      ;; Doubling the width temporarily to ease reading
-	   	      ;; (ruler x) '(:spn)
-	   	      (domain x) :treble
-	   	      (canvas-vis-p x) nil
-	   	      (origin-visible-p x) nil
-	   	      ;; (origin-visible-p (car (content x))) nil
-	   	      ))
-	   	    ;; ((or (eq (class-name (class-of x)) 'stacked-form)
-	   	    ;; 	   (typep x 'barline))
-	   	    ;;  (let ((colors '("green" "red" "gray" "orange" "pink" "blue")))
-	   	    ;; 	 (setf
-	   	    ;; 	  (canvas-vis-p x) t
-	   	    ;; 	  (canvas-color x) (nth (random (length colors)) colors)
-	   	    ;; 	  (origin-visible-p x) nil
-	   	    ;; 	  )))
-	   	    )
-	 )
-  )
 
 
 ;;; Kann nicht?

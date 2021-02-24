@@ -117,35 +117,26 @@ CDRs to get children listed in the desired order specified by lastgEN-first."
 	      )))
 
 (defmethod fixed-bottom ((obj form))
-  ;; "uniE05C" is bravura alto, should find a solution to
-  ;; find out the alto clef of a font!!!
-  (+ (y obj) (toplvl-scale
-	      (bbox-bottom (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))
-	      ;; (getf (get-glyph-bbox *staff-height-reference-glyph*) :bottom)
-	      ;; (bcr-bottom (get-glyph-bbox "uniE05C")
-	      ;; 		    ;; (get-bcr "clefs.C" (family obj))
-	      ;; 		    )
-	      )))
+  (+ (y obj)
+     (toplvl-scale (bbox-bottom (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj)))))))
 
 (defmethod fixed-height ((obj form))
-  ;; This is bravura alto clef
-  (toplvl-scale
-   (bbox-height (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))
-   ;; (getf (get-glyph-bbox *staff-height-reference-glyph*) :height)
-   ;; (bcr-height (get-glyph-bbox "uniE05C")
-		;; 	    ;; (get-bcr "clefs.C" (family obj))
-		;; 	    )
-		))
+  (toplvl-scale (bbox-height (glyph-bbox (get-glyph *staff-height-reference-glyph* (font obj))))))
 
 
 
 (defmethod initialize-instance :after ((obj form) &key)
+  (dolist (child (children obj))
+    (pushnew obj (ancestors child)))
   (let ((desc (reverse (descendants obj))))
-    (dolist (d desc)
-      ;; is pushnew safe for this???
-      (pushnew obj (ancestors d)))
+
+    ;; (dolist (d desc)
+    ;;   ;; is pushnew safe for this???
+    ;;   (pushnew obj (ancestors d)))
+    
     ;; At this time every obj has it's full ancestors list
     (when (toplevelp obj)
+      
       ;; Mtype init get-bcr first, da diese unabhängig von Allem sind
       (dolist (g (remove-if-not #'mcharp desc))      
 	(refresh-bcr! g :x t :y t :l t :r t :t t :b t :w t :h t))
@@ -216,8 +207,8 @@ new objects"
     ;; of it's children.
     ;; Use sequential-SETF, for (COMPWIDTH obj) depends on (RIGHT obj) & (LEFT obj)
     (setf (slot-value anc 'rslot) (compute-right anc)
-	  (slot-value anc 'lslot) (calc-left anc)
-	  (slot-value anc 'wslot) (compwidth anc)
+	  (slot-value anc 'lslot) (compute-left anc)
+	  (slot-value anc 'wslot) (compute-width anc)
 	  )
     )
   newx)
@@ -238,11 +229,11 @@ new objects"
   newy)
 
 ;;; Horizontal stuff → Initial
-(defmethod calc-left ((obj form))
+(defmethod compute-left ((obj form))
   ;; Don't need reversing here!!!
   (apply #'min
-	 (x obj)			;OBJ's own x is the leftmost?
-	 ;; Then since OBJ only functions as a container for other stuff it
+	 (x obj)			;OBJ's own x is the leftmost of all?
+	 ;; Then since a Form OBJ only functions as a container for other stuff, it
 	 ;; takes on the leftmost side of it's content.
 	 (mapcar #'left (reverse (descendants obj)))))
 
@@ -270,7 +261,7 @@ it takes care of chooising btwn userinputed width or system
 computed width."
   (or (user-width obj) (slot-value obj 'wslot)))
 
-(defmethod compwidth ((obj form))
+(defmethod compute-width ((obj form))
   ;; This subtraction will cause Floating Nightmare! :-S
   ;; #'right #'left are slot-value readers.
   (- (right obj) (left obj)))
@@ -288,7 +279,7 @@ computed width."
     (setf (slot-value anc 'rslot)
 	  (apply #'max (mapcar #'right (reverse (descendants anc))))
 	  (slot-value anc 'wslot)
-	  (compwidth anc)))
+	  (compute-width anc)))
   neww)
 
 ;;; Vertical stuff ↓
@@ -357,7 +348,7 @@ computed width."
 ;;; horizontal-form lines up it's direct-children horizontally side by side
 ;;; Takes place BEFORE applying rules (muss man davon ausgehen, wenn man Rules schreibt)!
 (defun hlineup (obj)
-
+  ;; (print (list (id obj) (left obj)))
   (when (formp obj)
     (dolist (d (content obj))
       (hlineup d)))
@@ -369,7 +360,7 @@ computed width."
 	  ;; moves XLR
 	  do (setf (left b) (right a)))))
 
-;;; Call this once on the toplevel form to recursively line-up it's content
+;;; Call this once on a toplevel form to recursively line-up it's child forms
 (defun nlineup (form)
   "Lines up all form's children horizontally or vertically. This
 applies also to the Stacked Forms, they might also have
@@ -377,21 +368,29 @@ horizontal/vertical children which should be lined up.  Without this
 all the content would get the same starting horizontal/vertical
 coordinates as the FORM itself."
   ;; Start lining up from within!
-  (dolist (child (remove-if-not #'formp (children form)))
-    (nlineup child))
+  (dolist (form-child (remove-if-not #'formp (children form)))
+    (nlineup form-child))
   (typecase form
     (horizontal-form
-     (let ((starting-left (left form)))
+     (let ((leftmost-child-left (left (car (content form)))))
+       (format t "~%~%LEFTMOST L ~F~&" (left (car (content form))))
        ;; The first direct child takes on the left-coord of the parent form and it's own
        ;; right coord, so we start lining up from the second direct child.
        (dotimes (i (list-length (cdr (content form))))
-	 ;; For the rest of direct children we compute their difference from
-	 ;; the starting left coordinate, then add that diff to the right-coord
-	 ;; of the last sibling.
-	 ;; (print (content (nth i (cdr (content form)))))
-	 (setf (left (nth i (cdr (content form))))
-	       (+ (- (left (nth i (cdr (content form)))) starting-left)
-		  (right (nth i (content form))))))))))
+  	 ;; For the rest of direct children we compute their difference from
+  	 ;; the starting left coordinate, then add that diff to the right-coord
+  	 ;; of the last sibling.
+	 (print (list (id (nth i (cdr (content form))))
+		      (left (nth i (cdr (content form))))))
+  	 (setf (left (nth i (cdr (content form))))
+  	       (+ (- (left (nth i (cdr (content form)))) leftmost-child-left)
+		  (right (nth i (content form)))))
+	 (print (list (id (nth i (cdr (content form))))
+		      (left (nth i (cdr (content form))))))
+	 (print '__________)
+	 ))))
+  ;; (refresh-bcr! form :l t)
+  )
 
 
 

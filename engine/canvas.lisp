@@ -123,12 +123,12 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
   "Storing rectangular coordinates"
   ;; X&y first, this order of computation is VERY important:
   ;; e.g. for a stick, (re)computing width happens based on it's r & l etc.
-  (when x (setf (slot-value obj 'xslot) (calc-x obj)))
+  (when x (setf (slot-value obj 'xslot) (compute-x obj)))
   (when y (setf (slot-value obj 'yslot) (calc-y obj)))  
   ;; LR and then W
-  (when l (setf (slot-value obj 'lslot) (calc-left obj)))
+  (when l (setf (slot-value obj 'lslot) (compute-left obj)))
   (when r (setf (slot-value obj 'rslot) (compute-right obj)))  
-  (when w (setf (slot-value obj 'wslot) (compwidth obj)))
+  (when w (setf (slot-value obj 'wslot) (compute-width obj)))
   ;; TB and then H
   (when top (setf (slot-value obj 'tslot) (refresh-top obj)))
   (when b (setf (slot-value obj 'bslot) (refresh-bottom obj)))
@@ -137,12 +137,27 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 
 (defmethod initialize-instance :after ((obj canvas) &key)
   (when (toplevelp obj)
-    (assert (null (ancestors obj)) () "Toplevel canvas can not have ancestors!")
-    (unless (absx obj) (setf (absx obj) +left-margin+))
-    (unless (absy obj) (setf (absy obj) +top-margin+)))
+    (assert (null (ancestors obj)) () "Top-level canvas can not have ancestors!")
+    ;; Für toplevel: die richten sich für XY nicht an ihre Kinder!
+    ;; Kinder bestimmen NUR deren Kanten (LR etc). Also wir konnen sicher
+    ;; beim Initialisieren die XY schon mal setzen.
+    ;; (unless (absx obj) (setf (absx obj) +left-margin+))
+    (setf (absx obj) (or (absx obj) +left-margin+)
+	  (slot-value obj 'xslot) (+ (absx obj) (x-offset obj))
+	  (absy obj) (or (absy obj) +top-margin+)
+	  (slot-value obj 'yslot) (+ (absy obj) (y-offset obj))))
   
   )
-(defmethod calc-x ((obj canvas))
+
+;;; A substitute for MEMBER-IF
+(defun delimit-ancestors (ancestors-list cutoff-pred upwardp)
+  (when ancestors-list			;NIL if ancestors-list empty
+    ;; upwardp = starting from the next ancestor up to the top-most
+    (let ((pos (position-if cutoff-pred ancestors-list :from-end upwardp)))
+      (unless pos
+	(error "Predicate ~A yielded NIL on ancestors-list ~A" cutoff-pred ancestors-list))
+      (nthcdr pos ancestors-list))))
+(defmethod compute-x ((obj canvas))
   ;; UPWARDP T = start from obj itself
   (let* ((absx-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absx t))
 	 ;; This is the one with a sure ABSX!
@@ -150,7 +165,6 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 	 ;; These all have had ABSX = NIL (empty list if OBJ itslef has ABSX).
 	 (tailcdr (cdr absx-tail)))
     (apply #'+ (absx tailcar) (x-offset tailcar) (mapcar #'x-offset tailcdr))))
-
 (defmethod calc-y ((obj canvas))
   (let* ((absy-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absy t))
 	 ;; This is the one with a sure ABSY!
@@ -158,4 +172,22 @@ nicht! Ausserdem diese für ein mtype innerhalb eines
 	 ;; These all have had ABSY = NIL (empty list if OBJ itslef has ABSY).
 	 (tailcdr (cdr absy-tail)))
     (apply #'+ (absy tailcar) (y-offset tailcar) (mapcar #'y-offset tailcdr))))
+
+(defun search-next-parent-with-abs-coord (obj coord)
+  ;; upwardp = starting from the next ancestor up to the top-most
+  (nthcdr (position-if coord (ancestors obj) :from-end t)
+	  (append (ancestors obj) (list obj))))
+
+;; (defun compute-x (obj)
+;;   ;; UPWARDP T = start from obj itself
+;;   (let* ((absx-tail (delimit-ancestors (append (ancestors obj) (list obj)) #'absx t))
+;; 	 ;; This is the one with a sure ABSX!
+;; 	 (tailcar (car absx-tail))
+;; 	 ;; These all have had ABSX = NIL (empty list if OBJ itslef has ABSX).
+;; 	 (tailcdr (cdr absx-tail)))
+;;     (apply #'+ (absx tailcar) (x-offset tailcar) (mapcar #'x-offset tailcdr))))
+
+
+
+
 

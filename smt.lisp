@@ -31,21 +31,23 @@ thus this can't be set to STACKED!")
    (flag :accessor flag :initarg :flag
 	 :initform nil)
    (stem :accessor stem
-	 :initform nil :initarg :stem)))
+	 :initform nil :initarg :stem)
+   (id :initform (gensym "NOTI"))))
 
 (defun notep (obj) (typep obj 'note))
 ;;; make-sform to contain all note stuff
-(defun make-note (&rest initargs &key &allow-other-keys)
-  (apply #'make-instance 'note initargs))
+;; (defun make-note (&rest initargs &key &allow-other-keys)
+;;   (apply #'make-instance 'note initargs))
 
 (defclass accidental (stacked-form pitch)
   ;; set domain to NIL or it will be inherited from stacked-form
   ((domain :initform nil)
    (mchar :initarg :mchar
-	  :accessor mchar)))
+	  :accessor mchar)
+   (id :initform (gensym "ACCI"))))
 (defparameter *accidental-right-side-space* (mm-to-px .5))
-(defun make-accidental (&rest initargs &key &allow-other-keys)
-  (apply #'make-instance 'accidental initargs))
+;; (defun make-accidental (&rest initargs &key &allow-other-keys)
+;;   (apply #'make-instance 'accidental initargs))
 
 (defclass line (stacked-form)
   ((starts :initarg :starts
@@ -54,6 +56,14 @@ thus this can't be set to STACKED!")
 	   :accessor starts)
    (ends :initarg :ends
 	 :accessor ends)))
+
+(defmacro define-score-makers (&rest names)
+  `(progn ,@(loop for name in names
+		  collect `(defun ,(intern (format nil "MAKE-~A" (string name)))
+			      (&rest initargs &key &allow-other-keys)
+			     (apply #'make-instance ',name initargs)))))
+
+(define-score-makers note accidental)
 
 (defclass barline (line) ())
 

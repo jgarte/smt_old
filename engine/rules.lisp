@@ -30,7 +30,7 @@ returned value of this funcall is then checked against the type-specifications o
 provided clauses in order to find the applicable rule-body.
 TARGETS is a list of types. It narrows down the range of objects which would be addressable
 by the rule to the specified types. A type T in this list makes the rule applicable 
-to all objects, irrespective of their types.
+to all objects, irrespective of their types. Empty TARGETS makes the rule effectless.
 DOMAINS list does a further filtering amongst the targets (specified by TARGETS list) and
 applies a further filtering for gaining engültige liste von Objekten die Futter für rule sein werden.
 "
@@ -103,25 +103,23 @@ applies a further filtering for gaining engültige liste von Objekten die Futter
 ;; 	  (assert-toplevel-lamlstlen obj clause-lamlstlen)
 ;; 	  (pass-args-to-clause-func obj clause-fn clause-lamlstlen))))))
 
-(defun apply-rules (score)
+(defun apply-rules (all)
   ;; Ruledocs
   (dolist (idx (sort (alexandria:hash-table-keys *ruletable*) #'<))    
     (let* ((plist (gethash idx *ruletable*)) ;Rule's plist
-	   ;; pick up objs with their types corresponding to trgts
-	   (trgts (getf plist :trgts))
-	   (trgobjs (remove-if-not #'(lambda (x) (find x trgts :test #'typep))
-				   (append (list score) (children score nil))))
+	   ;; pick up objs with their types in trgts
+	   (trgobjs (remove-if-not #'(lambda (x)
+				       (find x (getf plist :trgts) :test #'typep))
+				   (append (list all) (children all nil))))
 	   ;; pick up trgobjs with their dmns corresponding to dmns
 	   (dmns (getf plist :dmns))
 	   ;; If domains contains T, all objects no matter in which domain, are adressed.
 	   (dmnobjs (if (find t dmns)
 			;; No removings!
 			trgobjs
-			(remove-if-not #'(lambda (x) (typep (domain x) `(member ,@dmns))) trgobjs)))
-	   ;; (dmnobjs (remove-if-not  #'(lambda (x)
-	   ;; 				(typep (domain x)
-	   ;; 				       (if (find t dmns) t `(member ,@dmns))))
-	   ;; 			    trgobjs))
+			(remove-if-not #'(lambda (x)
+					   (typep (domain x) `(member ,@dmns)))
+				       trgobjs)))
 	   )
       (dolist (obj dmnobjs)
 	(let* ((clause-plist (funcall (getf plist :rlrfn)

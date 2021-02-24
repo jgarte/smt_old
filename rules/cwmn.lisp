@@ -26,11 +26,10 @@
 	  (hd (make-mchar (ecase dur
 			    (1 'noteheads.s0)
      			    ((h 1/2) 'noteheads.s1)
-
-
 			    (1/4 'noteheads.s2))
+			  :id (gensym "NOTE")
      			  :origin-visible-p nil
-     			  :canvas-vis-p nil
+     			  ;; :canvas-vis-p nil
 			  ;; :font (case dur
      			  ;; 	  (1 (second .installed-fonts.))
 			  ;; 	  (otherwise *font*))
@@ -52,7 +51,21 @@
 	 ((string= (mchar a) "b")
 	  (push (make-mchar 'accidentals.flat) (content a)))
 	 ((string= (mchar a) "bekar")
-	  (push (make-mchar 'accidentals.natural) (content a))))))
+	  (push (make-mchar 'accidentals.natural) (content a)))))
+  (symbol
+   (a)
+   (cond ((eq(mchar a) 'sharp)
+	  (let ((c (make-mchar 'accidentals.sharp)))
+	    (push c (content a))
+	    (setf (mchar a) c)))
+	 ((eq (mchar a) 'bemol)
+	  (let ((c (make-mchar 'accidentals.flat
+			       :mchar-opac .5
+			       :origin-visible-p nil
+     			       ;; :canvas-vis-p nil
+			       )))
+	    (push c (content a))
+	    (setf (mchar a) c))))))
 
 (defun fspace-alloc (space widths diff-alloc-ratios)
   (let* ((sum (apply #'+ widths))
@@ -133,17 +146,24 @@ is a CLOCKED."
 	 (count-durs (mapcar #'(lambda (d)
 				 (cons (count d durs :test #'=) d))
 			     (remove-duplicates durs)))
-	 (u (decide-unit durs))	  ;Which of the durations is the unit?
+	 (udur (decide-unit durs))	  ;Which of the durations is the unit?
 	 (uwidth (/ desired-width
 		    (apply #'+ (mapcar #'(lambda (x)
 					   ;; car x=tedade clockedha, cdr dur
-					   (* (car x) (ufactor u (cdr x))))
+					   (* (car x) (ufactor udur (cdr x))))
 				       count-durs))))
 	 )
+    ;; (print (mapcar #'(lambda (x)
+    ;; 		       (list x (dur x)
+    ;; 			     (* uwidth (ufactor udur (dur x)))
+    ;; 			     (width x)
+    ;; 			     (- (* uwidth (ufactor udur (dur x))) (width x))))
+    ;; 		   clocks-lst))
     (dolist (c clocks-lst)
       (setf (right-side-space c)
 	    ;; Exklusive width
-	    (- (* uwidth (ufactor u (dur c))) (width c))))))
+	    (- (* uwidth (ufactor udur (dur c)))
+	       (width c))))))
 
 ;(ngn::enumerate-generations (content (make-note :head (make-mchar 'clefs.c))) 0)
 (defrule id (horizontal-form) (julian) (.1 "Punktieren Durchlauf 1:
@@ -151,35 +171,45 @@ Findet das idealle Spacing zwischen Clocks, tut so al ob gäbe es gaar keine
 Non-clocks!")
   ((eql normseq) (h)
    ;; Change the funcall directions of COMP
-   (let* ((items (content h)))
+   (let* ((items (content h))
+	  )
+     ;; (print (mapcar #'(lambda (i) (list i (+ (width i) (right-side-space i)))) items))
      (n-compute-perfect-clock-punctuation (mapcar #'car (clock-heads items)) (width h))
      (dolist (lst (clock-heads items)
 		  ;; Am ende add all together
-		  (dolist (s (content h) (nlineup h))
+		  (dolist (s (content h)
+			     (progn
+			       ;; (print (mapcar #'(lambda (i) (list i (+ (width i) (right-side-space i)))) items))
+			       (nlineup h)
+			       (format t "~%>>>~F~&" (left h))))
+		    ;; (print (list s (width s)
+		    ;; 		 (right-side-space s)))
+		    
 		    (incf (width s) (right-side-space s))
-		    ;; (let ((item (car (content s))))
-		    ;;   (print item)
-		    ;;   ;; (print (list (left s) (width item) (right item) (width s) (right s) ))
-		    ;;   (incf (width item) (right-side-space item))
-		    ;;   ;; (print (list (left s) (width item) (right item) (width s) (right s)))
-		    ;;   ;; (print (list (car (content item))
-		    ;;   ;; 		   (width (car (content item)))))
-		    ;;   ;; (print '____)
-		    ;;   )
+		    
+		    ;; (print (list s (width s)))
 		    )
 		  )
-       (when (> (length lst) 1)
+       
+       (when (> (length lst) 1)		;note+accidental
+
 	 (if 
 	  ;; Passt rein? setz es von clock's fspace ab
 	  (< (apply #'+ (mapcar #'(lambda (nonclock)
 				    (+ (width nonclock) (right-side-space nonclock)))
 				(cdr lst)))
 	     (right-side-space (car lst)))
-	  (decf (right-side-space (car lst))
-		(apply #'+ (mapcar #'(lambda (nonclock)
-				       (+ (width nonclock) (right-side-space nonclock)))
-				   (cdr lst)))))))
-     )))
+	  (progn
+	    
+	    (decf (right-side-space (car lst))
+		  (apply #'+ (mapcar #'(lambda (nonclock)
+					 (+ (width nonclock)
+					    (right-side-space nonclock)))
+				     (cdr lst))))
+	    ;; (print (right-side-space (car lst)))
+	    )
+	  (progn (print 'größer))))))
+   ))
 
 
 
@@ -280,15 +310,24 @@ Non-clocks!")
 (defparameter *staff-line-thickness* 1.)
 
 ;;; Stave
-(defrule null (stacked-form) (:treble) (3 "Drawing staff lines")
+(defrule null (note accidental) (:treble) (3 "Drawing staff lines")
   (null (me)
 	(loop
 	  :for line-idx :from -2 :to 2
 	  :for line-y = (+ (* line-idx *space*) (y me))
-	  :do (packsvg me (ngn::svgline (left me) line-y (+ (left me) (width me)) line-y
-					"stroke-width" *staff-line-thickness*
-					"stroke-linecap" "round"
-					"stroke" "black")))))
+	  :do (packsvg me
+		       (ngn::svgline (left me) line-y
+				     (+ (left me) (width me)) line-y
+				     "stroke-width" *staff-line-thickness*
+				     "stroke-linecap" "sqaure"
+				     "stroke" (if (clockp me) "black"
+						  "red"))
+		       
+		       )
+	  )
+	;; (print (list me (when (clockp me) (dur me)) (width me)))
+	;;       (print '_________)
+	))
 
 (defrule null (barline) (t)
     (4 "Barline")

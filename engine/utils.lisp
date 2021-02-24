@@ -165,11 +165,12 @@ writing the svg doc.")
 (defgeneric pack-svglst (obj)
   (:documentation "Pushes all SVG elements to the SVGLST of obj."))
 
+;;; ????????????????????????????
 (defun smteq (obj1 obj2)
   ""
-  (and (typep obj1 (type-of obj2))
-       ;; If not same type, they may have same ID???
-       (eq (id obj1) (id obj2))))
+  (and (eq (id obj1) (id obj2))(typep obj1 (type-of obj2))
+       ;; If not same type, they r allowed to have the same ID???
+       ))
 
 (defclass smtobj ()
   ((id :initarg :id
@@ -202,14 +203,6 @@ use the reversed of this list."
 
 
 
-;;; A substitute for MEMBER-IF
-(defun delimit-ancestors (ancestors-list cutoff-pred upwardp)
-  (when ancestors-list			;NIL if ancestors-list empty
-    ;; upwardp = starting from the next ancestor up to the top-most
-    (let ((pos (position-if cutoff-pred ancestors-list :from-end upwardp)))
-      (unless pos
-	(error "Predicate ~A yielded NIL on ancestors-list ~A" cutoff-pred ancestors-list))
-      (nthcdr pos ancestors-list))))
 
 ;; (defun parse-float (string)
 ;;   "Returns a float read from string, and the index to the remainder of string."
@@ -296,7 +289,7 @@ use the reversed of this list."
 (defun render (score &key (apprulp t) (drawp t) (page-format *page-format*))
   ;; Vorbereitungen
   (preprocess score)
-  (nlineup score)
+  (ngn::hlineup score)
   ;; Teil von Rules ist setzen der Noten Content (head ...)
   (when apprulp (apply-rules score))
   (when drawp
